@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import urllib.request
 
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -48,8 +49,9 @@ def log(msg):
     sys.stdout.flush()
 
 def get_group_info(group_id):
-    url = "https://api.groupme.com/v3/groups/:%s?token=%s" % (group_id, os.getenv("ACCESS_TOKEN"))
-    request = Request(url)
-    json = urlopen(request).read().decode()
-    send_message(json)
+    with urllib.request.urlopen("https://api.groupme.com/v3/groups/%s?token=%s" % (group_id, os.getenv("ACCESS_TOKEN"))) as response:
+        html = response.read()
+    url = "https://api.groupme.com/v3/groups/%s?token=%s" % (group_id, os.getenv("ACCESS_TOKEN"))
+    return html["response"]["members"]
+
 
