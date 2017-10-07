@@ -25,14 +25,14 @@ def webhook():
         elif '!help' in data['text']:
             send_tribe_message("available commands: !throw, !gym, !website, !ultianalytics")
         elif 'ultianalytics' in data['text']:
-            send_tribe_message("url: undeclared password: %s" % (os.getenv("ULTI_PASS")))
+            send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         elif '!gym' in data['text'] or '!throw' in data['text']:
             if len(data['attachments']) > 0:
                 #               group_members = get_group_info(data['group_id'])
                 #               names = []
                 for attachment in data["attachments"]:
                     if attachment['type'] == 'image':
-                        send_workout_selfie(data['text'], attachment['url'])
+                        send_workout_selfie(data["name"] + " says \"" + data['text'] + "\"", attachment['url'])
                     #                    if attachment['type'] == 'mentions':
                     #                        for mentioned in attachment['user_ids']:
                     #                            for member in group_members:
