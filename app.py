@@ -19,6 +19,7 @@ def webhook():
     if data['name'] != 'TEST':
         msg = '{}, you sent "{}".'.format(data['name'], data['text'])
         send_message(msg)
+        send_message(len(data['attachments']))
 
     return "ok", 200
 
