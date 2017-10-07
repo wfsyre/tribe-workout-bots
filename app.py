@@ -15,11 +15,15 @@ def webhook():
     data = request.get_json()
     log('Recieved {}'.format(data))
 
+    group_members = get_group_info(data['group_id'])
     # We don't want to reply to ourselves!
     if data['name'] != 'TEST':
         msg = '{}, you sent "{}".'.format(data['name'], data['text'])
         send_message(msg)
-        send_message(data['attachments'])
+    if len(data['attachments']) > 0:
+        for attachment in data["attachments"]:
+            if attachment['type'] == 'mentions':
+                for user in attachment['user_ids']:
 
     return "ok", 200
 
@@ -38,3 +42,10 @@ def send_message(msg):
 def log(msg):
     print(str(msg))
     sys.stdout.flush()
+
+def get_group_info(group_id):
+    url = "https://api.groupme.com/v3/groups/%d?token=%s"% group_id, os.getenv("ACCESS_TOKEN")
+    request = Request(url)
+    json = urlopen(request).read().decode()
+    send_message(json)
+
