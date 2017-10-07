@@ -21,7 +21,8 @@ def webhook():
     if data['name'] != 'TEST':
         #msg = '{}, you sent "{}".'.format(data['name'], data['text'])
         #send_message(msg)
-        send_message(data)
+        if '!facebook' in data['text']:
+            send_message("facebook.com")
         if len(data['attachments']) > 0:
             group_members = get_group_info(data['group_id'])
             names = []
