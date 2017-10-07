@@ -21,10 +21,14 @@ def webhook():
         msg = '{}, you sent "{}".'.format(data['name'], data['text'])
         send_message(msg)
     if len(data['attachments']) > 0:
+        names = []
         for attachment in data["attachments"]:
             if attachment['type'] == 'mentions':
                 for user in attachment['user_ids']:
-
+                    for member in group_members["members"]:
+                        if user == member["user_id"]:
+                            names.append(member["nickname"])
+        send_message(str(names))
     return "ok", 200
 
 
