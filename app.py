@@ -16,7 +16,7 @@ def webhook():
     log('Recieved {}'.format(data))
 
     # We don't want to reply to ourselves!
-    if data['name'] != 'apnorton-test-bot':
+    if data['name'] != 'tribe-2017-2018-groupmebot':
         msg = '{}, you sent "{}".'.format(data['name'], data['text'])
         send_message(msg)
 
