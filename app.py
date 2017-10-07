@@ -16,12 +16,12 @@ app = Flask(__name__)
 def webhook():
     data = request.get_json()
     log('Recieved {}'.format(data))
-    send_message(data)
 
     # We don't want to reply to ourselves!
     if data['name'] != 'TEST':
         #msg = '{}, you sent "{}".'.format(data['name'], data['text'])
         #send_message(msg)
+        send_message(data)
         if len(data['attachments']) > 0:
             group_members = get_group_info(data['group_id'])
             names = []
