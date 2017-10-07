@@ -46,6 +46,7 @@ def send_message(msg):
     json = urlopen(request).read().decode()
 
 def send_image(img_url):
+    send_message(img_url)
     url = 'https://api.groupme.com/v3/bots/post'
 
     data = {
