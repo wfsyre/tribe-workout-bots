@@ -48,8 +48,12 @@ def log(msg):
     sys.stdout.flush()
 
 def get_group_info(group_id):
+    send_message("1")
     url = "https://api.groupme.com/v3/groups/%d?token=%s"% group_id, os.getenv("ACCESS_TOKEN")
+    send_message("2")
     request = Request(url)
+    send_message("3")
     json = urlopen(request).read().decode()
+    send_message("4")
     send_message(json)
 
