@@ -19,19 +19,19 @@ def webhook():
 
     # We don't want to reply to ourselves!
     if data['name'] != 'TEST':
-        msg = '{}, you sent "{}".'.format(data['name'], data['text'])
-        send_message(msg)
+        #msg = '{}, you sent "{}".'.format(data['name'], data['text'])
+        #send_message(msg)
         if len(data['attachments']) > 0:
             group_members = get_group_info(data['group_id'])
-            send_message("1")
             names = []
             for attachment in data["attachments"]:
+                if attachment['type'] == 'image':
+                    send_image(attachment['url'])
                 if attachment['type'] == 'mentions':
                     for mentioned in attachment['user_ids']:
                         for member in group_members:
                             if member["user_id"] == mentioned:
                                 names.append(member["nickname"])
-            send_message(str(names))
     return "ok", 200
 
 
@@ -45,6 +45,19 @@ def send_message(msg):
     request = Request(url, urlencode(data).encode())
     json = urlopen(request).read().decode()
 
+def send_image(img_url):
+    url = 'https://api.groupme.com/v3/bots/post'
+
+    data = {
+        "attachments": [
+            {
+                "type": "image",
+                "url": img_url
+            }
+        ]
+    }
+    request = Request(url, urlencode(data).encode())
+    json = urlopen(request).read().decode()
 
 def log(msg):
     print(str(msg))
