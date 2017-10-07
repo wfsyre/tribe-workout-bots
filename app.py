@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import ast
 import urllib.request
 
 from urllib.parse import urlencode
@@ -26,9 +27,9 @@ def webhook():
             names = []
             for attachment in data["attachments"]:
                 if attachment['type'] == 'mentions':
-                    for user in attachment['user_ids']:
-                        for member in group_members["members"]:
-                            if user == member["user_id"]:
+                    for mentioned in attachment['user_ids']:
+                        for member in group_members:
+                            if member["user_id"] == mentioned:
                                 names.append(member["nickname"])
             send_message(str(names))
     return "ok", 200
@@ -53,6 +54,10 @@ def get_group_info(group_id):
     with urllib.request.urlopen("https://api.groupme.com/v3/groups/%s?token=%s" % (group_id, os.getenv("ACCESS_TOKEN"))) as response:
         html = response.read()
     url = "https://api.groupme.com/v3/groups/%s?token=%s" % (group_id, os.getenv("ACCESS_TOKEN"))
-    return html["response"]["members"]
+    dict = parse_group_for_members(html)
+    return dict["response"]["members"]
+
+def parse_group_for_members(html_string):
+    return json.loads(html_string)
 
 
