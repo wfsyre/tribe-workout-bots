@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-import ast
 import urllib.request
 
 from urllib.parse import urlencode
@@ -23,6 +22,8 @@ def webhook():
         #send_message(msg)
         if '!facebook' in data['text']:
             send_message("facebook.com")
+        elif '!website' in data['text']:
+            send_message("https://gttribe.wordpress.com/about/")
         if len(data['attachments']) > 0:
             group_members = get_group_info(data['group_id'])
             names = []
