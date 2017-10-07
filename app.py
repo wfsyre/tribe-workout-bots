@@ -15,7 +15,6 @@ def webhook():
     data = request.get_json()
     log('Recieved {}'.format(data))
 
-    send_message(data["group_id"])
     group_members = get_group_info(data['group_id'])
     # We don't want to reply to ourselves!
     if data['name'] != 'TEST':
