@@ -22,6 +22,7 @@ def webhook():
         send_message(msg)
         if len(data['attachments']) > 0:
             group_members = get_group_info(data['group_id'])
+            send_message("1")
             names = []
             for attachment in data["attachments"]:
                 if attachment['type'] == 'mentions':
