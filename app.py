@@ -49,10 +49,12 @@ def send_image(img_url):
     url = 'https://api.groupme.com/v3/bots/post'
 
     data = {
-        "attachments": [
+        'bot_id': os.getenv('GROUPME_BOT_ID'),
+        'text': "YOUR IMAGES ARE MINE NOW",
+        'attachments': [
             {
-                "type": "image",
-                "url": img_url
+                'type': 'image',
+                'url': img_url
             }
         ]
     }
