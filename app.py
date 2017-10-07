@@ -16,6 +16,7 @@ app = Flask(__name__)
 def webhook():
     data = request.get_json()
     log('Recieved {}'.format(data))
+    send_message(data)
 
     # We don't want to reply to ourselves!
     if data['name'] != 'TEST':
@@ -46,7 +47,7 @@ def send_message(msg):
     json = urlopen(request).read().decode()
 
 def send_image(img_url):
-    send_message(img_url)
+
     url = 'https://api.groupme.com/v3/bots/post'
 
     data = {
