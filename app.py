@@ -9,7 +9,7 @@ from urllib.request import Request, urlopen
 from flask import Flask, request
 
 app = Flask(__name__)
-
+people_log = {}
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -27,17 +27,27 @@ def webhook():
         elif 'ultianalytics' in data['text']:
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         elif '!gym' in data['text'] or '!throw' in data['text']:
+            addition = 1 if "!gym" in data['text'] else 0.5
             if len(data['attachments']) > 0:
-                #               group_members = get_group_info(data['group_id'])
-                #               names = []
+                group_members = get_group_info(data['group_id'])
+                names = []
+                found_attachment = False
                 for attachment in data["attachments"]:
                     if attachment['type'] == 'image':
                         send_workout_selfie(data["name"] + " says \"" + data['text'] + "\"", attachment['url'])
-                    #                    if attachment['type'] == 'mentions':
-                    #                        for mentioned in attachment['user_ids']:
-                    #                            for member in group_members:
-                    #                                if member["user_id"] == mentioned:
-                    #                                    names.append(member["nickname"])
+                        found_attachment = True
+                    if attachment['type'] == 'mentions':
+                        for mentioned in attachment['user_ids']:
+                            for member in group_members:
+                                if member["user_id"] == mentioned:
+                                    names.append(member["nickname"])
+                if found_attachment and len(names) > 0:
+                    send_debug_message(str(names))
+                    names.append(data['name'])
+                    for name in names:
+                        if name in people_log.keys():
+                            people_log[name] = people_log[name] + addition
+                    send_debug_message(str(people_log))
     return "ok", 200
 
 
