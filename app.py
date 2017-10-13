@@ -22,6 +22,8 @@ def webhook():
         # send_message(msg)
         if '!website' in data['text']:
             send_tribe_message("https://gttribe.wordpress.com/about/")
+        elif '!iloveyou' in data['text']:
+            send_tribe_message("I love you too %s <3" % data['name'])
         elif '!help' in data['text']:
             send_tribe_message("available commands: !throw, !gym, !website, !ultianalytics")
         elif 'ultianalytics' in data['text']:
@@ -41,9 +43,9 @@ def webhook():
                             for member in group_members:
                                 if member["user_id"] == mentioned:
                                     names.append(member["nickname"])
-                if found_attachment and len(names) > 0:
-                    send_debug_message(str(names))
+                if found_attachment:
                     names.append(data['name'])
+                    send_debug_message(str(names))
                     for name in names:
                         if name in people_log.keys():
                             people_log[name] = people_log[name] + addition
