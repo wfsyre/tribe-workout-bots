@@ -49,6 +49,8 @@ def webhook():
                     for name in names:
                         if name in people_log.keys():
                             people_log[name] = people_log[name] + addition
+                        else:
+                            people_log[name] = addition
                     send_debug_message(str(people_log))
     return "ok", 200
 
@@ -91,3 +93,4 @@ def get_group_info(group_id):
 
 def parse_group_for_members(html_string):
     return json.loads(html_string)
+
