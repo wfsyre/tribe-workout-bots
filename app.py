@@ -4,6 +4,7 @@ import sys
 import json
 import urllib.request
 import psycopg2
+from psycopg2 import sql
 
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -55,11 +56,9 @@ def webhook():
                 if found_attachment:
                     names.append(data['name'])
                     for name in names:
-                        cursor.execute(
-                            "UPDATE tribe_data SET num_workouts = num_workouts+1,"
-                            "workout_score = workout_score+%d WHERE name = %s"
-                            % (addition, name))
-        cursor.execute("UPDATE tribe_data SET num_posts = num_posts+1 WHERE name = %s" % data['name'])
+                        cursor.execute(sql.SQL("UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s WHERE name = %s"), [addition, name])
+        cursor.execute(
+            sql.SQL("UPDATE tribe_data SET num_posts = num_posts-6 WHERE {} = %s").format(sql.Identifier('name')), data['name'])
     return "ok", 200
 
 
