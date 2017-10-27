@@ -1,7 +1,9 @@
 import os
+import urllib.parse
 import sys
 import json
 import urllib.request
+import psycopg2
 
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -9,17 +11,24 @@ from urllib.request import Request, urlopen
 from flask import Flask, request
 
 app = Flask(__name__)
-people_log = {}
+urllib.parse.uses_netloc.append("postgres")
+url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+
 
 @app.route('/', methods=['POST'])
 def webhook():
     data = request.get_json()
     log('Recieved {}'.format(data))
-
     # We don't want to reply to ourselves!
     if data['name'] != 'WORKOUT BOT':
-        # msg = '{}, you sent "{}".'.format(data['name'], data['text'])
-        # send_message(msg)
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
         if '!website' in data['text']:
             send_tribe_message("https://gttribe.wordpress.com/about/")
         elif '!iloveyou' in data['text']:
@@ -45,13 +54,12 @@ def webhook():
                                     names.append(member["nickname"])
                 if found_attachment:
                     names.append(data['name'])
-                    send_debug_message(str(names))
                     for name in names:
-                        if name in people_log.keys():
-                            people_log[name] = people_log[name] + addition
-                        else:
-                            people_log[name] = addition
-                    send_debug_message(str(people_log))
+                        cursor.execute(
+                            "UPDATE tribe_data SET num_workouts = num_workouts+1,"
+                            "workout_score = workout_score+%d WHERE name = %s"
+                            % (addition, name))
+        cursor.execute("UPDATE tribe_data SET num_posts = num_posts+1 WHERE name = %s" % data['name'])
     return "ok", 200
 
 
