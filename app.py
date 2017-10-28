@@ -22,14 +22,6 @@ def webhook():
     log('Recieved {}'.format(data))
     # We don't want to reply to ourselves!
     if data['name'] != 'WORKOUT BOT':
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
         if '!website' in data['text']:
             send_tribe_message("https://gttribe.wordpress.com/about/")
         elif '!iloveyou' in data['text']:
@@ -55,10 +47,7 @@ def webhook():
                                     names.append(member["nickname"])
                 if found_attachment:
                     names.append(data['name'])
-                    for name in names:
-                        cursor.execute(sql.SQL("UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s WHERE name = %s"), [addition, name])
-        cursor.execute(
-            sql.SQL("UPDATE tribe_data SET num_posts = num_posts-6 WHERE {} = %s").format(sql.Identifier('name')), data['name'])
+                    test_db_connection(names, addition)
     return "ok", 200
 
 
@@ -100,4 +89,27 @@ def get_group_info(group_id):
 
 def parse_group_for_members(html_string):
     return json.loads(html_string)
+
+def test_db_connection(names, addition):
+    send_debug_message("start")
+    conn = psycopg2.connect(
+        database=url.path[1:],
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
+        port=url.port
+    )
+    send_debug_message("connected")
+    cursor = conn.cursor()
+    for name in names:
+        cursor.execute(sql.SQL(
+            "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s WHERE name = %s;"),
+            [addition, name])
+    cursor.execute(
+        sql.SQL("UPDATE tribe_data SET num_posts = num_posts-6 WHERE {} = %s;").format(sql.Identifier('name')),
+        names[0])
+    send_debug_message("End")
+
+
+
 
