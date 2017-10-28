@@ -12,9 +12,6 @@ from urllib.request import Request, urlopen
 from flask import Flask, request
 
 app = Flask(__name__)
-urllib.parse.uses_netloc.append("postgres")
-url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
-
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -92,6 +89,8 @@ def parse_group_for_members(html_string):
 
 def test_db_connection(names, addition):
     send_debug_message("start")
+    urllib.parse.uses_netloc.append("postgres")
+    url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
     conn = psycopg2.connect(
         database=url.path[1:],
         user=url.username,
