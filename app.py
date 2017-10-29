@@ -18,6 +18,7 @@ def webhook():
     data = request.get_json()
     log('Recieved {}'.format(data))
     # We don't want to reply to ourselves!
+    send_debug_message("This is working")
     if data['name'] != 'WORKOUT BOT':
         if '!website' in data['text']:
             send_tribe_message("https://gttribe.wordpress.com/about/")
@@ -86,6 +87,7 @@ def get_group_info(group_id):
 
 def parse_group_for_members(html_string):
     return json.loads(html_string)
+
 
 def test_db_connection(names, addition):
     send_debug_message("start")
