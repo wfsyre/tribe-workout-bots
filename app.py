@@ -80,7 +80,6 @@ def get_group_info(group_id):
     with urllib.request.urlopen("https://api.groupme.com/v3/groups/%s?token=%s" % (
     group_id, os.getenv("ACCESS_TOKEN"))) as response:
         html = response.read()
-    url = "https://api.groupme.com/v3/groups/%s?token=%s" % (group_id, os.getenv("ACCESS_TOKEN"))
     dict = parse_group_for_members(html)
     return dict["response"]["members"]
 
