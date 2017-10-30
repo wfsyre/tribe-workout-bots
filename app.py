@@ -18,7 +18,6 @@ def webhook():
     data = request.get_json()
     log('Recieved {}'.format(data))
     # We don't want to reply to ourselves!
-    send_debug_message("This is working")
     if data['name'] != 'WORKOUT BOT':
         if '!website' in data['text']:
             send_tribe_message("https://gttribe.wordpress.com/about/")
@@ -29,7 +28,7 @@ def webhook():
         elif 'ultianalytics' in data['text']:
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         elif '!gym' in data['text'] or '!throw' in data['text']:
-            addition = 1 if "!gym" in data['text'] else 0.5
+            addition = 1.0 if "!gym" in data['text'] else 0.5
             if len(data['attachments']) > 0:
                 group_members = get_group_info(data['group_id'])
                 names = []
@@ -90,25 +89,33 @@ def parse_group_for_members(html_string):
 
 def test_db_connection(names, addition):
     send_debug_message("start")
-    urllib.parse.uses_netloc.append("postgres")
-    url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
-    conn = psycopg2.connect(
-        database=url.path[1:],
-        user=url.username,
-        password=url.password,
-        host=url.hostname,
-        port=url.port
-    )
-    send_debug_message("connected")
-    cursor = conn.cursor()
-    for name in names:
-        cursor.execute(sql.SQL(
-            "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s WHERE name = %s;"),
-            [addition, name])
-    cursor.execute(
-        sql.SQL("UPDATE tribe_data SET num_posts = num_posts-6 WHERE {} = %s;").format(sql.Identifier('name')),
-        names[0])
-    send_debug_message("End")
+    cursor = None
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        send_debug_message("connected")
+        cursor = conn.cursor()
+        for name in names:
+            cursor.execute(sql.SQL(
+                "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s WHERE name = %s"),
+                [str(addition), name])
+            cursor.commit()
+            send_debug_message("committed %s" % name)
+        cursor.execute(sql.SQL("UPDATE tribe_data SET num_posts = num_posts-6 WHERE name = %s"), names[0])
+        cursor.commit()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
+    finally:
+        if cursor is not None:
+            cursor.close()
+            send_debug_message("End")
 
 
 
