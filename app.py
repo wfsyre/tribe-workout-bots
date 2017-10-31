@@ -80,10 +80,10 @@ def webhook():
                 cursor.execute(sql.SQL(
                     "SELECT * FROM tribe_data WHERE workout_score > 0.0"),)
                 leaderboard = cursor.fetchall()
-                leaderboard.sort(key=lambda s: s[3])
+                leaderboard.sort(key=lambda s: s[3], reverse=True)
                 string = "Preliminary Rankings: \n"
                 for x in range(0, len(leaderboard)):
-                    string += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
+                    string += '%d) %s with %f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
                 send_tribe_message(string)
                 cursor.close()
                 conn.close()
