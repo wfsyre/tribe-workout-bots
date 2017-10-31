@@ -149,8 +149,8 @@ def test_db_connection(names, addition):
         now = datetime.datetime.now()
         for name in names:
             cursor.execute(sql.SQL(
-                "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = %s-%s-%s WHERE name = %s"),
-                [str(addition), now.year, now.month, now.day, name])
+                "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = now() WHERE name = %s"),
+                [str(addition), name])
             if cursor.rowcount == 0:
                 cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES(%s, %s, %s, %s"), (name, "0", "1", str(addition),))
                 send_debug_message("added %s to the group" % name)
