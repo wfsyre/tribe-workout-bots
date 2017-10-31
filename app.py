@@ -106,10 +106,10 @@ def test_db_connection(names, addition):
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s WHERE name = %s"),
                 [str(addition), name])
-            cursor.commit()
+            conn.commit()
             send_debug_message("committed %s" % name)
         cursor.execute(sql.SQL("UPDATE tribe_data SET num_posts = num_posts-6 WHERE name = %s"), names[0])
-        cursor.commit()
+        conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
     finally:
