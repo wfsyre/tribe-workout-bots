@@ -88,7 +88,7 @@ def parse_group_for_members(html_string):
 
 
 def test_db_connection(names, addition):
-    send_debug_message("start")
+    send_debug_message(str(names))
     cursor = None
     try:
         urllib.parse.uses_netloc.append("postgres")
@@ -108,7 +108,7 @@ def test_db_connection(names, addition):
                 [str(addition), name])
             conn.commit()
             send_debug_message("committed %s" % name)
-        cursor.execute(sql.SQL("UPDATE tribe_data SET num_posts = num_posts-6 WHERE name = %s"), names[0])
+        cursor.execute(sql.SQL("UPDATE tribe_data SET num_posts = num_posts-6 WHERE name = %s"), (names[0],))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
