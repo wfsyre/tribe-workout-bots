@@ -78,7 +78,7 @@ def webhook():
                 )
                 cursor = conn.cursor()
                 cursor.execute(sql.SQL(
-                    "SELECT * FROM tribe_data WHERE num_workouts > 0.0"),)
+                    "SELECT * FROM tribe_data WHERE workout_score > 0.0"),)
                 leaderboard = cursor.fetchall()
                 leaderboard.sort(key=lambda s: s[3])
                 string = "Preliminary Rankings: \n"
