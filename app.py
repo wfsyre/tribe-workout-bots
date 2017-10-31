@@ -82,8 +82,8 @@ def webhook():
                 leaderboard = cursor.fetchall()
                 leaderboard.sort(key=lambda s: s[3])
                 string = "Preliminary Rankings: \n"
-                for x in range(1, len(leaderboard)):
-                    string += '%d) %s with %d points \n' % (x, leaderboard[x - 1][0], leaderboard[x - 1][3])
+                for x in range(0, len(leaderboard)):
+                    string += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
                 send_tribe_message(string)
                 cursor.close()
                 conn.close()
