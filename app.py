@@ -65,6 +65,30 @@ def webhook():
                 if found_attachment:
                     names.append(data['name'])
                     test_db_connection(names, addition)
+        elif '!leaderboard' in data['text']:
+            try:
+                urllib.parse.uses_netloc.append("postgres")
+                url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+                conn = psycopg2.connect(
+                    database=url.path[1:],
+                    user=url.username,
+                    password=url.password,
+                    host=url.hostname,
+                    port=url.port
+                )
+                cursor = conn.cursor()
+                cursor.execute(sql.SQL(
+                    "SELECT * FROM tribe_data WHERE num_workouts > 0.0"),)
+                leaderboard = cursor.fetchall()
+                leaderboard.sort(key=lambda s: s[3])
+                string = "Preliminary Rankings: \n"
+                for x in range(1, len(leaderboard)):
+                    string += '%d) %s with %d points \n' % (x, leaderboard[x - 1][0], leaderboard[x - 1][3])
+                send_tribe_message(string)
+                cursor.close()
+                conn.close()
+            except (Exception, psycopg2.DatabaseError) as error:
+                send_debug_message(error)
     return "ok", 200
 
 
@@ -127,6 +151,9 @@ def test_db_connection(names, addition):
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = %s-%s-%s WHERE name = %s"),
                 [str(addition), now.year, now.month, now.day, name])
+            if cursor.rowcount == 0:
+                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES(%s, %s, %s, %s"), (name, "0", "1", str(addition),))
+                send_debug_message("added %s to the group" % name)
             conn.commit()
             send_debug_message("committed %s" % name)
     except (Exception, psycopg2.DatabaseError) as error:
