@@ -44,7 +44,7 @@ def webhook():
         elif '!iloveyou' in data['text']:
             send_tribe_message("I love you too %s <3" % data['name'])
         elif '!help' in data['text']:
-            send_tribe_message("available commands: !throw, !gym, !website, !ultianalytics")
+            send_tribe_message("available commands: !throw, !gym, !website, !ultianalytics, !leaderboard")
         elif 'ultianalytics' in data['text']:
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         elif '!gym' in data['text'] or '!throw' in data['text']:
