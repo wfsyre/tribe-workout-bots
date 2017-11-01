@@ -87,7 +87,7 @@ def webhook():
                 send_debug_message("fetching all")
                 leaderboard.sort(key=lambda s: s[3], reverse=True)
                 string = "Preliminary Rankings: \n"
-                for x in range(0, len(leaderboard)):
+                for x in range(0, 26):
                     string += '%d) %s with %f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
                 send_debug_message(string)
                 cursor.close()
