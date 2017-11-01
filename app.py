@@ -34,6 +34,9 @@ def webhook():
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET num_posts = num_posts+1 WHERE name = %s"),
                 (data['name'],))
+            if cursor.rowcount == 0:
+                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now())"), (data['name'],))
+                send_debug_message("added %s to the group" % data['name'])
             conn.commit()
             cursor.close()
             conn.close()
