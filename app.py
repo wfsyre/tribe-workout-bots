@@ -86,11 +86,14 @@ def webhook():
                 leaderboard = cursor.fetchall()
                 send_debug_message("fetching all")
                 leaderboard.sort(key=lambda s: s[3], reverse=True)
-                string = "Preliminary Rankings: \n"
-                for x in range(0, 26):
-                    string += '%d) %s with %f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
-                    send_debug_message(string)
-                send_debug_message(string)
+                string1 = "Top 10:\n"
+                string2 = "Everyone Else:\n"
+                for x in range(0, 10):
+                    string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
+                for x in range(10, len(leaderboard)):
+                    string2 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
+                send_debug_message(string1)
+                send_debug_message(string2)
                 cursor.close()
                 conn.close()
             except (Exception, psycopg2.DatabaseError) as error:
