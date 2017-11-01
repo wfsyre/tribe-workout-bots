@@ -67,10 +67,8 @@ def webhook():
                     test_db_connection(names, addition)
         elif '!leaderboard' in data['text']:
             try:
-                send_debug_message("starting")
                 urllib.parse.uses_netloc.append("postgres")
                 url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
-                send_debug_message("creating connection")
                 conn = psycopg2.connect(
                     database=url.path[1:],
                     user=url.username,
@@ -79,21 +77,18 @@ def webhook():
                     port=url.port
                 )
                 cursor = conn.cursor()
-                send_debug_message("about to execute")
                 cursor.execute(sql.SQL(
                     "SELECT * FROM tribe_data WHERE workout_score > 0.0"),)
-                send_debug_message("executed")
                 leaderboard = cursor.fetchall()
-                send_debug_message("fetching all")
                 leaderboard.sort(key=lambda s: s[3], reverse=True)
                 string1 = "Top 10:\n"
-                string2 = "Everyone Else:\n"
+                string2 = "Everyone Else with more than 0 points:\n"
                 for x in range(0, 10):
                     string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
                 for x in range(10, len(leaderboard)):
                     string2 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
-                send_debug_message(string1)
-                send_debug_message(string2)
+                send_tribe_message(string1)
+                send_tribe_message(string2)
                 cursor.close()
                 conn.close()
             except (Exception, psycopg2.DatabaseError) as error:
