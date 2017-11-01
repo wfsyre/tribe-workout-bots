@@ -79,10 +79,12 @@ def webhook():
                     port=url.port
                 )
                 cursor = conn.cursor()
-                send_debug_message("connected")
+                send_debug_message("about to execute")
                 cursor.execute(sql.SQL(
                     "SELECT * FROM tribe_data WHERE workout_score > 0.0"),)
+                send_debug_message("executed")
                 leaderboard = cursor.fetchall()
+                send_debug_message("fetching all")
                 leaderboard.sort(key=lambda s: s[3], reverse=True)
                 string = "Preliminary Rankings: \n"
                 for x in range(0, len(leaderboard)):
