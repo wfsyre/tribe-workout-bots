@@ -70,6 +70,7 @@ def webhook():
                 send_debug_message("starting")
                 urllib.parse.uses_netloc.append("postgres")
                 url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+                send_debug_message("creating connection")
                 conn = psycopg2.connect(
                     database=url.path[1:],
                     user=url.username,
@@ -78,6 +79,7 @@ def webhook():
                     port=url.port
                 )
                 cursor = conn.cursor()
+                send_debug_message("connected")
                 cursor.execute(sql.SQL(
                     "SELECT * FROM tribe_data WHERE workout_score > 0.0"),)
                 leaderboard = cursor.fetchall()
