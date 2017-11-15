@@ -42,16 +42,17 @@ def webhook():
             conn.close()
         except (Exception, psycopg2.DatabaseError) as error:
             send_debug_message(error)
-        if '!website' in data['text']:
+        text = data['text'].lower()
+        if '!website' in text:
             send_tribe_message("https://gttribe.wordpress.com/about/")
-        elif '!iloveyou' in data['text']:
+        elif '!iloveyou' in text:
             send_tribe_message("I love you too %s <3" % data['name'])
-        elif '!help' in data['text']:
+        elif '!help' in text:
             send_tribe_message("available commands: !throw, !gym, !website, !ultianalytics, !leaderboard")
-        elif 'ultianalytics' in data['text']:
+        elif 'ultianalytics' in text:
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
-        elif '!gym' in data['text'] or '!throw' in data['text']:
-            addition = 1.0 if "!gym" in data['text'] else 0.5
+        elif '!gym' in text or '!throw' in text:
+            addition = 1.0 if "!gym" in text else 0.5
             if len(data['attachments']) > 0:
                 group_members = get_group_info(data['group_id'])
                 names = []
@@ -68,7 +69,7 @@ def webhook():
                 if found_attachment:
                     names.append(data['name'])
                     test_db_connection(names, addition)
-        elif '!leaderboard' in data['text']:
+        elif '!leaderboard' in text:
             try:
                 urllib.parse.uses_netloc.append("postgres")
                 url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
