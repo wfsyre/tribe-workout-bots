@@ -18,9 +18,10 @@ app = Flask(__name__)
 def webhook():
     data = request.get_json()
     log('Recieved {}'.format(data))
-    # We don't want to reply to ourselves!
+    # We don't want to reply to ourselves
     if data['name'] != 'WORKOUT BOT' and data['name'] != 'TEST':
         try:
+            #set up connection to the database
             urllib.parse.uses_netloc.append("postgres")
             url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
             conn = psycopg2.connect(
@@ -31,6 +32,7 @@ def webhook():
                 port=url.port
             )
             cursor = conn.cursor()
+            #add 1 to the number of posts of the person that posted
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET num_posts = num_posts+1 WHERE name = %s"),
                 (data['name'],))
@@ -44,32 +46,37 @@ def webhook():
             send_debug_message(error)
         text = data['text'].lower()
         if '!website' in text:
+            #send the website information to the groupme
             send_tribe_message("https://gttribe.wordpress.com/about/")
         elif '!iloveyou' in text:
+            #special command for Stephen Mock
             send_tribe_message("I love you too %s <3" % data['name'])
         elif '!help' in text:
+            #Special command for Jeffrey Minowa
             send_tribe_message("available commands: !throw, !gym, !website, !ultianalytics, !leaderboard")
         elif 'ultianalytics' in text:
+            #get the ultianalytics password
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         elif '!gym' in text or '!throw' in text:
             addition = 1.0 if "!gym" in text else 0.5
             if len(data['attachments']) > 0:
-                group_members = get_group_info(data['group_id'])
+                #attachments are images or @mentions
+                group_members = get_group_info(data['group_id']) #should get the groupme names of all members in the group.
                 names = []
-                found_attachment = False
+                found_attachment = False #This will track whether we found an image or not, which is required
                 for attachment in data["attachments"]:
                     if attachment['type'] == 'image':
-                        send_workout_selfie(data["name"] + " says \"" + data['text'] + "\"", attachment['url'])
+                        send_workout_selfie(data["name"] + " says \"" + data['text'] + "\"", attachment['url']) #send the workout selfie to the other groupme
                         found_attachment = True
-                    if attachment['type'] == 'mentions':
+                    if attachment['type'] == 'mentions': #grab all the people @'d in the post to include them
                         for mentioned in attachment['user_ids']:
                             for member in group_members:
                                 if member["user_id"] == mentioned:
                                     names.append(member["nickname"])
-                if found_attachment:
+                if found_attachment: #append the poster to the list of names to be uodated in the database
                     names.append(data['name'])
                     test_db_connection(names, addition)
-        elif '!leaderboard' in text:
+        elif '!leaderboard' in text: #post the leaderboard in the groupme
             try:
                 urllib.parse.uses_netloc.append("postgres")
                 url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
@@ -81,17 +88,18 @@ def webhook():
                     port=url.port
                 )
                 cursor = conn.cursor()
+                #get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
                 cursor.execute(sql.SQL(
                     "SELECT * FROM tribe_data WHERE workout_score > -1.0"),)
                 leaderboard = cursor.fetchall()
-                leaderboard.sort(key=lambda s: s[3], reverse=True)
+                leaderboard.sort(key=lambda s: s[3], reverse=True) #sort the leaderboard by score descending
                 string1 = "Top 15:\n"
                 string2 = "Everyone Else:\n"
                 for x in range(0, 15):
                     string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
                 for x in range(15, len(leaderboard)):
                     string2 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][3])
-                send_tribe_message(string1)
+                send_tribe_message(string1) #need to split it up into 2 because groupme has a max message length for bots
                 send_tribe_message(string2)
                 cursor.close()
                 conn.close()
@@ -139,7 +147,7 @@ def parse_group_for_members(html_string):
     return json.loads(html_string)
 
 
-def test_db_connection(names, addition):
+def test_db_connection(names, addition): #poorly named method. It works, but it didn't always work so it was just a "test"
     send_debug_message(str(names))
     cursor = None
     conn = None
