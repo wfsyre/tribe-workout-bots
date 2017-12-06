@@ -119,7 +119,7 @@ def webhook():
                 cursor = conn.cursor()
                 #get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
                 cursor.execute(sql.SQL(
-                    "SELECT * FROM tribe_data WHERE num_workouts > -1.0"),)
+                    "SELECT * FROM tribe_data WHERE workout_score > -1.0"),)
                 leaderboard = cursor.fetchall()
                 leaderboard.sort(key=lambda s: s[1], reverse=True) #sort the leaderboard by score descending
                 string1 = "Top 15:\n"
@@ -148,7 +148,7 @@ def webhook():
                 cursor = conn.cursor()
                 #get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
                 cursor.execute(sql.SQL(
-                    "SELECT * FROM tribe_data WHERE num_workouts > -1.0"),)
+                    "SELECT * FROM tribe_data WHERE workout_score > -1.0"),)
                 leaderboard = cursor.fetchall()
                 leaderboard.sort(key=lambda s: s[2], reverse=True) #sort the leaderboard by score descending
                 string1 = "Top 15:\n"
