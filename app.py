@@ -105,8 +105,65 @@ def webhook():
                 conn.close()
             except (Exception, psycopg2.DatabaseError) as error:
                 send_debug_message(error)
+        elif '!mystery' in text: #displays the leaderboard for who posts the most
+            try:
+                urllib.parse.uses_netloc.append("postgres")
+                url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+                conn = psycopg2.connect(
+                    database=url.path[1:],
+                    user=url.username,
+                    password=url.password,
+                    host=url.hostname,
+                    port=url.port
+                )
+                cursor = conn.cursor()
+                #get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+                cursor.execute(sql.SQL(
+                    "SELECT * FROM tribe_data WHERE num_workouts > -1.0"),)
+                leaderboard = cursor.fetchall()
+                leaderboard.sort(key=lambda s: s[1], reverse=True) #sort the leaderboard by score descending
+                string1 = "Top 15:\n"
+                string2 = "Everyone Else:\n"
+                for x in range(0, 15):
+                    string1 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+                for x in range(15, len(leaderboard)):
+                    string2 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+                send_tribe_message(string1) #need to split it up into 2 because groupme has a max message length for bots
+                send_tribe_message(string2)
+                cursor.close()
+                conn.close()
+            except (Exception, psycopg2.DatabaseError) as error:
+                send_debug_message(error)
+        elif 'mystery2' in text: #display the leaderboard for who works out the most
+            try:
+                urllib.parse.uses_netloc.append("postgres")
+                url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+                conn = psycopg2.connect(
+                    database=url.path[1:],
+                    user=url.username,
+                    password=url.password,
+                    host=url.hostname,
+                    port=url.port
+                )
+                cursor = conn.cursor()
+                #get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+                cursor.execute(sql.SQL(
+                    "SELECT * FROM tribe_data WHERE num_workouts > -1.0"),)
+                leaderboard = cursor.fetchall()
+                leaderboard.sort(key=lambda s: s[2], reverse=True) #sort the leaderboard by score descending
+                string1 = "Top 15:\n"
+                string2 = "Everyone Else:\n"
+                for x in range(0, 15):
+                    string1 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][2])
+                for x in range(15, len(leaderboard)):
+                    string2 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][2])
+                send_tribe_message(string1) #need to split it up into 2 because groupme has a max message length for bots
+                send_tribe_message(string2)
+                cursor.close()
+                conn.close()
+            except (Exception, psycopg2.DatabaseError) as error:
+                send_debug_message(error)
     return "ok", 200
-
 
 def send_tribe_message(msg):
     send_message(msg, os.getenv("TRIBE_BOT_ID"))
