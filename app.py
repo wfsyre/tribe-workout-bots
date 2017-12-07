@@ -42,11 +42,9 @@ def webhook():
             group_members = get_group_info(data['group_id'])
             send_debug_message(str(len(group_members)))
             for member in group_members:
-                send_debug_message(str(member))
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET id = %s WHERE name = %s"),
                     (member['id'], member['nickname'],))
-                send_debug_message(str(member) + str(member.keys()))
                 conn.commit()
             #conn.commit()
             cursor.close()
@@ -91,6 +89,7 @@ def webhook():
             print_stats(2, True)
         elif '!talkative' in text:  # displays the leaderboard for who posts the most
             print_stats(1, True)
+        elif '!reset' in text and
     return "ok", 200
 
 
