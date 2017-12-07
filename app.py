@@ -58,7 +58,6 @@ def webhook():
             #get the ultianalytics password
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         elif '!gym' in text or '!throw' in text:
-            send_debug_message("gym or throw detected")
             addition = 1.0 if "!gym" in text else 0.5
             if len(data['attachments']) > 0:
                 #attachments are images or @mentions
@@ -80,6 +79,7 @@ def webhook():
                 if found_attachment: #append the poster to the list of names to be uodated in the database
                     names.append(data['name'])
                     ids.append(data['user_id'])
+                    send_debug_message(str(ids))
                     add_to_db(names, addition, ids)
         elif '!leaderboard' in text: #post the leaderboard in the groupme
             print_stats(3, True)
@@ -107,6 +107,7 @@ def webhook():
                 conn.commit()
                 cursor.close()
                 conn.close()
+                send_debug_message("workouts have been purged")
             except Exception as error:
                 send_debug_message(error)
     return "ok", 200
@@ -185,7 +186,6 @@ def parse_group_for_members(html_string):
 
 
 def add_to_db(names, addition, ids): #add "addition" to each of the "names" in the db
-    send_debug_message(str(names))
     cursor = None
     conn = None
     try:
@@ -201,6 +201,7 @@ def add_to_db(names, addition, ids): #add "addition" to each of the "names" in t
         cursor = conn.cursor()
         now = datetime.datetime.now()
         for x in range(len(names)):
+            send_debug_message(str(ids))
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = now() WHERE id = %s"),
                 [str(addition), ids[x]])
