@@ -40,12 +40,15 @@ def webhook():
                 cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now())"), (data['name'],))
                 send_debug_message("added %s to the group" % data['name'])
             group_members = get_group_info(data['group_id'])
+            send_debug_message(str(len(group_members)))
             for member in group_members:
+                send_debug_message(str(member))
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET id = %s WHERE name = %s"),
-                    (member['user_id'], member['name'],))
-                send_debug_message(str(member['user_id']) + " " + str(member['nickname']) + " " + str(member['name']))
-            conn.commit()
+                    (member['id'], member['nickname'],))
+                send_debug_message(str(member) + str(member.keys()))
+                conn.commit()
+            #conn.commit()
             cursor.close()
             conn.close()
         except (Exception, psycopg2.DatabaseError) as error:
