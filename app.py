@@ -34,22 +34,15 @@ def webhook():
             cursor = conn.cursor()
             #add 1 to the number of posts of the person that posted
             cursor.execute(sql.SQL(
-                "UPDATE tribe_data SET num_posts = num_posts+1 WHERE name = %s"),
-                (data['name'],))
+                "UPDATE tribe_data SET num_posts = num_posts+1, id = %s WHERE name = %s"),
+                (data['id'], data['name'],))
             if cursor.rowcount == 0:
-                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now())"), (data['name'],))
+                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now()), %s"), (data['name'], data['user_id']))
                 send_debug_message("added %s to the group" % data['name'])
-            group_members = get_group_info(data['group_id'])
-            send_debug_message(str(len(group_members)))
-            for member in group_members:
-                cursor.execute(sql.SQL(
-                    "UPDATE tribe_data SET id = %s WHERE name = %s"),
-                    (member['id'], member['nickname'],))
-                conn.commit()
-            #conn.commit()
+            conn.commit()
             cursor.close()
             conn.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except Exception as error:
             send_debug_message(error)
         text = data['text'].lower()
         if '!website' in text:
@@ -65,9 +58,11 @@ def webhook():
             #get the ultianalytics password
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         elif '!gym' in text or '!throw' in text:
+            send_debug_message("gym or throw detected")
             addition = 1.0 if "!gym" in text else 0.5
             if len(data['attachments']) > 0:
                 #attachments are images or @mentions
+                ids = []
                 group_members = get_group_info(data['group_id']) #should get the groupme names of all members in the group.
                 names = []
                 found_attachment = False #This will track whether we found an image or not, which is required
@@ -80,16 +75,39 @@ def webhook():
                             for member in group_members:
                                 if member["user_id"] == mentioned:
                                     names.append(member["nickname"])
+                                    ids.append(member["user_id"])
                 if found_attachment: #append the poster to the list of names to be uodated in the database
                     names.append(data['name'])
-                    add_to_db(names, addition)
+                    ids.append(data['user_id'])
+                    add_to_db(names, addition, ids)
         elif '!leaderboard' in text: #post the leaderboard in the groupme
             print_stats(3, True)
         elif '!workouts' in text: #display the leaderboard for who works out the most
             print_stats(2, True)
         elif '!talkative' in text:  # displays the leaderboard for who posts the most
             print_stats(1, True)
-        elif '!reset' in text and
+        elif '!reset' in text and data['name'] == 'William Syre':
+            send_tribe_message("Final leaderboard is:")
+            print_stats(3, True)
+            try:
+                urllib.parse.uses_netloc.append("postgres")
+                url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+                conn = psycopg2.connect(
+                    database=url.path[1:],
+                    user=url.username,
+                    password=url.password,
+                    host=url.hostname,
+                    port=url.port
+                )
+                cursor = conn.cursor()
+                # add 1 to the number of posts of the person that posted
+                cursor.execute(sql.SQL(
+                    "UPDATE tribe_data SET workout_score = 0, num_workouts = 0, last_post = now() WHERE workout_score > -1"))
+                conn.commit()
+                cursor.close()
+                conn.close()
+            except Exception as error:
+                send_debug_message(error)
     return "ok", 200
 
 
@@ -165,7 +183,7 @@ def parse_group_for_members(html_string):
     return json.loads(html_string)
 
 
-def add_to_db(names, addition): #add "addition" to each of the "names" in the db
+def add_to_db(names, addition, ids): #add "addition" to each of the "names" in the db
     send_debug_message(str(names))
     cursor = None
     conn = None
@@ -181,15 +199,16 @@ def add_to_db(names, addition): #add "addition" to each of the "names" in the db
         )
         cursor = conn.cursor()
         now = datetime.datetime.now()
-        for name in names:
+        for x in range(len(names)):
             cursor.execute(sql.SQL(
-                "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = now() WHERE name = %s"),
-                [str(addition), name])
-            if cursor.rowcount == 0:
-                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES(%s, %s, %s, %s"), (name, "0", "1", str(addition),))
-                send_debug_message("added %s to the group" % name)
+                "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = now() WHERE id = %s"),
+                [str(addition), ids[x]])
+
+            #if cursor.rowcount == 0: #Shouldn;t be necessary
+            #    cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES(%s, %s, %s, %s"), (names[x], "0", "1", str(addition), ids[x]))
+            #    send_debug_message("added %s to the group" % names[x])
             conn.commit()
-            send_debug_message("committed %s" % name)
+            send_debug_message("committed %s" % names[x])
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
     finally:
