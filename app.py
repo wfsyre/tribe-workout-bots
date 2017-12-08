@@ -58,11 +58,13 @@ def webhook():
             #get the ultianalytics password
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         elif '!gym' in text or '!throw' in text:
+            send_debug_message("Found gym or throw")
             addition = 1.0 if "!gym" in text else 0.5
             if len(data['attachments']) > 0:
                 #attachments are images or @mentions
                 ids = []
                 group_members = get_group_info(data['group_id']) #should get the groupme names of all members in the group.
+                send_debug_message("got group members")
                 names = []
                 found_attachment = False #This will track whether we found an image or not, which is required
                 for attachment in data["attachments"]:
@@ -70,12 +72,13 @@ def webhook():
                         send_workout_selfie(data["name"] + " says \"" + data['text'] + "\"", attachment['url']) #send the workout selfie to the other groupme
                         found_attachment = True
                     if attachment['type'] == 'mentions': #grab all the people @'d in the post to include them
+                        send_debug_message(str(attachment['user_ids']))
                         for mentioned in attachment['user_ids']:
                             for member in group_members:
                                 if member["user_id"] == mentioned:
                                     names.append(member["nickname"])
                                     ids.append(member["user_id"])
-                                    send_debug_message(str(member.leys()))
+                                    send_debug_message(str(member.keys()))
                                     send_debug_message(str(member))
                 if found_attachment: #append the poster to the list of names to be updated in the database
                     names.append(data['name'])
