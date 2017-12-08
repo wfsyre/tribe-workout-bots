@@ -75,11 +75,10 @@ def webhook():
                                 if member["user_id"] == mentioned:
                                     names.append(member["nickname"])
                                     ids.append(member["user_id"])
-                                    send_debug_message(str(member["user_id"]))
-                if found_attachment: #append the poster to the list of names to be uodated in the database
+                if found_attachment: #append the poster to the list of names to be updated in the database
                     names.append(data['name'])
                     ids.append(data['user_id'])
-                    send_debug_message(str(ids))
+                    send_debug_message(str(names))
                     add_to_db(names, addition, ids)
         elif '!leaderboard' in text: #post the leaderboard in the groupme
             print_stats(3, True)
@@ -199,9 +198,8 @@ def add_to_db(names, addition, ids): #add "addition" to each of the "names" in t
             port=url.port
         )
         cursor = conn.cursor()
-        now = datetime.datetime.now()
-        for x in range(len(names)):
-            send_debug_message(str(ids))
+        send_debug_message(str(len(names)))
+        for x in range(0, len(names)):
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = now() WHERE id = %s"),
                 [str(addition), ids[x]])
