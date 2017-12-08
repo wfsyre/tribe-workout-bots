@@ -75,6 +75,8 @@ def webhook():
                                 if member["user_id"] == mentioned:
                                     names.append(member["nickname"])
                                     ids.append(member["user_id"])
+                                    send_debug_message(str(member.leys()))
+                                    send_debug_message(str(member))
                 if found_attachment: #append the poster to the list of names to be updated in the database
                     names.append(data['name'])
                     ids.append(data['user_id'])
