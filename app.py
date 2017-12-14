@@ -37,7 +37,7 @@ def webhook():
                 "UPDATE tribe_data SET num_posts = num_posts+1, id = %s WHERE name = %s"),
                 (data['user_id'], data['name'],))
             if cursor.rowcount == 0:
-                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now()), %s"), (data['name'], data['user_id']))
+                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now()), %s"), (data['name'], data['user_id'],))
                 send_debug_message("added %s to the group" % data['name'])
             conn.commit()
             cursor.close()
@@ -78,8 +78,6 @@ def webhook():
                                 if member["user_id"] == mentioned:
                                     names.append(member["nickname"])
                                     ids.append(member["user_id"])
-                                    send_debug_message(str(member.keys()))
-                                    send_debug_message(str(member))
                 if found_attachment: #append the poster to the list of names to be updated in the database
                     names.append(data['name'])
                     ids.append(data['user_id'])
@@ -207,11 +205,11 @@ def add_to_db(names, addition, ids): #add "addition" to each of the "names" in t
         for x in range(0, len(names)):
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = now() WHERE id = %s"),
-                [str(addition), ids[x]],)
+                (str(addition), ids[x],))
             if cursor.rowcount == 0: #If a user does not have an id yet
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = now(), id = %s WHERE name = %s"),
-                    [str(addition), names[x]], ids[x],)
+                    (str(addition), names[x], ids[x],))
                 send_debug_message("%s does not have an id yet" % names[x])
             conn.commit()
             send_debug_message("committed %s" % names[x])
