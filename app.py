@@ -20,6 +20,12 @@ def webhook():
     log('Recieved {}'.format(data))
     # We don't want to reply to ourselves
     if data['name'] != 'WORKOUT BOT' and data['name'] != 'TEST':
+        GYM_POINTS = 1.0
+        TRACK_POINTS = 1.0
+        THROW_POINTS = 0.5
+        SWIM_POINTS = 1.0
+        PICKUP_POINTS = 0.5
+        BIKING_POINTS = 1.0
         try:
             #set up connection to the database
             urllib.parse.uses_netloc.append("postgres")
@@ -53,36 +59,22 @@ def webhook():
             send_tribe_message("I love you too %s <3" % data['name'])
         elif '!help' in text:
             #Special command for Jeffrey Minowa
-            send_tribe_message("available commands: !throw, !gym, !website, !ultianalytics, !leaderboard")
+            send_tribe_message("available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !ultianalytics, !leaderboard")
         elif 'ultianalytics' in text:
             #get the ultianalytics password
             send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
-        elif '!gym' in text or '!throw' in text:
-            send_debug_message("Found gym or throw")
-            addition = 1.0 if "!gym" in text else 0.5
-            if len(data['attachments']) > 0:
-                #attachments are images or @mentions
-                ids = []
-                group_members = get_group_info(data['group_id']) #should get the groupme names of all members in the group.
-                send_debug_message("got group members")
-                names = []
-                found_attachment = False #This will track whether we found an image or not, which is required
-                for attachment in data["attachments"]:
-                    if attachment['type'] == 'image':
-                        send_workout_selfie(data["name"] + " says \"" + data['text'] + "\"", attachment['url']) #send the workout selfie to the other groupme
-                        found_attachment = True
-                    if attachment['type'] == 'mentions': #grab all the people @'d in the post to include them
-                        send_debug_message(str(attachment['user_ids']))
-                        for mentioned in attachment['user_ids']:
-                            for member in group_members:
-                                if member["user_id"] == mentioned:
-                                    names.append(member["nickname"])
-                                    ids.append(member["user_id"])
-                if found_attachment: #append the poster to the list of names to be updated in the database
-                    names.append(data['name'])
-                    ids.append(data['user_id'])
-                    send_debug_message(str(names))
-                    add_to_db(names, addition, ids)
+        elif '!gym' in text:
+            handle_workouts(data, GYM_POINTS)
+        elif '!throw' in text:
+            handle_workouts(data, THROW_POINTS)
+        elif '!swim' in text:
+            handle_workouts(data, SWIM_POINTS)
+        elif '!track' in text:
+            handle_workouts(data, TRACK_POINTS)
+        elif '!bike' in text:
+            handle_workouts(data, BIKING_POINTS)
+        elif '!pickup' in text:
+            handle_workouts(data, PICKUP_POINTS)
         elif '!leaderboard' in text: #post the leaderboard in the groupme
             print_stats(3, True)
         elif '!workouts' in text: #display the leaderboard for who works out the most
@@ -118,6 +110,32 @@ def webhook():
 def send_tribe_message(msg):
     send_message(msg, os.getenv("TRIBE_BOT_ID"))
 
+def handle_workouts(data, addition):
+    send_debug_message("Found gym or throw")
+    if len(data['attachments']) > 0:
+        # attachments are images or @mentions
+        ids = []
+        group_members = get_group_info(data['group_id'])  # should get the groupme names of all members in the group.
+        send_debug_message("got group members")
+        names = []
+        found_attachment = False  # This will track whether we found an image or not, which is required
+        for attachment in data["attachments"]:
+            if attachment['type'] == 'image':
+                send_workout_selfie(data["name"] + " says \"" + data['text'] + "\"",
+                                    attachment['url'])  # send the workout selfie to the other groupme
+                found_attachment = True
+            if attachment['type'] == 'mentions':  # grab all the people @'d in the post to include them
+                send_debug_message(str(attachment['user_ids']))
+                for mentioned in attachment['user_ids']:
+                    for member in group_members:
+                        if member["user_id"] == mentioned:
+                            names.append(member["nickname"])
+                            ids.append(member["user_id"])
+        if found_attachment:  # append the poster to the list of names to be updated in the database
+            names.append(data['name'])
+            ids.append(data['user_id'])
+            send_debug_message(str(names))
+            add_to_db(names, addition, ids)
 
 def print_stats(datafield, rev):
     try:
@@ -201,7 +219,6 @@ def add_to_db(names, addition, ids): #add "addition" to each of the "names" in t
             port=url.port
         )
         cursor = conn.cursor()
-        send_debug_message(str(len(names)))
         for x in range(0, len(names)):
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = now() WHERE id = %s"),
