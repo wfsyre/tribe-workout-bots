@@ -116,12 +116,10 @@ def send_tribe_message(msg):
     send_message(msg, os.getenv("TRIBE_BOT_ID"))
 
 def handle_workouts(data, addition):
-    send_debug_message("Found gym or throw")
     if len(data['attachments']) > 0:
         # attachments are images or @mentions
         ids = []
         group_members = get_group_info(data['group_id'])  # should get the groupme names of all members in the group.
-        send_debug_message("got group members")
         names = []
         found_attachment = False  # This will track whether we found an image or not, which is required
         for attachment in data["attachments"]:
@@ -236,7 +234,7 @@ def add_to_db(names, addition, ids): #add "addition" to each of the "names" in t
             conn.commit()
             send_debug_message("committed %s" % names[x])
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(str(error))
     finally:
         if cursor is not None:
             cursor.close()
