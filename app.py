@@ -40,9 +40,14 @@ def webhook():
             cursor = conn.cursor()
             #add 1 to the number of posts of the person that posted
             cursor.execute(sql.SQL(
-                "UPDATE tribe_data SET num_posts = num_posts+1, id = %s WHERE name = %s"),
-                (data['user_id'], data['name'],))
-            if cursor.rowcount == 0:
+                "UPDATE tribe_data SET num_posts = num_posts+1 WHERE id = %s"),
+                (data['user_id'], ))
+            if cursor.rowcount == 0: #No id but possibly has a name
+                cursor.execute(sql.SQL(
+                    "UPDATE tribe_data SET num_posts = num_posts+1, id = %s WHERE name = %s"),
+                    (data['user_id'], data['name'],))
+                send_debug_message("gave an id to %s" % data['name'])
+            if cursor.rowcount == 0: #Is not present in the database and needs to be added
                 cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now()), %s"), (data['name'], data['user_id'],))
                 send_debug_message("added %s to the group" % data['name'])
             conn.commit()
