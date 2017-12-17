@@ -86,6 +86,42 @@ def webhook():
             print_stats(2, True)
         elif '!talkative' in text:  # displays the leaderboard for who posts the most
             print_stats(1, True)
+        elif '!ratio' in text:
+            try:
+                urllib.parse.uses_netloc.append("postgres")
+                url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+                conn = psycopg2.connect(
+                    database=url.path[1:],
+                    user=url.username,
+                    password=url.password,
+                    host=url.hostname,
+                    port=url.port
+                )
+                cursor = conn.cursor()
+                # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+                cursor.execute(sql.SQL(
+                    "SELECT * FROM tribe_data WHERE workout_score > -1.0"), )
+                leaderboard = cursor.fetchall()
+                for person in leaderboard:
+                    if person[2] == 0:
+                        ratio = 0
+                    else:
+                        ratio = person[3] / person[2]
+                    person[1] = ratio
+                leaderboard.sort(key=lambda s: s[1], reverse=True)  # sort the leaderboard by score descending
+                string1 = "Top 15:\n"
+                string2 = "Everyone Else:\n"
+                for x in range(0, 15):
+                    string1 += '%d) %s - %.2f \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+                for x in range(15, len(leaderboard)):
+                    string2 += '%d) %s - %.2f \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+                # need to split it up into 2 because groupme has a max message length for bots
+                send_tribe_message(string1)
+                send_tribe_message(string2)
+                cursor.close()
+                conn.close()
+            except (Exception, psycopg2.DatabaseError) as error:
+                send_debug_message(error)
         elif '!reset' in text and data['name'] == 'William Syre':
             send_tribe_message("Final leaderboard is:")
             print_stats(3, True)
