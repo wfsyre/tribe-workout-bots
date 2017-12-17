@@ -107,14 +107,14 @@ def webhook():
                         ratio = 0
                     else:
                         ratio = person[3] / person[2]
-                    person[1] = ratio
-                leaderboard.sort(key=lambda s: s[1], reverse=True)  # sort the leaderboard by score descending
+                    person[5] = ratio
+                leaderboard.sort(key=lambda s: s[5], reverse=True)  # sort the leaderboard by score descending
                 string1 = "Top 15:\n"
                 string2 = "Everyone Else:\n"
                 for x in range(0, 15):
-                    string1 += '%d) %s - %.2f \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+                    string1 += '%d) %s - %.2f \n' % (x + 1, leaderboard[x][0], leaderboard[x][5])
                 for x in range(15, len(leaderboard)):
-                    string2 += '%d) %s - %.2f \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+                    string2 += '%d) %s - %.2f \n' % (x + 1, leaderboard[x][0], leaderboard[x][5])
                 # need to split it up into 2 because groupme has a max message length for bots
                 send_tribe_message(string1)
                 send_tribe_message(string2)
