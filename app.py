@@ -148,6 +148,7 @@ def webhook():
                 send_debug_message("workouts have been purged")
             except Exception as error:
                 send_debug_message(error)
+    send_debug_message(data.keys())
     return "ok", 200
 
 
@@ -246,6 +247,15 @@ def get_group_info(group_id):
 def parse_group_for_members(html_string):
     return json.loads(html_string)
 
+def like_message(conversation_id, message_id):
+    url = 'https://api.groupme.com/v3/post/messages'
+
+    data = {
+        'conversation_id': conversation_id,
+        'message_id': message_id,
+    }
+    request = Request(url, urlencode(data).encode())
+    json = urlopen(request).read().decode()
 
 def add_to_db(names, addition, ids): #add "addition" to each of the "names" in the db
     cursor = None
