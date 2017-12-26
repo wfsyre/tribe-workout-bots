@@ -64,10 +64,12 @@ def webhook():
             send_tribe_message("I love you too %s <3" % data['name'])
         elif '!help' in text:
             #Special command for Jeffrey Minowa
-            send_tribe_message("available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !ultianalytics, !leaderboard, !workouts, !talkative")
-        elif 'ultianalytics' in text:
+            send_tribe_message("available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !leaderboard, !workouts, !talkative, !points, !ratio, !heatcheck")
+        #elif 'ultianalytics' in text:
             #get the ultianalytics password
-            send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
+        #    send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
+        elif '!points' in text:
+            send_tribe_message("Track - %d, Gym - %d, Throw - %d, Swim - %d, Pickup - %d, Biking - %d" % (TRACK_POINTS, GYM_POINTS, THROW_POINTS, SWIM_POINTS, PICKUP_POINTS, BIKING_POINTS))
         elif '!gym' in text:
             handle_workouts(data, GYM_POINTS)
         elif '!throw' in text:
