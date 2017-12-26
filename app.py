@@ -150,7 +150,6 @@ def webhook():
                 send_debug_message("workouts have been purged")
             except Exception as error:
                 send_debug_message(error)
-    send_debug_message(data.keys())
     return "ok", 200
 
 
