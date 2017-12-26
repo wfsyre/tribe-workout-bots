@@ -180,7 +180,9 @@ def handle_workouts(data, addition):
             names.append(data['name'])
             ids.append(data['user_id'])
             send_debug_message(str(names))
-            add_to_db(names, addition, ids)
+            num = add_to_db(names, addition, ids)
+            if num == len(names):
+                like_message(data['group_id'], data['id'])
 
 def print_stats(datafield, rev):
     try:
@@ -249,19 +251,15 @@ def get_group_info(group_id):
 def parse_group_for_members(html_string):
     return json.loads(html_string)
 
-def like_message(conversation_id, message_id):
-    url = 'https://api.groupme.com/v3/post/messages'
-
-    data = {
-        'conversation_id': conversation_id,
-        'message_id': message_id,
-    }
-    request = Request(url, urlencode(data).encode())
+def like_message(group_id, msg_id):
+    url = 'https://api.groupme.com/v3/post/messages/%s/%s/like?token=%s' % (str(group_id), str(msg_id), os.getenv("ACCESS_TOKEN"))
+    request = Request(url)
     json = urlopen(request).read().decode()
 
 def add_to_db(names, addition, ids): #add "addition" to each of the "names" in the db
     cursor = None
     conn = None
+    num_commited = 0
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
@@ -284,12 +282,14 @@ def add_to_db(names, addition, ids): #add "addition" to each of the "names" in t
                 send_debug_message("%s does not have an id yet" % names[x])
             conn.commit()
             send_debug_message("committed %s" % names[x])
+            num_commited += 1
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
         if cursor is not None:
             cursor.close()
             conn.close()
+        return num_commited
 
 
 
