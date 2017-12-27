@@ -150,6 +150,7 @@ def webhook():
                 send_debug_message("workouts have been purged")
             except Exception as error:
                 send_debug_message(error)
+        like_message(data['group_id'], data['id'])
     return "ok", 200
 
 
