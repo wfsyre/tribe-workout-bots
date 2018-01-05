@@ -254,9 +254,10 @@ def parse_group_for_members(html_string):
 def like_message(group_id, msg_id):
     send_debug_message("group_id is %s" % str(group_id))
     send_debug_message("message_id is %s" % str(msg_id))
-    url = 'https://api.groupme.com/v3/messages/group_id=%s/message_id=%s/like?token=%s' % (str(group_id), str(msg_id), os.getenv("ACCESS_TOKEN"))
-    request = Request(url)
-    json = urlopen(request).read().decode()
+    url = 'https://api.groupme.com/v3/messages/%s/%s/like?token=%s/' % (str(group_id), str(msg_id), os.getenv("ACCESS_TOKEN"))
+    data = {}
+    request = Request(url, urlencode(data).encode())
+    urlopen(request)
 
 def add_to_db(names, addition, ids): #add "addition" to each of the "names" in the db
     cursor = None
