@@ -90,6 +90,8 @@ def webhook():
             print_stats(1, True)
         elif '!heatcheck' in text:
             send_tribe_message("Kenta wins")
+        elif '!stackbread' in text:
+            send_tribe_message("This is dumb.")
         elif '!ratio' in text:
             try:
                 urllib.parse.uses_netloc.append("postgres")
