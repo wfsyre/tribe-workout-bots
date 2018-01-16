@@ -48,7 +48,7 @@ def webhook():
                     (data['user_id'], data['name'],))
                 send_debug_message("gave an id to %s" % data['name'])
             if cursor.rowcount == 0: #Is not present in the database and needs to be added
-                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now()), %s"), (data['name'], data['user_id'],))
+                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now(), %s)"), (data['name'], data['user_id'],))
                 send_debug_message("added %s to the group" % data['name'])
             conn.commit()
             cursor.close()
@@ -59,40 +59,44 @@ def webhook():
         if '!website' in text:
             #send the website information to the groupme
             send_tribe_message("https://gttribe.wordpress.com/about/")
-        elif '!iloveyou' in text:
+        if '!iloveyou' in text:
             #special command for Stephen Mock
             send_tribe_message("I love you too %s <3" % data['name'])
-        elif '!help' in text:
+        if '!help' in text:
             #Special command for Jeffrey Minowa
             send_tribe_message("available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !leaderboard, !workouts, !talkative, !points, !ratio, !heatcheck")
         #elif 'ultianalytics' in text:
             #get the ultianalytics password
         #    send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
-        elif '!points' in text:
+        if '!points' in text:
             send_tribe_message("Track - %d, Gym - %d, Throw - %d, Swim - %d, Pickup - %d, Biking - %d" % (TRACK_POINTS, GYM_POINTS, THROW_POINTS, SWIM_POINTS, PICKUP_POINTS, BIKING_POINTS))
-        elif '!gym' in text:
+        if '!gym' in text:
             handle_workouts(data, GYM_POINTS)
-        elif '!throw' in text:
+        if '!throw' in text:
             handle_workouts(data, THROW_POINTS)
-        elif '!swim' in text:
+        if '!swim' in text:
             handle_workouts(data, SWIM_POINTS)
-        elif '!track' in text:
+        if '!track' in text:
             handle_workouts(data, TRACK_POINTS)
-        elif '!bike' in text:
+        if '!bike' in text:
             handle_workouts(data, BIKING_POINTS)
-        elif '!pickup' in text:
+        if '!pickup' in text:
             handle_workouts(data, PICKUP_POINTS)
-        elif '!leaderboard' in text: #post the leaderboard in the groupme
+        if '!leaderboard' in text: #post the leaderboard in the groupme
             print_stats(3, True)
-        elif '!workouts' in text: #display the leaderboard for who works out the most
+        if '!workouts' in text: #display the leaderboard for who works out the most
             print_stats(2, True)
-        elif '!talkative' in text:  # displays the leaderboard for who posts the most
+        if '!talkative' in text:  # displays the leaderboard for who posts the most
             print_stats(1, True)
-        elif '!heatcheck' in text:
+        if '!heatcheck' in text:
             send_tribe_message("Kenta wins")
-        elif '!stackbread' in text:
+        if '!hydrate' in text:
+            add_hydration(data, 1)
+        if '!waterboard' in text:
+            print_water()
+        if '!stackbread' in text:
             send_tribe_message("This is dumb.")
-        elif '!ratio' in text:
+        if '!ratio' in text:
             try:
                 urllib.parse.uses_netloc.append("postgres")
                 url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
@@ -129,7 +133,7 @@ def webhook():
                 conn.close()
             except (Exception, psycopg2.DatabaseError) as error:
                 send_debug_message(error)
-        elif '!reset' in text and data['name'] == 'William Syre':
+        if '!reset' in text and data['name'] == 'William Syre':
             send_tribe_message("Final leaderboard is:")
             print_stats(3, True)
             try:
@@ -264,7 +268,7 @@ def like_message(group_id, msg_id):
 def add_to_db(names, addition, ids): #add "addition" to each of the "names" in the db
     cursor = None
     conn = None
-    num_commited = 0
+    num_committed = 0
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
@@ -287,15 +291,103 @@ def add_to_db(names, addition, ids): #add "addition" to each of the "names" in t
                 send_debug_message("%s does not have an id yet" % names[x])
             conn.commit()
             send_debug_message("committed %s" % names[x])
-            num_commited += 1
+            num_committed += 1
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
         if cursor is not None:
             cursor.close()
             conn.close()
-        return num_commited
+        return num_committed
 
+def add_hydration(data, addition):
+    cursor = None
+    conn = None
+    num_committed = 0
+    names, ids = get_names_and_ids_from_message(data)
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        for x in range(0, len(names)):
+            cursor.execute(sql.SQL(
+                "UPDATE tribe_water SET num_liters = num_liters+1, WHERE id = %s"),
+                (str(addition), ids[x],))
+            if cursor.rowcount == 0:  # If a user does not have an id yet
+                cursor.execute(sql.SQL(
+                    "UPDATE tribe_water SET num_liters = num_liters+1, id = %s WHERE name = %s"),
+                    (str(addition), names[x], ids[x],))
+                send_debug_message("%s does not have an id yet" % names[x])
+            if cursor.rowcount == 0: # user is not in the db yet
+                cursor.execute(sql.SQL("INSERT INTO tribe_water VALUES (%s, 1, %s)"), (names[x], ids[x]))
+            conn.commit()
+            send_debug_message("committed %s" % names[x])
+            num_committed += 1
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(str(error))
+    finally:
+        if cursor is not None:
+            cursor.close()
+            conn.close()
+        return num_committed
 
+def get_names_and_ids_from_message(data):
+    if len(data['attachments']) > 0:
+        # attachments are images or @mentions
+        ids = []
+        group_members = get_group_info(data['group_id'])  # should get the groupme names of all members in the group.
+        names = []
+        found_attachment = False  # This will track whether we found an image or not, which is required
+        for attachment in data["attachments"]:
+            if attachment['type'] == 'image':
+                found_attachment = True
+            if attachment['type'] == 'mentions':  # grab all the people @'d in the post to include them
+                send_debug_message(str(attachment['user_ids']))
+                for mentioned in attachment['user_ids']:
+                    for member in group_members:
+                        if member["user_id"] == mentioned:
+                            names.append(member["nickname"])
+                            ids.append(member["user_id"])
+        if found_attachment:  # return all mentions plus the name of the poster
+            names.append(data['name'])
+            ids.append(data['user_id'])
+            return names, ids
+
+def print_water():
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL(
+            "SELECT * FROM tribe_water WHERE num_liters > -1.0"), )
+        leaderboard = cursor.fetchall()
+        leaderboard.sort(key=lambda s: s[1], reverse=True)  # sort the leaderboard by score descending
+        string1 = "Top 15:\n"
+        string2 = "Everyone Else:\n"
+        for x in range(0, 15):
+            string1 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+        for x in range(15, len(leaderboard)):
+            string2 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+        send_tribe_message(string1)  # need to split it up into 2 because groupme has a max message length for bots
+        send_tribe_message(string2)
+        cursor.close()
+        conn.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
 
 
