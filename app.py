@@ -380,11 +380,14 @@ def print_water():
         string1 = "Top 15:\n"
         string2 = "Everyone Else:\n"
         for x in range(0, 15):
-            string1 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
-        for x in range(15, len(leaderboard)):
-            string2 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+            if len(leaderboard) > 15:
+                string1 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+        if len(leaderboard) > 15:
+            for x in range(15, len(leaderboard)):
+                string2 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
         send_tribe_message(string1)  # need to split it up into 2 because groupme has a max message length for bots
-        send_tribe_message(string2)
+        if len(leaderboard) > 15:
+            send_tribe_message(string2)
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
