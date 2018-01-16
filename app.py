@@ -380,7 +380,7 @@ def print_water():
         string1 = "Top 15:\n"
         string2 = "Everyone Else:\n"
         for x in range(0, 15):
-            if len(leaderboard) > 15:
+            if x < len(leaderboard):
                 string1 += '%d) %s with %d points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
         if len(leaderboard) > 15:
             for x in range(15, len(leaderboard)):
