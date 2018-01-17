@@ -318,7 +318,7 @@ def add_hydration(data, addition):
         cursor = conn.cursor()
         for x in range(0, len(names)):
             cursor.execute(sql.SQL(
-                "UPDATE tribe_water SET num_liters = num_liters+%s, WHERE id = %s"),
+                "UPDATE tribe_water SET num_liters = num_liters+%s WHERE id = %s"),
                 (str(addition), ids[x],))
             if cursor.rowcount == 0:  # If a user does not have an id yet
                 cursor.execute(sql.SQL(
