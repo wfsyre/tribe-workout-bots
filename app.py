@@ -261,7 +261,7 @@ def parse_group_for_members(html_string):
 def like_message(group_id, msg_id):
     send_debug_message("group_id is %s" % str(group_id))
     send_debug_message("message_id is %s" % str(msg_id))
-    url = 'https://api.groupme.com/v3/messages/%s/%s/like?token=%s/' % (str(group_id), str(msg_id), os.getenv("ACCESS_TOKEN"))
+    url = 'https://api.groupme.com/v3/messages/%s/%s/like?token=%s' % (str(group_id), str(msg_id), os.getenv("ACCESS_TOKEN"))
     data = {}
     requests.post(url, data)
 
