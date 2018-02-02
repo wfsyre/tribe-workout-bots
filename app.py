@@ -5,6 +5,7 @@ import json
 import urllib.request
 import datetime
 import psycopg2
+import requests
 from psycopg2 import sql
 
 from urllib.parse import urlencode
@@ -262,8 +263,7 @@ def like_message(group_id, msg_id):
     send_debug_message("message_id is %s" % str(msg_id))
     url = 'https://api.groupme.com/v3/messages/%s/%s/like?token=%s/' % (str(group_id), str(msg_id), os.getenv("ACCESS_TOKEN"))
     data = {}
-    request = Request(url, urlencode(data).encode())
-    urlopen(request)
+    requests.post(url, data)
 
 def add_to_db(names, addition, ids): #add "addition" to each of the "names" in the db
     cursor = None
