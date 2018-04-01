@@ -88,7 +88,8 @@ def webhook():
         if '!pickup' in text:
             handle_workouts(data, PICKUP_POINTS)
         if '!leaderboard' in text:  # post the leaderboard in the groupme
-            print_stats(3, True)
+            send_tribe_message("no")
+            # print_stats(3, True)
         if '!workouts' in text:  # display the leaderboard for who works out the most
             print_stats(2, True)
         if '!talkative' in text:  # displays the leaderboard for who posts the most
