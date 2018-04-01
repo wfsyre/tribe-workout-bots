@@ -104,6 +104,7 @@ def webhook():
         if '!stackbread' in text:
             send_tribe_message("This is dumb.")
         if '!ratio' in text:
+            send_tribe_message("no")
             try:
                 urllib.parse.uses_netloc.append("postgres")
                 url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
