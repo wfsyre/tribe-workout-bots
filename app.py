@@ -161,6 +161,10 @@ def webhook():
                 send_debug_message("workouts have been purged")
             except Exception as error:
                 send_debug_message(error)
+        if 'april fools' in text:
+            send_tribe_message("Shut the hell up %s" % data['name'])
+        if 'bamasecs' in text:
+            send_tribe_message("FBS")
     return "ok", 200
 
 
@@ -169,6 +173,7 @@ def send_tribe_message(msg):
 
 
 def handle_workouts(data, addition):
+    send_tribe_message("nice selfie idiot")
     if len(data['attachments']) > 0:
         # attachments are images or @mentions
         group_members = get_group_info(data['group_id'])  # should get the groupme names of all members in the group.
