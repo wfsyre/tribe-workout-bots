@@ -66,11 +66,10 @@ def webhook():
             # special command for Stephen Mock
             send_tribe_message("I love you too %s <3" % data['name'])
         if '!help' in text:
+            send_tribe_message("help yourself")
             # Special command for Jeffrey Minowa
-            send_tribe_message(
-                "available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !leaderboard, !workouts, !talkative, !points, !ratio, !heatcheck")
-            # elif 'ultianalytics' in text:
-            # get the ultianalytics password
+            #send_tribe_message(
+              #  "available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !leaderboard, !workouts, !talkative, !points, !ratio, !heatcheck")
         #    send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         if '!points' in text:
             send_tribe_message("Track - %d, Gym - %d, Throw - %d, Swim - %d, Pickup - %d, Biking - %d" % (
@@ -91,11 +90,13 @@ def webhook():
             send_tribe_message("no")
             # print_stats(3, True)
         if '!workouts' in text:  # display the leaderboard for who works out the most
-            print_stats(2, True)
+            send_tribe_message("nice try")
+            #print_stats(2, True)
         if '!talkative' in text:  # displays the leaderboard for who posts the most
-            print_stats(1, True)
+            send_tribe_message("never again")
+            #print_stats(1, True)
         if '!heatcheck' in text:
-            send_tribe_message("Kenta wins")
+            send_tribe_message("Kenta still wins tho")
         if '!hydrate' in text:
             add_hydration(data, 1)
         if '!waterboard' in text:
