@@ -66,10 +66,9 @@ def webhook():
             # special command for Stephen Mock
             send_tribe_message("I love you too %s <3" % data['name'])
         if '!help' in text:
-            send_tribe_message("help yourself")
             # Special command for Jeffrey Minowa
-            #send_tribe_message(
-              #  "available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !leaderboard, !workouts, !talkative, !points, !ratio, !heatcheck")
+            send_tribe_message(
+                "available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !leaderboard, !workouts, !talkative, !points, !ratio, !heatcheck")
         #    send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         if '!points' in text:
             send_tribe_message("Track - %d, Gym - %d, Throw - %d, Swim - %d, Pickup - %d, Biking - %d" % (
@@ -87,16 +86,13 @@ def webhook():
         if '!pickup' in text:
             handle_workouts(data, PICKUP_POINTS)
         if '!leaderboard' in text:  # post the leaderboard in the groupme
-            send_tribe_message("no")
-            # print_stats(3, True)
+            print_stats(3, True)
         if '!workouts' in text:  # display the leaderboard for who works out the most
-            send_tribe_message("nice try")
-            #print_stats(2, True)
+            print_stats(2, True)
         if '!talkative' in text:  # displays the leaderboard for who posts the most
-            send_tribe_message("never again")
-            #print_stats(1, True)
+            print_stats(1, True)
         if '!heatcheck' in text:
-            send_tribe_message("Kenta still wins tho")
+            send_tribe_message("Kenta wins")
         if '!hydrate' in text:
             add_hydration(data, 1)
         if '!waterboard' in text:
@@ -104,7 +100,6 @@ def webhook():
         if '!stackbread' in text:
             send_tribe_message("This is dumb.")
         if '!ratio' in text:
-            send_tribe_message("no")
             try:
                 urllib.parse.uses_netloc.append("postgres")
                 url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
@@ -164,8 +159,6 @@ def webhook():
                 send_debug_message("workouts have been purged")
             except Exception as error:
                 send_debug_message(error)
-        if 'april fools' in text:
-            send_tribe_message("Shut the hell up %s" % data['name'])
         if 'bamasecs' in text:
             send_tribe_message("FBS")
     return "ok", 200
@@ -176,7 +169,6 @@ def send_tribe_message(msg):
 
 
 def handle_workouts(data, addition):
-    send_tribe_message("nice selfie idiot")
     if len(data['attachments']) > 0:
         # attachments are images or @mentions
         group_members = get_group_info(data['group_id'])  # should get the groupme names of all members in the group.
