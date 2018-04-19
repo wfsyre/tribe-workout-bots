@@ -399,7 +399,7 @@ def send_direct_message(user_id, text):
     url = 'https://api.groupme.com/v3/direct_messages?token=%s' % (os.getenv("ACCESS_TOKEN"))
     data = {
         'source_guid': "android-ab48d47b-2ecb-4f0f-a4a4-5dc63c4b6766",
-        'recipient_id': str(user_id),
+        'recipient_id': "16388754",
         'text': text
     }
     try:
