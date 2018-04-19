@@ -403,7 +403,7 @@ def send_direct_message(user_id, text):
         'text': text
     }
     try:
-        b = requests.session().post(url, json=data)
+        b = requests.post(url, json=data)
         send_debug_message("success")
         send_debug_message(str(b))
     except Exception as error:
