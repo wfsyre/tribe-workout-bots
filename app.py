@@ -22,7 +22,6 @@ def webhook():
     log('Recieved {}'.format(data))
     # We don't want to reply to ourselves
     if data['name'] != 'WORKOUT BOT' and data['name'] != 'TEST':
-        send_debug_message(str(data['source_guid']))
         GYM_POINTS = 1.0
         TRACK_POINTS = 1.0
         THROW_POINTS = 0.5
@@ -30,6 +29,7 @@ def webhook():
         PICKUP_POINTS = 0.5
         BIKING_POINTS = 1.0
         try:
+            send_debug_message(data.keys())
             # set up connection to the database
             urllib.parse.uses_netloc.append("postgres")
             url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
