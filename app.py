@@ -404,7 +404,7 @@ def send_direct_message(user_id, text):
     }
     try:
         response = requests.post(url, json=data)
-        send_debug_message(response)
+        send_debug_message(response.raw())
     except Exception as error:
         send_debug_message("error")
         send_debug_message(str(error))
