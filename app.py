@@ -161,6 +161,8 @@ def webhook():
                 send_debug_message(error)
         if 'bamasecs' in text:
             send_tribe_message("FBS")
+        if 'test' in text:
+            send_direct_message(data['user_id'], "THIS IS A TEST OF THE GEORGIA TECH EMERGENCY NOTIFICATION SYSTEM")
     return "ok", 200
 
 
@@ -391,3 +393,13 @@ def print_water():
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
+
+
+def send_direct_message(user_id, text):
+    url = 'https://api.groupme.com/v3/direct_messages/token=%s' % (os.getenv("ACCESS_TOKEN"))
+    data = {
+        'source_guid': "Android",
+        'recipient_id': str(user_id),
+        'text': text
+    }
+    requests.post(url, data)
