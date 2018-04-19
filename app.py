@@ -398,11 +398,12 @@ def print_water():
 def send_direct_message(user_id, text):
     url = 'https://api.groupme.com/v3/direct_messages/token=%s' % (os.getenv("ACCESS_TOKEN"))
     data = {
-        'source_guid': "Android",
+        'source_guid': "android-ab48d47b-2ecb-4f0f-a4a4-5dc63c4b6666",
         'recipient_id': str(user_id),
         'text': text
     }
     try:
         b = requests.post(url, data)
+        send_debug_message(str(b))
     except Exception as error:
         send_debug_message(str(error))
