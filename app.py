@@ -3,7 +3,7 @@ import urllib.parse
 import sys
 import json
 import urllib.request
-import datetime
+import time
 import psycopg2
 import requests
 from psycopg2 import sql
@@ -398,15 +398,14 @@ def print_water():
 def send_direct_message(user_id, text):
     url = 'https://api.groupme.com/v3/direct_messages?token=%s' % (os.getenv("ACCESS_TOKEN"))
     data = {
-        'source_guid': "android-ab48d47b-2ecb-4f0f-a4a4-5dc63c4b6776",
+        'source_guid': str(time.time()),
         'recipient_id': "16388754",
         'text': text
     }
     try:
-        b = requests.post(url, data)
+        b = requests.session().post(url, json=data)
         send_debug_message("success")
         send_debug_message(str(b))
-        send_debug_message(str(b.content))
     except Exception as error:
         send_debug_message("error")
         send_debug_message(str(error))
