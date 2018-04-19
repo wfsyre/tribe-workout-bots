@@ -29,7 +29,6 @@ def webhook():
         PICKUP_POINTS = 0.5
         BIKING_POINTS = 1.0
         try:
-            send_debug_message(data.keys())
             # set up connection to the database
             urllib.parse.uses_netloc.append("postgres")
             url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
@@ -403,5 +402,7 @@ def send_direct_message(user_id, text):
         'recipient_id': str(user_id),
         'text': text
     }
-    b = requests.post(url, data)
-    send_debug_message(b)
+    try:
+        b = requests.post(url, data)
+    except Exception as error:
+        send_debug_message(str(error))
