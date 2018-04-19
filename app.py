@@ -22,6 +22,7 @@ def webhook():
     log('Recieved {}'.format(data))
     # We don't want to reply to ourselves
     if data['name'] != 'WORKOUT BOT' and data['name'] != 'TEST':
+        send_debug_message(data['source_guid'])
         GYM_POINTS = 1.0
         TRACK_POINTS = 1.0
         THROW_POINTS = 0.5
@@ -402,4 +403,5 @@ def send_direct_message(user_id, text):
         'recipient_id': str(user_id),
         'text': text
     }
-    requests.post(url, data)
+    b = requests.post(url, data)
+    send_debug_message(b)
