@@ -404,7 +404,7 @@ def send_direct_message(user_id, text):
         'text': text.encode()
         }
     }
-    data = json.dumps(data)
+    #data = json.dumps(data)
     try:
         r = requests.post(url, data=data)
         send_debug_message("success")
