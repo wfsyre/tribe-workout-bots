@@ -400,6 +400,7 @@ def send_direct_message(user_id, text):
     data = {
         'source_guid': str(time.time()).encode(),
         'recipient_id': "16388754".encode(),
+        'conversation_id': ("%s+16458398" % str(user_id)),
         'text': text.encode()
     }
     try:
