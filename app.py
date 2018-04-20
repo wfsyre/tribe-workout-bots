@@ -162,7 +162,7 @@ def webhook():
         if 'bamasecs' in text:
             send_tribe_message("FBS")
         if 'test' in text:
-            send_direct_message(data['user_id'], "THIS IS A TEST OF THE GEORGIA TECH EMERGENCY NOTIFICATION SYSTEM")
+            send_debug_message(str(data))
         if '!string' in text:
             if data['name'] == "Keith Fingland":
                 send_direct_message(data['user_id'], "Hello Keith")
