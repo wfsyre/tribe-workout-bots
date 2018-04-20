@@ -401,14 +401,16 @@ def send_direct_message(user_id, text):
         'source_guid': str(time.time()),
         'recipient_id': "16388754",
         'conversation_id': "16388754+16458398",
-        'text': text.encode()
+        'text': text
         }
     }
     #data = json.dumps(data)
     try:
-        r = requests.post(url, data=data)
+        params = json.dumps(data).encode('utf8')
+        request = Request(url, data=params, headers={'content-type': 'application/json'})
+        response = urlopen(request).read().decode()
         send_debug_message("success")
-        send_debug_message(r)
+        send_debug_message(response)
     except Exception as error:
         send_debug_message("error")
         send_debug_message(str(error))
