@@ -164,6 +164,7 @@ def webhook():
         if 'test' in text:
             send_debug_message(str(data))
         if '!string' in text:
+            send_debug_message("string found")
             if data['name'] == "Keith Fingland":
                 send_direct_message(data['user_id'], 'https://i.groupme.com/496x256.png.e920d3f904a243a9af9e459b9d677756')
             if data['name'] == "Alex Mathis":
@@ -179,7 +180,7 @@ def webhook():
             if data['name'] == "Tyler French":
                 send_direct_message(data['user_id'], 'https://i.groupme.com/540x226.png.174233d6d36e4370bd33b4c3c3b2d4c9')
             if data['name'] == "William Syre":
-                send_debug_message('https://i.groupme.com/540x226.png.174233d6d36e4370bd33b4c3c3b2d4c9')
+                send_debug_message("https://i.groupme.com/540x226.png.174233d6d36e4370bd33b4c3c3b2d4c9")
 
     return "ok", 200
 
