@@ -407,6 +407,7 @@ def send_direct_message(user_id, text):
     data = dumps(data)
     try:
         r = requests.post(url, data=data)
+        send_debug_message("success")
         send_debug_message(r)
     except Exception as error:
         send_debug_message("error")
