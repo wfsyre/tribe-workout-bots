@@ -399,12 +399,13 @@ def send_direct_message(user_id, text):
     url = 'https://api.groupme.com/v3/direct_messages?token=%s' % (os.getenv("ACCESS_TOKEN"))
     data = {
         'source_guid': str(time.time()),
-        'recipient_id': "16388754",
+        'recipient_id': '16388754',
         'text': text
     }
     try:
-        response = requests.post(url, json=data)
-        send_debug_message(response.raw())
+        request = Request(url, urlencode(data).encode())
+        json = urlopen(request).read().decode()
+        send_debug_message(json)
     except Exception as error:
         send_debug_message("error")
         send_debug_message(str(error))
