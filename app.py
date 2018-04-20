@@ -163,6 +163,22 @@ def webhook():
             send_tribe_message("FBS")
         if 'test' in text:
             send_direct_message(data['user_id'], "THIS IS A TEST OF THE GEORGIA TECH EMERGENCY NOTIFICATION SYSTEM")
+        if '!string' in text:
+            if data['name'] == "Keith Fingland":
+                send_direct_message(data['user_id'], "Hello Keith")
+            if data['name'] == "Alex Mathis":
+                send_direct_message(data['user_id'], "Hello Keith")
+            if data['name'] == "Amatheon Bohan":
+                send_direct_message(data['user_id'], "Hello Keith")
+            if data['name'] == "Maximilian Kolhof":
+                send_direct_message(data['user_id'], "Hello Keith")
+            if data['name'] == "Miguel de los Reyes":
+                send_direct_message(data['user_id'], "Hello Keith")
+            if data['name'] == "Stephen Mock":
+                send_direct_message(data['user_id'], "Hello Keith")
+            if data['name'] == "Tyler French":
+                send_direct_message(data['user_id'], "Hello Keith")
+
     return "ok", 200
 
 
