@@ -398,9 +398,9 @@ def print_water():
 def send_direct_message(user_id, text):
     url = 'https://api.groupme.com/v3/direct_messages?token=%s' % (os.getenv("ACCESS_TOKEN"))
     data = {
-        'source_guid': str(time.time()),
-        'recipient_id': '16388754',
-        'text': text
+        'source_guid': str(time.time()).encode(),
+        'recipient_id': "16388754".encode(),
+        'text': text.encode()
     }
     try:
         request = Request(url, urlencode(data).encode())
