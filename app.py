@@ -403,7 +403,7 @@ def send_direct_message(user_id, text):
         'text': text.encode()
     }
     try:
-        request = Request(url, urlencode(data).encode())
+        request = Request(url.encode(), urlencode(data).encode())
         json = urlopen(request).read().decode()
         send_debug_message(json)
     except Exception as error:
