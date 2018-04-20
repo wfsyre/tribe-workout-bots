@@ -1,7 +1,7 @@
 import os
 import urllib.parse
 import sys
-import json
+from json import dumps, loads
 import urllib.request
 import time
 import psycopg2
@@ -246,7 +246,7 @@ def get_group_info(group_id):
 
 
 def parse_group_for_members(html_string):
-    return json.loads(html_string)
+    return loads(html_string)
 
 
 def like_message(group_id, msg_id):
@@ -396,7 +396,7 @@ def print_water():
 
 
 def send_direct_message(user_id, text):
-    url = "https://api.groupme.com/v3/direct_messages?token=%s" % (os.getenv("ACCESS_TOKEN"))
+    url = r"https://api.groupme.com/v3/direct_messages?token=%s" % (os.getenv("ACCESS_TOKEN"))
     data = {"direct_message": {
         'source_guid': str(time.time()),
         'recipient_id': "16388754",
@@ -404,10 +404,10 @@ def send_direct_message(user_id, text):
         'text': text.encode()
         }
     }
+    data = dumps(data)
     try:
-        request = Request(url, urlencode(data).encode())
-        json = urlopen(request).read().decode()
-        send_debug_message(json)
+        r = requests.post(url, data=data)
+        send_debug_message(r)
     except Exception as error:
         send_debug_message("error")
         send_debug_message(str(error))
