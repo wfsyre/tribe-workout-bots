@@ -165,19 +165,21 @@ def webhook():
             send_debug_message(str(data))
         if '!string' in text:
             if data['name'] == "Keith Fingland":
-                send_direct_message(data['user_id'], "Hello Keith")
+                send_direct_message(data['user_id'], 'https://i.groupme.com/496x256.png.e920d3f904a243a9af9e459b9d677756')
             if data['name'] == "Alex Mathis":
-                send_direct_message(data['user_id'], "Hello Keith")
+                send_direct_message(data['user_id'], 'https://i.groupme.com/492x246.png.4ae25915ff8d4f9d97b40cfe3194a7e2')
             if data['name'] == "Amatheon Bohan":
-                send_direct_message(data['user_id'], "Hello Keith")
+                send_direct_message(data['user_id'], 'https://i.groupme.com/581x304.png.df6c13b0dada4e6cb97a3c3378a6750b')
             if data['name'] == "Maximilian Kolhof":
-                send_direct_message(data['user_id'], "Hello Keith")
+                send_direct_message(data['user_id'], 'https://i.groupme.com/459x226.png.5b2cdd271cb247deb0de4a1477fcdc4d')
             if data['name'] == "Miguel de los Reyes":
-                send_direct_message(data['user_id'], "Hello Keith")
+                send_direct_message(data['user_id'], 'https://i.groupme.com/476x223.png.65de7227bb0d4c37913fecaac7236d94')
             if data['name'] == "Stephen Mock":
-                send_direct_message(data['user_id'], "Hello Keith")
+                send_direct_message(data['user_id'], 'https://i.groupme.com/502x277.png.0846fcdb580f4c219808e903ea0d275e')
             if data['name'] == "Tyler French":
-                send_direct_message(data['user_id'], "Hello Keith")
+                send_direct_message(data['user_id'], 'https://i.groupme.com/540x226.png.174233d6d36e4370bd33b4c3c3b2d4c9')
+            if data['name'] == "William Syre":
+                send_debug_message('https://i.groupme.com/540x226.png.174233d6d36e4370bd33b4c3c3b2d4c9')
 
     return "ok", 200
 
