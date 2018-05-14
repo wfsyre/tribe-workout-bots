@@ -163,25 +163,6 @@ def webhook():
             send_tribe_message("FBS")
         if 'test' in text:
             send_debug_message(str(data))
-        if '!string' in text:
-            send_debug_message("string found")
-            if data['name'] == "Keith Fingland" and "b4208vwbij" in text:
-                send_direct_message(data['user_id'], 'https://i.groupme.com/496x256.png.e920d3f904a243a9af9e459b9d677756')
-            elif data['name'] == "Alex Mathis" and "8hp9v3r8h9" in text:
-                send_direct_message(data['user_id'], 'https://i.groupme.com/492x246.png.4ae25915ff8d4f9d97b40cfe3194a7e2')
-            elif data['name'] == "Amatheon Bohan" and "qv3978hv31" in text:
-                send_direct_message(data['user_id'], 'https://i.groupme.com/581x304.png.df6c13b0dada4e6cb97a3c3378a6750b')
-            elif data['name'] == "Maximilian Kolhof" and "q35p87bv98" in text:
-                send_direct_message(data['user_id'], 'https://i.groupme.com/459x226.png.5b2cdd271cb247deb0de4a1477fcdc4d')
-            elif data['name'] == "Miguel de los Reyes" and "q3v9r8hqv3" in text:
-                send_direct_message(data['user_id'], 'https://i.groupme.com/476x223.png.65de7227bb0d4c37913fecaac7236d94')
-            elif data['name'] == "Stephen Mock" and "v99qv8jtrb" in text:
-                send_direct_message(data['user_id'], 'https://i.groupme.com/502x277.png.0846fcdb580f4c219808e903ea0d275e')
-            elif data['name'] == "Tyler French" and "vq398v450u" in text:
-                send_direct_message(data['user_id'], 'https://i.groupme.com/487x250.png.4ce6295f1a8b449882516120d3827c91')
-            else:
-                send_direct_message(data['user_id'], "Either something went wrong or that is not the right code")
-
     return "ok", 200
 
 
