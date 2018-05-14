@@ -290,18 +290,24 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
         cursor = conn.cursor()
         for x in range(0, len(names)):
             cursor.execute(sql.SQL(
-                "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
-                "now() WHERE id = %s"),
-                (str(addition), ids[x],))
-            if cursor.rowcount == 0:  # If a user does not have an id yet
+                "SELECT workout_score FROM tribe_data WHERE id = %s"), (str(ids[x]),))
+            score = cursor.fetchall()
+            send_debug_message("invalid workout poster found " + str(score))
+            score = int(score)
+            if score != -1:
                 cursor.execute(sql.SQL(
-                    "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post "
-                    "= now(), id = %s WHERE name = %s"),
-                    (str(addition), names[x], ids[x],))
-                send_debug_message("%s does not have an id yet" % names[x])
-            conn.commit()
-            send_debug_message("committed %s" % names[x])
-            num_committed += 1
+                    "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
+                    "now() WHERE id = %s"),
+                    (str(addition), ids[x],))
+                if cursor.rowcount == 0:  # If a user does not have an id yet
+                    cursor.execute(sql.SQL(
+                        "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post "
+                        "= now(), id = %s WHERE name = %s"),
+                        (str(addition), names[x], ids[x],))
+                    send_debug_message("%s does not have an id yet" % names[x])
+                conn.commit()
+                send_debug_message("committed %s" % names[x])
+                num_committed += 1
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
