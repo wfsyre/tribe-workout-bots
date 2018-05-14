@@ -275,7 +275,7 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
         for x in range(0, len(names)):
             cursor.execute(sql.SQL(
                 "SELECT workout_score FROM tribe_data WHERE id = %s"), (str(ids[x]),))
-            score = cursor.fetchall()
+            score = cursor.fetchall()[0]
             send_debug_message("invalid workout poster found " + str(score))
             score = int(score)
             if score != -1:
