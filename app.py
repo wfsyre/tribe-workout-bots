@@ -276,7 +276,6 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
             cursor.execute(sql.SQL(
                 "SELECT workout_score FROM tribe_data WHERE id = %s"), (str(ids[x]),))
             score = cursor.fetchall()[0][0]
-            send_debug_message("invalid workout poster found " + str(score))
             score = int(score)
             if score != -1:
                 cursor.execute(sql.SQL(
@@ -292,6 +291,8 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
                 conn.commit()
                 send_debug_message("committed %s" % names[x])
                 num_committed += 1
+            else:
+                send_debug_message("invalid workout poster found " + str(score))
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
