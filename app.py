@@ -91,6 +91,8 @@ def webhook():
             print_stats(2, True)
         if '!talkative' in text:  # displays the leaderboard for who posts the most
             print_stats(1, True)
+        if '!handsome' in text:  # displays the leaderboard for who posts the most
+            print_stats(1, True)
         if '!heatcheck' in text:
             send_tribe_message("Kenta wins")
         if '!hydrate' in text:
