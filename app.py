@@ -71,7 +71,7 @@ def webhook():
                 "available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !leaderboard, !workouts, !talkative, !points, !ratio, !heatcheck")
         #    send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
         if '!points' in text:
-            send_tribe_message("Track - %.1f, Gym - %.1f, Throw - %.1f, Swim - %.1f, Pickup - %.1f, Biking - %.1f" % (
+            send_tribe_message("Track: %.1f, Gym: %.1f, Throw: %.1f, Swim: %.1f, Pickup: %.1f, Biking: %.1f" % (
             TRACK_POINTS, GYM_POINTS, THROW_POINTS, SWIM_POINTS, PICKUP_POINTS, BIKING_POINTS))
         if '!gym' in text:
             handle_workouts(data, GYM_POINTS)
