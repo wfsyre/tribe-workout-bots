@@ -160,9 +160,7 @@ def webhook():
             except Exception as error:
                 send_debug_message(error)
         if 'bamasecs' in text:
-            send_tribe_message("FBS")
-        if 'test' in text:
-            send_debug_message(str(data))
+            send_tribe_message("Fuck Bama Secs")
     return "ok", 200
 
 
