@@ -26,7 +26,7 @@ def webhook():
     BIKING_POINTS = 1.0
     data = request.get_json()
     if data['type'] == "url_verification":
-        return data['challenge'], "OK", 200
+        return "ok", 200
     return "ok", 200
 
 
