@@ -18,151 +18,15 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def webhook():
+    GYM_POINTS = 1.0
+    TRACK_POINTS = 1.0
+    THROW_POINTS = 0.5
+    SWIM_POINTS = 1.0
+    PICKUP_POINTS = 0.5
+    BIKING_POINTS = 1.0
     data = request.get_json()
-    log('Recieved {}'.format(data))
-    # We don't want to reply to ourselves
-    if data['name'] != 'WORKOUT BOT' and data['name'] != 'TEST':
-        GYM_POINTS = 1.0
-        TRACK_POINTS = 1.0
-        THROW_POINTS = 0.5
-        SWIM_POINTS = 1.0
-        PICKUP_POINTS = 0.5
-        BIKING_POINTS = 1.0
-        try:
-            # set up connection to the database
-            urllib.parse.uses_netloc.append("postgres")
-            url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
-            conn = psycopg2.connect(
-                database=url.path[1:],
-                user=url.username,
-                password=url.password,
-                host=url.hostname,
-                port=url.port
-            )
-            cursor = conn.cursor()
-            # add 1 to the number of posts of the person that posted
-            cursor.execute(sql.SQL(
-                "UPDATE tribe_data SET num_posts = num_posts+1 WHERE id = %s"),
-                (data['user_id'],))
-            if cursor.rowcount == 0:  # No id but possibly has a name
-                cursor.execute(sql.SQL(
-                    "UPDATE tribe_data SET num_posts = num_posts+1, id = %s WHERE name = %s"),
-                    (data['user_id'], data['name'],))
-                send_debug_message("gave an id to %s" % data['name'])
-            if cursor.rowcount == 0:  # Is not present in the database and needs to be added
-                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 1, 0, 0, now(), %s)"),
-                               (data['name'], data['user_id'],))
-                send_debug_message("added %s to the group" % data['name'])
-            conn.commit()
-            cursor.close()
-            conn.close()
-        except Exception as error:
-            send_debug_message(error)
-        text = data['text'].lower()
-        if '!website' in text:
-            # send the website information to the groupme
-            send_tribe_message("https://gttribe.wordpress.com/about/")
-        if '!iloveyou' in text:
-            # special command for Stephen Mock
-            send_tribe_message("I love you too %s <3" % data['name'])
-        if '!help' in text:
-            # Special command for Jeffrey Minowa
-            send_tribe_message(
-                "available commands: !throw, !gym, !swim, !track, !bike, !pickup, !website, !leaderboard, !workouts, !talkative, !points, !ratio, !heatcheck")
-        #    send_tribe_message("url: http://www.ultianalytics.com/app/#/5629819115012096/login || password: %s" % (os.getenv("ULTI_PASS")))
-        if '!points' in text:
-            send_tribe_message("Track: %.1f, Gym: %.1f, Throw: %.1f, Swim: %.1f, Pickup: %.1f, Biking: %.1f" % (
-            TRACK_POINTS, GYM_POINTS, THROW_POINTS, SWIM_POINTS, PICKUP_POINTS, BIKING_POINTS))
-        if '!gym' in text:
-            handle_workouts(data, GYM_POINTS)
-        if '!throw' in text:
-            handle_workouts(data, THROW_POINTS)
-        if '!swim' in text:
-            handle_workouts(data, SWIM_POINTS)
-        if '!track' in text:
-            handle_workouts(data, TRACK_POINTS)
-        if '!bike' in text:
-            handle_workouts(data, BIKING_POINTS)
-        if '!pickup' in text:
-            handle_workouts(data, PICKUP_POINTS)
-        if '!leaderboard' in text:  # post the leaderboard in the groupme
-            print_stats(3, True)
-        if '!workouts' in text:  # display the leaderboard for who works out the most
-            print_stats(2, True)
-        if '!talkative' in text:  # displays the leaderboard for who posts the most
-            print_stats(1, True)
-        if '!handsome' in text:  # displays the leaderboard for who posts the most
-            print_stats(1, True)
-        if '!heatcheck' in text:
-            send_tribe_message("Kenta wins")
-        if '!hydrate' in text:
-            add_hydration(data, 1)
-        if '!waterboard' in text:
-            print_water()
-        if '!stackbread' in text:
-            send_tribe_message("This is dumb.")
-        if '!ratio' in text:
-            try:
-                urllib.parse.uses_netloc.append("postgres")
-                url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
-                conn = psycopg2.connect(
-                    database=url.path[1:],
-                    user=url.username,
-                    password=url.password,
-                    host=url.hostname,
-                    port=url.port
-                )
-                cursor = conn.cursor()
-                # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-                cursor.execute(sql.SQL(
-                    "SELECT * FROM tribe_data WHERE workout_score > -1.0"), )
-                leaderboard = cursor.fetchall()
-                new_leaderboard = []
-                for person in leaderboard:
-                    if person[2] == 0:
-                        ratio = 0
-                    else:
-                        ratio = person[3] / person[2]
-                    new_leaderboard.append((person[0], ratio))
-                new_leaderboard.sort(key=lambda s: s[1], reverse=True)  # sort the leaderboard by score descending
-                string1 = "Top 15:\n"
-                string2 = "Everyone Else:\n"
-                for x in range(0, 15):
-                    string1 += '%d) %s - %.2f \n' % (x + 1, new_leaderboard[x][0], new_leaderboard[x][1])
-                for x in range(15, len(leaderboard)):
-                    string2 += '%d) %s - %.2f \n' % (x + 1, new_leaderboard[x][0], new_leaderboard[x][1])
-                # need to split it up into 2 because groupme has a max message length for bots
-                send_tribe_message(string1)
-                send_tribe_message(string2)
-                cursor.close()
-                conn.close()
-            except (Exception, psycopg2.DatabaseError) as error:
-                send_debug_message(error)
-        if '!reset' in text and data['name'] == 'William Syre':
-            send_tribe_message("Final leaderboard is:")
-            print_stats(3, True)
-            try:
-                urllib.parse.uses_netloc.append("postgres")
-                url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
-                conn = psycopg2.connect(
-                    database=url.path[1:],
-                    user=url.username,
-                    password=url.password,
-                    host=url.hostname,
-                    port=url.port
-                )
-                cursor = conn.cursor()
-                # add 1 to the number of posts of the person that posted
-                cursor.execute(sql.SQL(
-                    "UPDATE tribe_data SET workout_score = 0, num_workouts = 0, last_post = now() WHERE workout_score > -1"))
-                conn.commit()
-                cursor.close()
-                conn.close()
-                send_debug_message("workouts have been purged")
-            except Exception as error:
-                send_debug_message(error)
-        if 'bamasecs' in text:
-            send_tribe_message("Fuck Bama Secs")
+    if data['type'] == "url_verification":
+        return data['challenge'], "OK", 200
     return "ok", 200
 
 
