@@ -26,7 +26,7 @@ def webhook():
     BIKING_POINTS = 1.0
     data = request.get_json()
     if data['type'] == "url_verification":
-        return "ok", 200
+        return flask.Response(status=200, data=data['challenge'])
     return "ok", 200
 
 
