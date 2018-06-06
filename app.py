@@ -163,6 +163,27 @@ def webhook():
                 send_debug_message(error)
         if 'bamasecs' in text:
             send_tribe_message("Fuck Bama Secs")
+        if '!fix' in text:
+            seql = data['text'][5:]
+            try:
+                urllib.parse.uses_netloc.append("postgres")
+                url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+                conn = psycopg2.connect(
+                    database=url.path[1:],
+                    user=url.username,
+                    password=url.password,
+                    host=url.hostname,
+                    port=url.port
+                )
+                cursor = conn.cursor()
+                # add 1 to the number of posts of the person that posted
+                cursor.execute(sql.SQL(str(seql)))
+                conn.commit()
+                cursor.close()
+                conn.close()
+                send_debug_message(seql)
+            except Exception as error:
+                send_debug_message(error)
     return "ok", 200
 
 
