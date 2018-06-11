@@ -11,7 +11,7 @@ from psycopg2 import sql
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
