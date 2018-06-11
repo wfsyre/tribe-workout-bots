@@ -18,6 +18,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def webhook():
+    print("in Webhook")
     GYM_POINTS = 1.0
     TRACK_POINTS = 1.0
     THROW_POINTS = 0.5
@@ -25,7 +26,9 @@ def webhook():
     PICKUP_POINTS = 0.5
     BIKING_POINTS = 1.0
     data = request.get_json()
+    print(data)
     if data['type'] == "url_verification":
+        print("found correct type")
         return Flask.jsonify({'challenge': data['challenge']})
     return "ok", 200
 
