@@ -26,10 +26,9 @@ def webhook():
     PICKUP_POINTS = 0.5
     BIKING_POINTS = 1.0
     data = request.get_json()
-    print(data)
     if data['type'] == "url_verification":
-        print("found correct type")
         return jsonify({'challenge': data['challenge']})
+    send_message("hello")
     return "ok", 200
 
 
@@ -79,15 +78,14 @@ def print_stats(datafield, rev):
         send_debug_message(error)
 
 
-def send_message(msg, bot_ID):
-    url = 'https://api.groupme.com/v3/bots/post'
-
-    data = {
-        'bot_id': bot_ID,
-        'text': msg,
-    }
-    request = Request(url, urlencode(data).encode())
+def send_message(msg, channel="#random"):
+    url = 'https://slack.com/api/chat.postMessage/'
+    append = "token=" + str(os.getenv("BOT_OATH_ACCESS_TOKEN"))
+        + "channel=" + channel,
+        + 'text=' + str(msg)
+    request = Request(url)
     json = urlopen(request).read().decode()
+    print(json)
 
 
 def send_workout_selfie(msg, image_url):
