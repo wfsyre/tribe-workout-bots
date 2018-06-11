@@ -29,7 +29,7 @@ def webhook():
     print(data)
     if data['type'] == "url_verification":
         print("found correct type")
-        return Flask.jsonify({'challenge': data['challenge']})
+        return jsonify({'challenge': data['challenge']})
     return "ok", 200
 
 
