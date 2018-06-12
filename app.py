@@ -85,9 +85,8 @@ def send_message(msg, channel="#random"):
         'channel': channel,
         'text': str(msg)
     }
-    request = Request(url, data)
-    json = urlopen(request).read().decode()
-    print(json)
+    resp = requests.post(url, data)
+    print(resp)
 
 
 def send_workout_selfie(msg, image_url):
