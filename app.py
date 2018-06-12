@@ -81,7 +81,7 @@ def print_stats(datafield, rev):
 def send_message(msg, channel="#random"):
     url = 'https://slack.com/api/chat.postMessage/'
     append = "token=" + str(os.getenv("BOT_OATH_ACCESS_TOKEN"))
-        + "channel=" + channel,
+        + "channel=" + channel
         + 'text=' + str(msg)
     request = Request(url)
     json = urlopen(request).read().decode()
