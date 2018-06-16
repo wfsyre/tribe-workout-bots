@@ -189,7 +189,9 @@ def webhook():
             now = datetime.now()
             regionals = datetime(2019, 4, 28, 8, 0, 0)
             until = regionals - now
-            send_debug_message("regionals is in " + str(until))
+            days = until.days
+            seconds = until.seconds
+            send_debug_message("regionals is in " + str(seconds) + "seconds")
     return "ok", 200
 
 
