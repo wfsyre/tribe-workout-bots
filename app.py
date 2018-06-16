@@ -444,3 +444,7 @@ def send_direct_message(user_id, text):
         response = urlopen(request).read().decode()
     except Exception as error:
         send_debug_message(str(error))
+
+def stringFromSeconds(seconds):
+    if seconds < 0:
+        return seconds, " seconds. You missed it, better luck next year."
