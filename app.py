@@ -4,6 +4,7 @@ import urllib.parse
 import sys
 import urllib.request
 import time
+from datetime import *
 import psycopg2
 import requests
 from psycopg2 import sql
@@ -184,6 +185,11 @@ def webhook():
                 send_debug_message(seql)
             except Exception as error:
                 send_debug_message(error)
+        if '!regionals' in text:
+            now = datetime.now()
+            regionals = datetime(2019, 4, 28, 8, 0, 0)
+            until = regionals - now
+            send_debug_message("regionals is in " + str(until))
     return "ok", 200
 
 
