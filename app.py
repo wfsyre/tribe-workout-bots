@@ -27,13 +27,13 @@ def webhook():
     BIKING_POINTS = 1.0
     data = request.get_json()
     print(list(data['event'].keys()))
-    get_group_info()
     if 'text' in list(data['event'].keys()):
         lower_text = data['event']['text']
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
     if 'username' not in list(data['event'].keys()):
-        print(data)
+        print("User message found")
+        print(parse_text_for_mentions(lower))
         if "!gym" in lower_text:
             print("gym found")
     elif data['event']['username'] != "Workout Bot":
@@ -115,11 +115,19 @@ def log(msg):
 def get_group_info():
     url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
     json = requests.get(url).json()
-    print(json)
+    return json
 
-
-def parse_group_for_members(html_string):
-    return json.loads(html_string)
+def parse_text_for_mentions(text):
+    indicies = []
+    i = 0
+    while(i < len(text)):
+        temp = text.find('@')
+        if temp = -1:
+            return indicies
+        else:
+            indicies.append(temp)
+            i = temp + 1
+    return indicies
 
 
 def like_message(group_id, msg_id):
