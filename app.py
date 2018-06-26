@@ -122,7 +122,7 @@ def parse_text_for_mentions(text):
     i = 0
     while(i < len(text)):
         temp = text.find('@')
-        if temp = -1:
+        if temp == -1:
             return indicies
         else:
             indicies.append(temp)
