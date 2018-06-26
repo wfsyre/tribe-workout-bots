@@ -114,7 +114,7 @@ def log(msg):
 
 def get_group_info():
     url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
-    json = requests.get(url).get_json()
+    json = requests.get(url)
     print(json)
 
 
