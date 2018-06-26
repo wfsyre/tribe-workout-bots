@@ -27,6 +27,7 @@ def webhook():
     BIKING_POINTS = 1.0
     data = request.get_json()
     print(list(data['event'].keys()))
+    get_group_info()
     if 'text' in list(data['event'].keys()):
         lower_text = data['event']['text']
     if data['type'] == "url_verification":
@@ -111,12 +112,10 @@ def log(msg):
     sys.stdout.flush()
 
 
-def get_group_info(group_id):
-    with urllib.request.urlopen("https://api.groupme.com/v3/groups/%s?token=%s" % (
-            group_id, os.getenv("ACCESS_TOKEN"))) as response:
-        html = response.read()
-    dict = parse_group_for_members(html)
-    return dict["response"]["members"]
+def get_group_info():
+    url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
+    json = requests.get(url).get_json()
+    print(json)
 
 
 def parse_group_for_members(html_string):
