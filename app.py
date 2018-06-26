@@ -29,10 +29,13 @@ def webhook():
     data = request.get_json()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
-    print("sending message")
-    print(data)
-    # send_message("Hello World")
-    print("message sent")
+    if data['event']['text'] == "test":
+        print("sending message")
+        print(data)
+        send_message("Hello World")
+        print("message sent")
+    else:
+        print(data)
     return "ok", 200
 
 
