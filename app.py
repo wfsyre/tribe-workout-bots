@@ -26,7 +26,6 @@ def webhook():
     PICKUP_POINTS = 0.5
     BIKING_POINTS = 1.0
     data = request.get_json()
-    print(list(data['event'].keys()))
     if 'text' in list(data['event'].keys()):
         lower_text = data['event']['text']
     if data['type'] == "url_verification":
@@ -121,7 +120,7 @@ def parse_text_for_mentions(text):
     indicies = []
     i = 0
     while(i < len(text)):
-        temp = text.find('@')
+        temp = text.find('@', i)
         if temp == -1:
             return indicies
         else:
