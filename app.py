@@ -26,16 +26,19 @@ def webhook():
     PICKUP_POINTS = 0.5
     BIKING_POINTS = 1.0
     data = request.get_json()
-    print(data['event'].keys())
+    print(list(data['event'].keys()))
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
-    if data['event']['username'] != "Workout Bot":
+    if 'username' not in list(data['event'].keys()):
         print("sending message")
         print(data)
         send_message("Hello World")
         print("message sent")
-    else:
+    elif data['event']['username'] != "Workout Bot":
+        print(data['event']['username'])
         print(data)
+    else:
+        print(data['event']['username'])
     return "ok", 200
 
 
