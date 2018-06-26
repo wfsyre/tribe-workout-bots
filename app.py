@@ -29,7 +29,8 @@ def webhook():
     data = request.get_json()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
-    if data['event']['text'] == "test":
+    print(data['event']['username'])
+    if data['event']['username'] != "Workout Bot":
         print("sending message")
         print(data)
         send_message("Hello World")
