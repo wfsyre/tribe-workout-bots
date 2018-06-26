@@ -32,7 +32,9 @@ def webhook():
         return jsonify({'challenge': data['challenge']})
     if 'username' not in list(data['event'].keys()):
         print("User message found")
-        print(parse_text_for_mentions(lower_text))
+        indicies = parse_text_for_mentions(lower_text)
+        new_str = lower_text[indicies[0]:lower_text.find('>', indicies[0])]
+        print(new_str, lower_text, indicies)
         if "!gym" in lower_text:
             print("gym found")
     elif data['event']['username'] != "Workout Bot":
@@ -117,6 +119,7 @@ def get_group_info():
     return json
 
 def parse_text_for_mentions(text):
+    print(text)
     indicies = []
     i = 0
     while(i < len(text)):
