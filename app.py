@@ -81,11 +81,10 @@ def print_stats(datafield, rev):
         send_debug_message(error)
 
 
-def send_message(msg, channel="#random"):
+def send_message(msg, chan="#random"):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
-    sc.api_call("chat.postMessage",channel="#random", text="Hello from Python! :tada:")
-)
+    sc.api_call("chat.postMessage",channel=chan, text=msg)
 
 
 def send_workout_selfie(msg, image_url):
