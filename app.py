@@ -19,7 +19,6 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def webhook():
-    print(data['event'])
     GYM_POINTS = 1.0
     TRACK_POINTS = 1.0
     THROW_POINTS = 0.5
@@ -27,6 +26,7 @@ def webhook():
     PICKUP_POINTS = 0.5
     BIKING_POINTS = 1.0
     data = request.get_json()
+    print(data['event'])
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
     if data['event']['username'] != "Workout Bot":
