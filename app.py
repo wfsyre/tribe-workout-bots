@@ -6,6 +6,7 @@ import urllib.request
 import time
 import psycopg2
 import requests
+from slackclient import SlackClient
 from psycopg2 import sql
 
 from urllib.parse import urlencode
@@ -81,14 +82,10 @@ def print_stats(datafield, rev):
 
 
 def send_message(msg, channel="#random"):
-    url = 'https://slack.com/api/chat.postMessage/'
-    data = {
-        'token': str(os.getenv("BOT_OATH_ACCESS_TOKEN")),
-        'channel': channel,
-        'text': str(msg)
-    }
-    resp = requests.post(url, data)
-    print(resp)
+    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+    sc = SlackClient(slack_token)
+    sc.api_call("chat.postMessage",channel="#random", text="Hello from Python! :tada:")
+)
 
 
 def send_workout_selfie(msg, image_url):
