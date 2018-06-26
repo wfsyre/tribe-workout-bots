@@ -32,9 +32,8 @@ def webhook():
         return jsonify({'challenge': data['challenge']})
     if 'username' not in list(data['event'].keys()):
         print("User message found")
-        indicies = parse_text_for_mentions(lower_text)
-        new_str = lower_text[indicies[0]:lower_text.find('>', indicies[0])]
-        print(new_str, lower_text, indicies)
+        ids = parse_text_for_mentions(lower_text)
+        names = match_names_to_ids(ids)
         if "!gym" in lower_text:
             print("gym found")
     elif data['event']['username'] != "Workout Bot":
@@ -48,7 +47,7 @@ def webhook():
 
 
 def send_tribe_message(msg):
-    send_message(msg, os.getenv("TRIBE_BOT_ID"))
+    send_message(msg, chan="#random")
 
 
 def handle_workouts(data, addition):
@@ -98,15 +97,8 @@ def send_message(msg, chan="#bot_testing"):
     sc = SlackClient(slack_token)
     sc.api_call("chat.postMessage",channel=chan, text=msg)
 
-
-def send_workout_selfie(msg, image_url):
-    send_message(msg, os.getenv("WORKOUT_BOT_ID"))
-    send_message(image_url, os.getenv("WORKOUT_BOT_ID"))
-
-
 def send_debug_message(msg):
-    send_message(msg, os.getenv("TEST_BOT_ID"))
-
+    send_message(msg, chan="#bot_testing")
 
 def log(msg):
     print(str(msg))
@@ -121,6 +113,7 @@ def get_group_info():
 def parse_text_for_mentions(text):
     print(text)
     indicies = []
+    mention_ids = []
     i = 0
     while(i < len(text)):
         temp = text.find('@', i)
@@ -129,7 +122,18 @@ def parse_text_for_mentions(text):
         else:
             indicies.append(temp)
             i = temp + 1
-    return indicies
+    for index in indicies:
+        mention_ids.append(text[index + 1:text.find('>', index)])
+    return mention_ids
+
+def match_names_to_ids(mention_ids, group_json):
+    mention_names = []
+    info = get_group_info()
+    for id in mention_ids:
+        for member in group_json['members']:
+            print(member, id)
+            if member['id'] = id:
+                mention_names.append(member['real_name'])
 
 
 def like_message(group_id, msg_id):
@@ -224,31 +228,6 @@ def add_hydration(data, addition):
         if len(names) == num_committed:
             like_message(data['group_id'], data['id'])
         return num_committed
-
-
-def get_names_and_ids_from_message(data, require_attachment):
-    if len(data['attachments']) > 0:
-        # attachments are images or @mentions
-        ids = []
-        group_members = get_group_info(data['group_id'])  # should get the groupme names of all members in the group.
-        names = []
-        found_attachment = not require_attachment  # This will track whether we found an image or not, which is required
-        for attachment in data["attachments"]:
-            if attachment['type'] == 'image':
-                found_attachment = True
-            if attachment['type'] == 'mentions':  # grab all the people @'d in the post to include them
-                send_debug_message(str(attachment['user_ids']))
-                for mentioned in attachment['user_ids']:
-                    for member in group_members:
-                        if member["user_id"] == mentioned:
-                            names.append(member["nickname"])
-                            ids.append(member["user_id"])
-        if found_attachment:  # return all mentions plus the name of the poster
-            names.append(data['name'])
-            ids.append(data['user_id'])
-            return names, ids
-        else:
-            return None, None
 
 
 def print_water():
