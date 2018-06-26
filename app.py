@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def webhook():
-    print("in Webhook")
+    print(data['event'])
     GYM_POINTS = 1.0
     TRACK_POINTS = 1.0
     THROW_POINTS = 0.5
@@ -29,7 +29,6 @@ def webhook():
     data = request.get_json()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
-    print(data['event']['username'])
     if data['event']['username'] != "Workout Bot":
         print("sending message")
         print(data)
@@ -86,7 +85,7 @@ def print_stats(datafield, rev):
         send_debug_message(error)
 
 
-def send_message(msg, chan="#random"):
+def send_message(msg, chan="#bot_testing"):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     sc.api_call("chat.postMessage",channel=chan, text=msg)
