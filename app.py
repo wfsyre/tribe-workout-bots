@@ -32,6 +32,7 @@ def webhook():
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
     if 'username' not in list(data['event'].keys()):
+        print(data)
         if "!gym" in lower_text:
             print("gym found")
     elif data['event']['username'] != "Workout Bot":
