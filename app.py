@@ -133,7 +133,7 @@ def match_names_to_ids(mention_ids, group_json):
     for id in mention_ids:
         for member in group_json['members']:
             print(member, id)
-            if member['id'] = id:
+            if member['id'] == id:
                 mention_names.append(member['real_name'])
     return mention_names
 
