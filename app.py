@@ -34,6 +34,7 @@ def webhook():
         print("User message found")
         ids = parse_text_for_mentions(lower_text)
         names = match_names_to_ids(ids)
+        send_debug_message(str(names))
         if "!gym" in lower_text:
             print("gym found")
     elif data['event']['username'] != "Workout Bot":
@@ -134,6 +135,7 @@ def match_names_to_ids(mention_ids, group_json):
             print(member, id)
             if member['id'] = id:
                 mention_names.append(member['real_name'])
+    return mention_names
 
 
 def like_message(group_id, msg_id):
