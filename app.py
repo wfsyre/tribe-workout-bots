@@ -127,11 +127,11 @@ def parse_text_for_mentions(text):
         mention_ids.append(text[index + 1:text.find('>', index)])
     return mention_ids
 
-def match_names_to_ids(mention_ids, group_json):
+def match_names_to_ids(mention_ids):
     mention_names = []
     info = get_group_info()
     for id in mention_ids:
-        for member in group_json['members']:
+        for member in info['members']:
             print(member, id)
             if member['id'] == id:
                 mention_names.append(member['real_name'])
