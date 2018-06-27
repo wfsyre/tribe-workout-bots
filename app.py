@@ -30,6 +30,9 @@ def webhook():
         lower_text = data['event']['text']
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
+
+
+
     if 'username' not in list(data['event'].keys()):
         print("User message found")
         ids = parse_text_for_mentions(lower_text)
@@ -39,6 +42,10 @@ def webhook():
         send_debug_message(str(names))
         if "!gym" in lower_text:
             print("gym found")
+
+
+
+
     elif data['event']['username'] != "Workout Bot":
         print("Is this another bot?")
         print(data['event']['username'])
@@ -121,7 +128,7 @@ def parse_text_for_mentions(text):
     while(i < len(text)):
         temp = text.find('@', i)
         if temp == -1:
-            return indicies
+            i = len(text)
         else:
             indicies.append(temp)
             i = temp + 1
