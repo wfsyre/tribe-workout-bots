@@ -30,22 +30,13 @@ def webhook():
         lower_text = data['event']['text']
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
-
-
-
     if 'username' not in list(data['event'].keys()):
-        print("User message found")
-        ids = parse_text_for_mentions(lower_text)
-        print(ids)
-        names = match_names_to_ids(ids)
-        print(names)
-        send_debug_message(str(names))
+        names, ids = get_names_ids_from_message(lower_text)
+        #add_to_db(names, 0, ids)
         if "!gym" in lower_text:
             print("gym found")
-
-
-
-
+        if "!leaderboard" in lower_text:
+            print_stats(2, true)
     elif data['event']['username'] != "Workout Bot":
         print("Is this another bot?")
         print(data['event']['username'])
@@ -59,22 +50,25 @@ def webhook():
 def send_tribe_message(msg):
     send_message(msg, chan="#random")
 
+def get_names_ids_from_message(lower_text):
+    ids = parse_text_for_mentions(lower_text)
+    names = match_names_to_ids(ids)
+    return names, ids
+
+
 
 def handle_workouts(data, addition):
-    if len(data['attachments']) > 0:
-        # attachments are images or @mentions
-        group_members = get_group_info(data['group_id'])  # should get the groupme names of all members in the group.
-        names, ids = get_names_and_ids_from_message(data, True)
-        if names is not None and ids is not None:
-            num = add_to_db(names, addition, ids)
-        if num == len(names):
-            like_message(data['group_id'], data['id'])
+    names, ids = get_names_ids_from_message(data, True)
+    if names is not None and ids is not None:
+        num = add_to_db(names, addition, ids)
+    if num == len(names):
+        like_message(data['group_id'], data['id'])
 
 
 def print_stats(datafield, rev):
     try:
         urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
         conn = psycopg2.connect(
             database=url.path[1:],
             user=url.username,
@@ -145,14 +139,7 @@ def match_names_to_ids(mention_ids):
             if member['id'] == id:
                 mention_names.append(member['real_name'])
     return mention_names
-
-
-def like_message(group_id, msg_id):
-    # send_debug_message("group_id is %s" % str(group_id))
-    # send_debug_message("message_id is %s" % str(msg_id))
-    url = 'https://api.groupme.com/v3/messages/%s/%s/like?token=%s' % (str(group_id), str(msg_id), os.getenv("ACCESS_TOKEN"))
-    data = {}
-    requests.post(url, data)
+   
 
 
 def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in the db
@@ -161,7 +148,7 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
     num_committed = 0
     try:
         urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
         conn = psycopg2.connect(
             database=url.path[1:],
             user=url.username,
@@ -201,13 +188,14 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
 
 
 def add_hydration(data, addition):
+    return None #does not work for slack
     cursor = None
     conn = None
     num_committed = 0
-    names, ids = get_names_and_ids_from_message(data, True)
+    names, ids = get_names_ids_from_message(data, True)
     try:
         urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
         conn = psycopg2.connect(
             database=url.path[1:],
             user=url.username,
@@ -244,7 +232,7 @@ def add_hydration(data, addition):
 def print_water():
     try:
         urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
         conn = psycopg2.connect(
             database=url.path[1:],
             user=url.username,
@@ -273,20 +261,3 @@ def print_water():
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
-
-
-def send_direct_message(user_id, text):
-    url = r"https://api.groupme.com/v3/direct_messages?token=%s" % (os.getenv("APP_ACCESS_TOKEN"))
-    data = {'direct_message': {
-        'source_guid': str(time.time()),
-        'recipient_id': str(user_id),
-        'conversation_id': "%s+16458398" % str(user_id),
-        'text': text
-        }
-    }
-    try:
-        params = json.dumps(data).encode('utf8')
-        request = Request(url, data=params, headers={'content-type': 'application/json'})
-        response = urlopen(request).read().decode()
-    except Exception as error:
-        send_debug_message(str(error))
