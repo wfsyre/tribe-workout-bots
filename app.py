@@ -36,7 +36,7 @@ def webhook():
         if "!gym" in lower_text:
             print("gym found")
         if "!leaderboard" in lower_text:
-            print_stats(2, true)
+            print_stats(2, True)
     elif data['event']['username'] != "Workout Bot":
         print("Is this another bot?")
         print(data['event']['username'])
