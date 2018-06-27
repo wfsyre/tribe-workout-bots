@@ -33,7 +33,9 @@ def webhook():
     if 'username' not in list(data['event'].keys()):
         print("User message found")
         ids = parse_text_for_mentions(lower_text)
+        print(ids)
         names = match_names_to_ids(ids)
+        print(names)
         send_debug_message(str(names))
         if "!gym" in lower_text:
             print("gym found")
