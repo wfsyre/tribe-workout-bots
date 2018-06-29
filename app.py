@@ -35,7 +35,7 @@ def webhook():
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
-        add_num_posts(data['event']['user'])
+        add_num_posts([data['event']['user']])
         if "!leaderboard" in lower_text:
             print_stats(3, True)
         if '!workouts' in lower_text:  # display the leaderboard for who works out the most
