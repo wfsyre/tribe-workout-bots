@@ -46,7 +46,7 @@ def webhook():
             if "!track" in lower_text:
                 print("track found")
                 print_stats(2, True)
-                print(names, ids):
+                print(names, ids)
                 add_to_db(names, 0.5, ids)
                 print_stats(2, True)
             if "!throw" in lower_text:
