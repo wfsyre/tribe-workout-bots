@@ -45,9 +45,9 @@ def webhook():
                 print("gym found")
             if "!track" in lower_text:
                 print("track found")
-                print_stats(3, True)
-                add_to_db(names, 0, ids)
-                print_stats(3, True)
+                print_stats(2, True)
+                add_to_db(names, 0.5, ids)
+                print_stats(2, True)
             if "!throw" in lower_text:
                 print("throw found")
             if "!swim" in lower_text:
