@@ -95,7 +95,8 @@ def get_names_ids_from_message(lower_text):
 
 def add_num_posts(stuff):
     print(stuff)
-    name = match_names_to_ids(stuff)[0]
+    name = match_names_to_ids(stuff)
+    print(name)
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
