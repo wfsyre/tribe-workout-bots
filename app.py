@@ -54,9 +54,8 @@ def webhook():
 
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
-        print("This a message post")
         if data['event']['subtype'] == 'file_share':
-            print("found an uplaoded image")
+            print("found an uploaded image")
             lower_text = data['event']['text'].lower()
             names, ids = get_names_ids_from_message(data['event']['text'])
             if "!gym" in lower_text:
@@ -94,9 +93,7 @@ def get_names_ids_from_message(lower_text):
 
 
 def add_num_posts(stuff):
-    print(stuff)
-    name = match_names_to_ids(stuff)
-    print(name)
+    name = match_names_to_ids(stuff)[0]
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
