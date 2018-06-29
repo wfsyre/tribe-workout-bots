@@ -37,7 +37,7 @@ def webhook():
         #add_to_db(names, 0, ids)
     elif data['event']['username'] != "Workout Bot":
         print("This a message post")
-        if (data['event']['subtype'] == 'file_share') {
+        if data['event']['subtype'] == 'file_share':
             print("found an uplaoded image")
             lower_text = data['event']['text'].lower()
             names, ids = get_names_ids_from_message(lower_text)
@@ -56,7 +56,6 @@ def webhook():
                 print("pickup found")
             if "!bike" in lower_text:
                 print("bike found")
-        }
         print(data['event']['username'])
         print(data)
     else:
