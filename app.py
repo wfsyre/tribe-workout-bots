@@ -27,18 +27,36 @@ def webhook():
     BIKING_POINTS = 1.0
     data = request.get_json()
     if 'text' in list(data['event'].keys()):
-        lower_text = data['event']['text']
+        lower_text = data['event']['text'].lower()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
     if 'username' not in list(data['event'].keys()):
         names, ids = get_names_ids_from_message(lower_text)
-        #add_to_db(names, 0, ids)
-        if "!gym" in lower_text:
-            print("gym found")
         if "!leaderboard" in lower_text:
             print_stats(2, True)
+        #add_to_db(names, 0, ids)
     elif data['event']['username'] != "Workout Bot":
-        print("Is this another bot?")
+        print("This a message post")
+        if (data['event']['subtype'] == 'file_share') {
+            print("found an uplaoded image")
+            lower_text = data['event']['text'].lower()
+            names, ids = get_names_ids_from_message(lower_text)
+            if "!gym" in lower_text:
+                print("gym found")
+            if "!track" in lower_text:
+                print("track found")
+                print_stats(2, True)
+                add_to_db(names, 0, ids)
+                print_stats(2, True)
+            if "!throw" in lower_text:
+                print("throw found")
+            if "!swim" in lower_text:
+                print("swim found")
+            if "!pickup" in lower_text:
+                print("pickup found")
+            if "!bike" in lower_text:
+                print("bike found")
+        }
         print(data['event']['username'])
         print(data)
     else:
