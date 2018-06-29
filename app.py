@@ -40,7 +40,7 @@ def webhook():
         if data['event']['subtype'] == 'file_share':
             print("found an uplaoded image")
             lower_text = data['event']['text'].lower()
-            names, ids = get_names_ids_from_message(lower_text)
+            names, ids = get_names_ids_from_message(data['event']['text'])
             if "!gym" in lower_text:
                 print("gym found")
             if "!track" in lower_text:
