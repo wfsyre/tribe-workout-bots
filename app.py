@@ -35,18 +35,18 @@ def webhook():
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
-        add_num_posts(data['event'])
+        add_num_posts(data['event']['user'])
         if "!leaderboard" in lower_text:
             print_stats(3, True)
-        if '!workouts' in text:  # display the leaderboard for who works out the most
+        if '!workouts' in lower_text:  # display the leaderboard for who works out the most
             print_stats(2, True)
-        if '!talkative' in text:  # displays the leaderboard for who posts the most
+        if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
             print_stats(1, True)
-        if '!handsome' in text:  # displays the leaderboard for who posts the most
+        if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
             print_stats(1, True)
-        if '!heatcheck' in text:
+        if '!heatcheck' in lower_text:
             send_tribe_message("Kenta wins")
-        if '!regionals' in text:
+        if '!regionals' in lower_text:
             now = datetime.now()
             regionals = datetime(2019, 4, 28, 8, 0, 0)
             until = regionals - now
@@ -95,6 +95,26 @@ def get_names_ids_from_message(lower_text):
 
 def add_num_posts(stuff):
     print(stuff)
+    name = match_names_to_ids(stuff)[0]
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL(
+            "UPDATE tribe_data set num_posts=num_posts+1 where name = %s"), (name, ))
+        cursor.commit()
+        cursor.close()
+        conn.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
 
 
 def handle_workouts(data, addition):
