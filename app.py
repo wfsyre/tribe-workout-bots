@@ -196,7 +196,6 @@ def match_names_to_ids(mention_ids):
     info = get_group_info()
     for id in mention_ids:
         for member in info['members']:
-            print(member, id)
             if member['id'] == id:
                 mention_names.append(member['real_name'])
     return mention_names
