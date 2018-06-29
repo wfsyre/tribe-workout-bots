@@ -198,6 +198,8 @@ def match_names_to_ids(mention_ids):
         for member in info['members']:
             if member['id'] == id:
                 mention_names.append(member['real_name'])
+            else:
+                print(member['id'], id)
     return mention_names
    
 
