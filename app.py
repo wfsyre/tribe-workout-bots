@@ -177,20 +177,20 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
         cursor = conn.cursor()
         for x in range(0, len(names)):
             cursor.execute(sql.SQL(
-                "SELECT workout_score FROM tribe_data WHERE id = %s"), (str(ids[x]),))
+                "SELECT workout_score FROM tribe_data WHERE name = %s"), (str(names[x]),))
             score = cursor.fetchall()[0][0]
             score = int(score)
             print(score)
             if score != -1:
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
-                    "now() WHERE id = %s"),
-                    (str(addition), ids[x],))
+                    "now() WHERE name = %s"),
+                    (str(addition), names[x],))
                 if cursor.rowcount == 0:  # If a user does not have an id yet
                     cursor.execute(sql.SQL(
                         "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post "
-                        "= now(), id = %s WHERE name = %s"),
-                        (str(addition), names[x], ids[x],))
+                        "= now() WHERE name = %s"),
+                        (str(addition), names[x],))
                     send_debug_message("%s does not have an id yet" % names[x])
                 conn.commit()
                 send_debug_message("committed %s" % names[x])
