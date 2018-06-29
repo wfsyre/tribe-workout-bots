@@ -30,12 +30,30 @@ def webhook():
         lower_text = data['event']['text'].lower()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
-    if 'username' not in list(data['event'].keys()):
-        names, ids = get_names_ids_from_message(lower_text)
+
+
+    if 'username' not in list(data['event'].keys()):    #messages without attachments go here
+        lower_text = data['event']['text'].lower()
+        names, ids = get_names_ids_from_message(data['event']['text'])
+        add_num_posts(data['event'])
         if "!leaderboard" in lower_text:
+            print_stats(3, True)
+        if '!workouts' in text:  # display the leaderboard for who works out the most
             print_stats(2, True)
-        #add_to_db(names, 0, ids)
-    elif data['event']['username'] != "Workout Bot":
+        if '!talkative' in text:  # displays the leaderboard for who posts the most
+            print_stats(1, True)
+        if '!handsome' in text:  # displays the leaderboard for who posts the most
+            print_stats(1, True)
+        if '!heatcheck' in text:
+            send_tribe_message("Kenta wins")
+        if '!regionals' in text:
+            now = datetime.now()
+            regionals = datetime(2019, 4, 28, 8, 0, 0)
+            until = regionals - now
+            send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()))
+
+
+    elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
         print("This a message post")
         if data['event']['subtype'] == 'file_share':
             print("found an uplaoded image")
@@ -43,21 +61,22 @@ def webhook():
             names, ids = get_names_ids_from_message(data['event']['text'])
             if "!gym" in lower_text:
                 print("gym found")
+                add_to_db(names, GYM_POINTS, ids)
             if "!track" in lower_text:
                 print("track found")
-                print_stats(2, True)
-                print(names, ids)
-                add_to_db(names, 0.5, ids)
-                print_stats(2, True)
+                add_to_db(names, TRACK_POINTS, ids)
             if "!throw" in lower_text:
                 print("throw found")
+                add_to_db(names, THROW_POINTS, ids)
             if "!swim" in lower_text:
                 print("swim found")
+                add_to_db(names, SWIM_POINTS, ids)
             if "!pickup" in lower_text:
                 print("pickup found")
+                add_to_db(names, PICKUP_POINTS, ids)
             if "!bike" in lower_text:
                 print("bike found")
-        print(data['event']['username'])
+                add_to_db(names, BIKING_POINTS, ids)
         print(data)
     else:
         print("Don't respond to myself")
@@ -73,6 +92,9 @@ def get_names_ids_from_message(lower_text):
     names = match_names_to_ids(ids)
     return names, ids
 
+
+def add_num_posts(stuff):
+    print(stuff)
 
 
 def handle_workouts(data, addition):
