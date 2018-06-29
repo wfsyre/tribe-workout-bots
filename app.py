@@ -111,7 +111,7 @@ def add_num_posts(stuff):
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
             "UPDATE tribe_data set num_posts=num_posts+1 where name = %s"), (name, ))
-        cursor.commit()
+        conn.commit()
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
