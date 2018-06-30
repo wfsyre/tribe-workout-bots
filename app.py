@@ -6,11 +6,9 @@ import urllib.request
 import time
 import psycopg2
 import requests
+from datetime import datetime
 from slackclient import SlackClient
 from psycopg2 import sql
-
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
 
 from flask import Flask, request, jsonify
 
@@ -35,22 +33,23 @@ def webhook():
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
-        add_num_posts([data['event']['user']])
-        if "!leaderboard" in lower_text:
-            print_stats(3, True)
-        if '!workouts' in lower_text:  # display the leaderboard for who works out the most
-            print_stats(2, True)
-        if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
-            print_stats(1, True)
-        if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
-            print_stats(1, True)
-        if '!heatcheck' in lower_text:
-            send_tribe_message("Kenta wins")
-        if '!regionals' in lower_text:
-            now = datetime.now()
-            regionals = datetime(2019, 4, 28, 8, 0, 0)
-            until = regionals - now
-            send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()))
+        repeat = add_num_posts([data['event']['user']], data['token'])
+        if not repeat:
+            if "!leaderboard" in lower_text:
+                print_stats(3, True)
+            if '!workouts' in lower_text:  # display the leaderboard for who works out the most
+                print_stats(2, True)
+            if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
+                print_stats(1, True)
+            if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
+                print_stats(1, True)
+            if '!heatcheck' in lower_text:
+                send_tribe_message("Kenta wins")
+            if '!regionals' in lower_text:
+                now = datetime.now()
+                regionals = datetime(2019, 4, 28, 8, 0, 0)
+                until = regionals - now
+                send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()))
 
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
@@ -58,24 +57,26 @@ def webhook():
             print("found an uploaded image")
             lower_text = data['event']['text'].lower()
             names, ids = get_names_ids_from_message(data['event']['text'])
-            if "!gym" in lower_text:
-                print("gym found")
-                add_to_db(names, GYM_POINTS, ids)
-            if "!track" in lower_text:
-                print("track found")
-                add_to_db(names, TRACK_POINTS, ids)
-            if "!throw" in lower_text:
-                print("throw found")
-                add_to_db(names, THROW_POINTS, ids)
-            if "!swim" in lower_text:
-                print("swim found")
-                add_to_db(names, SWIM_POINTS, ids)
-            if "!pickup" in lower_text:
-                print("pickup found")
-                add_to_db(names, PICKUP_POINTS, ids)
-            if "!bike" in lower_text:
-                print("bike found")
-                add_to_db(names, BIKING_POINTS, ids)
+            repeat = add_num_posts([data['event']['user']], data['token'])
+            if not repeat:
+                if "!gym" in lower_text:
+                    print("gym found")
+                    add_to_db(names, GYM_POINTS, ids)
+                if "!track" in lower_text:
+                    print("track found")
+                    add_to_db(names, TRACK_POINTS, ids)
+                if "!throw" in lower_text:
+                    print("throw found")
+                    add_to_db(names, THROW_POINTS, ids)
+                if "!swim" in lower_text:
+                    print("swim found")
+                    add_to_db(names, SWIM_POINTS, ids)
+                if "!pickup" in lower_text:
+                    print("pickup found")
+                    add_to_db(names, PICKUP_POINTS, ids)
+                if "!bike" in lower_text:
+                    print("bike found")
+                    add_to_db(names, BIKING_POINTS, ids)
         print(data)
     else:
         print("Don't respond to myself")
@@ -92,8 +93,8 @@ def get_names_ids_from_message(lower_text):
     return names, ids
 
 
-def add_num_posts(stuff):
-    name = match_names_to_ids(stuff)[0]
+def add_num_posts(mention_id, token):
+    name = match_names_to_ids(mention_id)[0]
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -107,10 +108,20 @@ def add_num_posts(stuff):
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
-            "UPDATE tribe_data set num_posts=num_posts+1 where name = %s"), (name, ))
-        conn.commit()
-        cursor.close()
-        conn.close()
+            "UPDATE tribe_data SET num_posts=num_posts+1, slack_id=%s WHERE name = %s AND last_token != %s"), [mention_id, name, token])
+        if cursor.rowcount == 0:
+            conn.commit()
+            cursor.close()
+            conn.close()
+            send_debug_message("Found a repeat slack post")
+            return True
+        else:
+            cursor.execute(sql.SQL(
+                "UPDATE tribe_data set last_token=%s where name = %s"), [name, token])
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return False
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
 
