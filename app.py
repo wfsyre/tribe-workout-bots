@@ -57,6 +57,8 @@ def webhook():
             print("found an uploaded image")
             lower_text = data['event']['text'].lower()
             names, ids = get_names_ids_from_message(data['event']['text'])
+            print("names ", names, "ids", ids)
+            print(data['event']['user'])
             repeat = add_num_posts([data['event']['user']], data['token'])
             if not repeat:
                 if "!gym" in lower_text:
@@ -94,7 +96,10 @@ def get_names_ids_from_message(lower_text):
 
 
 def add_num_posts(mention_id, token):
+    print("in add num posts")
+    print(token)
     name = match_names_to_ids(mention_id)[0]
+    print(name)
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
