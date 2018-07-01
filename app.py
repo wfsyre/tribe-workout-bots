@@ -119,7 +119,7 @@ def add_num_posts(mention_id, event_time):
             "UPDATE tribe_data SET num_posts=num_posts+1, "
             + "slack_id=%s, "
             + "last_time = %s "
-            + "WHERE name = %s AND last_time != %s"), [mention_id, event_time, name, event_time])
+            + "WHERE name = %s AND last_time != %s"), [mention_id[0], event_time, name, event_time])
         if cursor.rowcount == 0:
             conn.commit()
             cursor.close()
