@@ -101,6 +101,7 @@ def add_num_posts(mention_id, event_time):
     print(event_time)
     name = match_names_to_ids(mention_id)[0]
     print(name)
+    print(mention_id)
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
     try:
         urllib.parse.uses_netloc.append("postgres")
