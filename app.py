@@ -33,6 +33,7 @@ def webhook():
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
+        print("names ", names, "ids", ids)
         repeat = add_num_posts([data['event']['user']], data['event_time'])
         if not repeat:
             if "!leaderboard" in lower_text:
@@ -100,6 +101,7 @@ def add_num_posts(mention_id, event_time):
     print(event_time)
     name = match_names_to_ids(mention_id)[0]
     print(name)
+    # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
