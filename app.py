@@ -31,10 +31,9 @@ def webhook():
 
 
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
-        print(data['event_time'])
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
-        repeat = add_num_posts([data['event']['user']], data['token'])
+        repeat = add_num_posts([data['event']['user']], data['event_time'])
         if not repeat:
             if "!leaderboard" in lower_text:
                 print_stats(3, True)
@@ -54,14 +53,13 @@ def webhook():
 
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
-        print(data['event_time'])
         if data['event']['subtype'] == 'file_share':
             print("found an uploaded image")
             lower_text = data['event']['text'].lower()
             names, ids = get_names_ids_from_message(data['event']['text'])
             print("names ", names, "ids", ids)
             print(data['event']['user'])
-            repeat = add_num_posts([data['event']['user']], data['token'])
+            repeat = add_num_posts([data['event']['user']], data['event_time'])
             if not repeat:
                 if "!gym" in lower_text:
                     print("gym found")
@@ -97,9 +95,9 @@ def get_names_ids_from_message(lower_text):
     return names, ids
 
 
-def add_num_posts(mention_id, token):
+def add_num_posts(mention_id, event_time):
     print("in add num posts")
-    print(token)
+    print(event_time)
     name = match_names_to_ids(mention_id)[0]
     print(name)
     try:
@@ -115,7 +113,10 @@ def add_num_posts(mention_id, token):
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
-            "UPDATE tribe_data SET num_posts=num_posts+1, slack_id=%s WHERE name = %s AND last_token != %s"), [mention_id, name, token])
+            "UPDATE tribe_data SET num_posts=num_posts+1, "
+            + "slack_id=%s, "
+            + "last_time = %d "
+            + "WHERE name = %s AND last_time != %d"), [mention_id, event_time, name, event_time])
         if cursor.rowcount == 0:
             conn.commit()
             cursor.close()
@@ -123,8 +124,6 @@ def add_num_posts(mention_id, token):
             send_debug_message("Found a repeat slack post")
             return True
         else:
-            cursor.execute(sql.SQL(
-                "UPDATE tribe_data set last_token=%s where name = %s"), [name, token])
             conn.commit()
             cursor.close()
             conn.close()
