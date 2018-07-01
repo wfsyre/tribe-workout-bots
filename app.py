@@ -54,6 +54,7 @@ def webhook():
 
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
+        print(data['event_time'])
         if data['event']['subtype'] == 'file_share':
             print("found an uploaded image")
             lower_text = data['event']['text'].lower()
