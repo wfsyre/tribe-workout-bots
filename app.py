@@ -24,7 +24,6 @@ def webhook():
     PICKUP_POINTS = 0.5
     BIKING_POINTS = 1.0
     data = request.get_json()
-    print(data)
     if 'text' in list(data['event'].keys()):
         lower_text = data['event']['text'].lower()
     if data['type'] == "url_verification":
@@ -32,6 +31,7 @@ def webhook():
 
 
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
+        print(data['event_time'])
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
         repeat = add_num_posts([data['event']['user']], data['token'])
