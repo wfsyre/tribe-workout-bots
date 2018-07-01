@@ -24,6 +24,7 @@ def webhook():
     PICKUP_POINTS = 0.5
     BIKING_POINTS = 1.0
     data = request.get_json()
+    print(data)
     if 'text' in list(data['event'].keys()):
         lower_text = data['event']['text'].lower()
     if data['type'] == "url_verification":
