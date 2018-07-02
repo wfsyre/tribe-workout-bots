@@ -84,6 +84,7 @@ def webhook():
                 if "!test" in lower_text:
                     print("test found")
                     num = add_to_db(names, 0, ids)
+            print num
             if num == len(names):
                 print("trying to like message")
                 print(data)
@@ -255,14 +256,14 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
             if score != -1:
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
-                    "now() WHERE name = %s"),
-                    (str(addition), names[x],))
-                if cursor.rowcount == 0:  # If a user does not have an id yet
-                    cursor.execute(sql.SQL(
-                        "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post "
-                        "= now() WHERE name = %s"),
-                        (str(addition), names[x],))
-                    send_debug_message("%s does not have an id yet" % names[x])
+                    "now(), slack_id=%s WHERE name = %s"),
+                    (str(addition), ids[x], names[x],))
+                # if cursor.rowcount == 0:  # If a user does not have an id yet
+                #     cursor.execute(sql.SQL(
+                #         "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post "
+                #         "= now() WHERE name = %s"),
+                #         (str(addition), names[x],))
+                #     send_debug_message("%s does not have an id yet" % names[x])
                 conn.commit()
                 send_debug_message("committed %s" % names[x])
                 num_committed += 1
