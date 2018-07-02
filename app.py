@@ -61,25 +61,36 @@ def webhook():
             print("names ", names, "ids", ids)
             print(data['event']['user'])
             repeat = add_num_posts([data['event']['user']], data['event_time'])
+            num = -1
             if not repeat:
                 if "!gym" in lower_text:
                     print("gym found")
-                    add_to_db(names, GYM_POINTS, ids)
+                    num = add_to_db(names, GYM_POINTS, ids)
                 if "!track" in lower_text:
                     print("track found")
-                    add_to_db(names, TRACK_POINTS, ids)
+                    num = add_to_db(names, TRACK_POINTS, ids)
                 if "!throw" in lower_text:
                     print("throw found")
-                    add_to_db(names, THROW_POINTS, ids)
+                    num = add_to_db(names, THROW_POINTS, ids)
                 if "!swim" in lower_text:
                     print("swim found")
-                    add_to_db(names, SWIM_POINTS, ids)
+                    num = add_to_db(names, SWIM_POINTS, ids)
                 if "!pickup" in lower_text:
                     print("pickup found")
-                    add_to_db(names, PICKUP_POINTS, ids)
+                    num = add_to_db(names, PICKUP_POINTS, ids)
                 if "!bike" in lower_text:
                     print("bike found")
-                    add_to_db(names, BIKING_POINTS, ids)
+                    num = add_to_db(names, BIKING_POINTS, ids)
+                if "!test" in lower_text:
+                    print("test found")
+                    num = add_to_db(names, 0, ids)
+            if num == len(names):
+                print("trying to like message")
+                print(data)
+                print(data['channel'])
+                print(data['timestamp'])
+                like_message(data['channel'], data['timestamp'])
+            
         print(data)
     else:
         print("Don't respond to myself")
@@ -211,6 +222,7 @@ def parse_text_for_mentions(text):
 def match_names_to_ids(mention_ids):
     mention_names = []
     info = get_group_info()
+    print(info)
     for id in mention_ids:
         for member in info['members']:
             if member['id'] == id:
@@ -339,3 +351,31 @@ def print_water():
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
+
+
+def stringFromSeconds(seconds):
+    if seconds < 0:
+        return seconds, " seconds. You missed it, better luck next year."
+    else:
+        days = seconds / 60 / 60 / 24
+        fracDays = days - int(days)
+        hours = fracDays * 24
+        fracHours = hours - int(hours)
+        minutes = fracHours * 60
+        fracMinutes = minutes - int(minutes)
+        seconds = fracMinutes * 60
+        return "%d days, %d hours, %d minutes, %d seconds" % (days, minutes, hours, seconds)
+
+
+def like_message(chan, time):
+    # url = "https://slack.com/api/reactions.add/"
+    # data {
+    #     'token': os.getenv("BOT_OATH_ACCESS_TOKEN"),
+    #     'name': 'thumbsup',
+    #     'channel': chan,
+    #     'timestamp':
+    # }
+    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+    sc = SlackClient(slack_token)
+    sc.api_call("reactions.add", name='thumbsup', channel=chan, timestamp=time)
+
