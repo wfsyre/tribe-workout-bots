@@ -37,20 +37,20 @@ def webhook():
         repeat = add_num_posts([data['event']['user']], data['event_time'])
         if not repeat:
             if "!leaderboard" in lower_text:
-                print_stats(3, True)
+                print_stats(3, True, channel=data['event']['channel'])
             if '!workouts' in lower_text:  # display the leaderboard for who works out the most
-                print_stats(2, True)
+                print_stats(2, True, channel=data['event']['channel'])
             if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
-                print_stats(1, True)
+                print_stats(1, True, channel=data['event']['channel'])
             if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
-                print_stats(1, True)
+                print_stats(1, True, channel=data['event']['channel'])
             if '!heatcheck' in lower_text:
-                send_tribe_message("Kenta wins")
+                send_tribe_message("Kenta wins", channel=data['event']['channel'])
             if '!regionals' in lower_text:
                 now = datetime.now()
                 regionals = datetime(2019, 4, 28, 8, 0, 0)
                 until = regionals - now
-                send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()))
+                send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=data['event']['channel'])
             if '!' in lower_text:
                 like_message(data['event']['channel'], data['event']['ts'])
             if '!subtract' in lower_text and data['event']['channel'] == BOT_CHANNEL:
@@ -148,7 +148,7 @@ def handle_workouts(data, addition):
         like_message(data['group_id'], data['id'])
 
 
-def print_stats(datafield, rev):
+def print_stats(datafield, rev, channel="#random"):
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -165,14 +165,12 @@ def print_stats(datafield, rev):
             "SELECT * FROM tribe_data WHERE workout_score > -1.0"), )
         leaderboard = cursor.fetchall()
         leaderboard.sort(key=lambda s: s[datafield], reverse=rev)  # sort the leaderboard by score descending
-        string1 = "Top 15:\n"
-        string2 = "Everyone Else:\n"
-        for x in range(0, 15):
+        string1 = "Leaderboard:\n"
+        for x in range(0, len(leaderboard)):
             string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
-        for x in range(15, len(leaderboard)):
-            string2 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
-        send_tribe_message(string1)  # need to split it up into 2 because groupme has a max message length for bots
-        send_tribe_message(string2)
+        # for x in range(15, len(leaderboard)):
+        #     string2 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
+        send_tribe_message(string1, channel)
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
