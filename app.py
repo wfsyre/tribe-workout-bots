@@ -87,7 +87,7 @@ def webhook():
             if num == len(names):
                 print("trying to like message")
                 print("CHANNEL", data['event']['channel'])
-                print("TIMESTAMP", data['event']['timestamp'])
+                print("TIMESTAMP", data['timestamp'])
                 like_message(data['event']['channel'], data['event']['timestamp']) 
     else:
         print("Don't respond to myself")
