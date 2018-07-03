@@ -31,7 +31,6 @@ def webhook():
 
 
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
-        send_debug_message(data)
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
         print("names ", names, "ids", ids)
@@ -59,7 +58,6 @@ def webhook():
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
         if data['event']['subtype'] == 'file_share':
-            send_debug_message(data)
             print("found an uploaded image")
             lower_text = data['event']['text'].lower()
             names, ids = get_names_ids_from_message(data['event']['text'])
