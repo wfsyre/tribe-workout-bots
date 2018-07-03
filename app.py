@@ -86,9 +86,8 @@ def webhook():
             print("NUM: ", num)
             if num == len(names):
                 print("trying to like message")
-                print("CHANNEL", data['event']['channel'])
-                print("TIMESTAMP", data['event']['ts'])
-                like_message(data['event']['channel'], data['event']['ts']) 
+                print("FILE", data['event']['file'])
+                like_file(data['event']['file']) 
     else:
         print("Don't respond to myself")
     return "ok", 200
@@ -368,5 +367,11 @@ def like_message(chan, time):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     res = sc.api_call("reactions.add", name='robot_face', channel=chan, timestamp=time)
+    print(res)
+
+def like_file(f):
+    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+    sc = SlackClient(slack_token)
+    res = sc.api_call("reactions.add", name='robot_face', file=f)
     print(res)
 
