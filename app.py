@@ -51,6 +51,9 @@ def webhook():
                 regionals = datetime(2019, 4, 28, 8, 0, 0)
                 until = regionals - now
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()))
+            if '!' in lower_text:
+                like_message(data['event']['channel'], [data['event']['ts'])
+
 
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
@@ -357,13 +360,6 @@ def stringFromSeconds(seconds):
 
 
 def like_message(chan, time):
-    # url = "https://slack.com/api/reactions.add/"
-    # data {
-    #     'token': os.getenv("BOT_OATH_ACCESS_TOKEN"),
-    #     'name': 'thumbsup',
-    #     'channel': chan,
-    #     'timestamp':
-    # }
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     res = sc.api_call("reactions.add", name='robot_face', channel=chan, timestamp=time)
