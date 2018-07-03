@@ -367,5 +367,6 @@ def like_message(chan, time):
     # }
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
-    sc.api_call("reactions.add", name='thumbsup', channel=chan, timestamp=time)
+    res = sc.api_call("reactions.add", name='thumbsup', channel=chan, timestamp=time)
+    print(res)
 
