@@ -86,8 +86,8 @@ def webhook():
             print("NUM: ", num)
             if num == len(names):
                 print("trying to like message")
-                print("FILE", data['event']['file'])
-                like_file(data['event']['file']) 
+                print("FILE", data['event']['file']['id'])
+                like_file(data['event']['file']['id']) 
     else:
         print("Don't respond to myself")
     return "ok", 200
