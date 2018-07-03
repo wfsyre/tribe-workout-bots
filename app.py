@@ -88,7 +88,6 @@ def webhook():
                 print("trying to like message")
                 print("CHANNEL", data['event']['channel'])
                 print("TIMESTAMP", data['event']['ts'])
-                print(data)
                 like_message(data['event']['channel'], data['event']['ts']) 
     else:
         print("Don't respond to myself")
@@ -368,6 +367,6 @@ def like_message(chan, time):
     # }
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
-    res = sc.api_call("reactions.add", name='thumbsup', channel=chan, timestamp=time)
+    res = sc.api_call("reactions.add", name='robot_face', channel=chan, timestamp=time)
     print(res)
 
