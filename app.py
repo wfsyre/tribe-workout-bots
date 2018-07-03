@@ -34,7 +34,6 @@ def webhook():
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
-        print("names ", names, "ids", ids)
         repeat = add_num_posts([data['event']['user']], data['event_time'])
         if not repeat:
             if "!leaderboard" in lower_text:
@@ -91,8 +90,6 @@ def webhook():
                     num = add_to_db(names, 0, ids)
             print("NUM: ", num)
             if num == len(names):
-                print("trying to like message")
-                print("FILE", data['event']['file']['id'])
                 like_file(data['event']['file']['id']) 
     else:
         print("Don't respond to myself")
@@ -246,7 +243,6 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
                 "SELECT workout_score FROM tribe_data WHERE name = %s"), (str(names[x]),))
             score = cursor.fetchall()[0][0]
             score = int(score)
-            print(score)
             if score != -1:
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
@@ -366,13 +362,11 @@ def like_message(chan, time):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     res = sc.api_call("reactions.add", name='robot_face', channel=chan, timestamp=time)
-    print(res)
 
 def like_file(f):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     res = sc.api_call("reactions.add", name='robot_face', file=f)
-    print(res)
 
 
 def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from each of the "names" in the db
