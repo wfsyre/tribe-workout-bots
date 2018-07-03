@@ -52,7 +52,7 @@ def webhook():
                 until = regionals - now
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()))
             if '!' in lower_text:
-                like_message(data['event']['channel'], [data['event']['ts'])
+                like_message(data['event']['channel'], data['event']['ts'])
 
 
 
