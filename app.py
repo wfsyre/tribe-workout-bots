@@ -90,7 +90,7 @@ def webhook():
                 print(data)
                 print(data['event']['channel'])
                 print(data['event']['timestamp'])
-                like_message(data['event']['channel'], (data['event']['timestamp']) 
+                like_message(data['event']['channel'], data['event']['timestamp']) 
             print(data)
     else:
         print("Don't respond to myself")
