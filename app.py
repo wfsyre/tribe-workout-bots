@@ -56,7 +56,7 @@ def webhook():
                 like_message(data['event']['channel'], data['event']['ts'])
             if '!subtract' in lower_text and data['event']['channel'] == BOT_CHANNEL:
                 send_debug_message("SUBTRACTING: " + lower_text[-3:] + " FROM: " + str(names))
-                num = subtract_from_db(names, int(lower_text[-3:]), ids)
+                num = subtract_from_db(names, float(lower_text[-3:]), ids)
     
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
