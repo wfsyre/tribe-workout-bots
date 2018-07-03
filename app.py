@@ -88,6 +88,7 @@ def webhook():
                 print("trying to like message")
                 print("CHANNEL", data['event']['channel'])
                 print("TIMESTAMP", data['event']['file']['timestamp'])
+                print(data)
                 like_message(data['event']['channel'], data['event']['file']['timestamp']) 
     else:
         print("Don't respond to myself")
