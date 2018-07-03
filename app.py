@@ -84,7 +84,7 @@ def webhook():
                 if "!test" in lower_text:
                     print("test found")
                     num = add_to_db(names, 0, ids)
-            print num
+            print(num)
             if num == len(names):
                 print("trying to like message")
                 print(data)
