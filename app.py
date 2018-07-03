@@ -59,7 +59,6 @@ def webhook():
             lower_text = data['event']['text'].lower()
             names, ids = get_names_ids_from_message(data['event']['text'])
             print("names ", names, "ids", ids)
-            print(data['event']['user'])
             repeat = add_num_posts([data['event']['user']], data['event_time'])
             num = -1
             if not repeat:
@@ -84,17 +83,14 @@ def webhook():
                 if "!test" in lower_text:
                     print("test found")
                     num = add_to_db(names, 0, ids)
-            print(num)
+            print("NUM: ", num)
             if num == len(names):
                 print("trying to like message")
-                print(data)
-                print(data['event']['channel'])
-                print(data['event']['timestamp'])
+                print("CHANNEL", data['event']['channel'])
+                print("TIMESTAMP", data['event']['timestamp'])
                 like_message(data['event']['channel'], data['event']['timestamp']) 
-            print(data)
     else:
         print("Don't respond to myself")
-        print(data['event']['username'])
     return "ok", 200
 
 
@@ -108,11 +104,7 @@ def get_names_ids_from_message(lower_text):
 
 
 def add_num_posts(mention_id, event_time):
-    print("in add num posts")
-    print(event_time)
     name = match_names_to_ids(mention_id)[0]
-    print(name)
-    print(mention_id)
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
     try:
         urllib.parse.uses_netloc.append("postgres")
@@ -204,7 +196,6 @@ def get_group_info():
     return json
 
 def parse_text_for_mentions(text):
-    print(text)
     indicies = []
     mention_ids = []
     i = 0
@@ -222,7 +213,6 @@ def parse_text_for_mentions(text):
 def match_names_to_ids(mention_ids):
     mention_names = []
     info = get_group_info()
-    print(info)
     for id in mention_ids:
         for member in info['members']:
             if member['id'] == id:
