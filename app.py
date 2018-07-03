@@ -96,8 +96,8 @@ def webhook():
     return "ok", 200
 
 
-def send_tribe_message(msg):
-    send_message(msg, chan="#random")
+def send_tribe_message(msg, channel="#random"):
+    send_message(msg, channel)
 
 def get_names_ids_from_message(lower_text):
     ids = parse_text_for_mentions(lower_text)
