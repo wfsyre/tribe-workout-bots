@@ -56,6 +56,11 @@ def webhook():
             if '!subtract' in lower_text and data['event']['channel'] == BOT_CHANNEL:
                 send_debug_message("SUBTRACTING: " + lower_text[-3:] + " FROM: " + str(names))
                 num = subtract_from_db(names, float(lower_text[-3:]), ids)
+            if '!reset' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
+                print_stats(3, True, channel=data['event']['channel'])
+                reset_scores()
+                send_debug_message("Reseting leaderboard")
+                
     
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
@@ -397,3 +402,28 @@ def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from ea
             conn.close()
         return num_committed
 
+
+def reset_scores():  # add "addition" to each of the "names" in the db
+    cursor = None
+    conn = None
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL(
+            "UPDATE tribe_data SET num_workouts = 0, workout_score = 0, last_post = now()"))
+        conn.commit()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(str(error))
+    finally:
+        if cursor is not None:
+            cursor.close()
+            conn.close()
+        return num_committed
