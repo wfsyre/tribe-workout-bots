@@ -121,10 +121,19 @@ def add_num_posts(mention_id, event_time):
             + "last_time = %s "
             + "WHERE name = %s AND last_time != %s"), [mention_id[0], event_time, name, event_time])
         if cursor.rowcount == 0:
+            #could also be a new person
+            cursor.execute(sql.SQL(
+                "UPDATE tribe_data SET num_posts=num_posts WHERE name = %s"), [name])
+            if cursor.rowcount == 0:
+                #new person
+                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s)"),
+                               [name, mention_id[0], event_time])
+                send_debug_message("%s is new to Tribe" % name)
+            else:
+                send_debug_message("Found a repeat slack post")
             conn.commit()
             cursor.close()
             conn.close()
-            send_debug_message("Found a repeat slack post")
             return True
         else:
             conn.commit()
