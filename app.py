@@ -63,9 +63,12 @@ def webhook():
                 reset_scores()
                 send_debug_message("Reseting leaderboard")
             if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
-                send_debug_message("ADDING: " + lower_text[-3:] + " FROM: " + str(names))
+                send_debug_message("ADDING: " + lower_text[-3:] + " TO: " + str(names))
                 num = add_to_db(names, lower_text[-3:], ids)
-                
+            if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or 'pickup' in lower_text:
+                like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
+            if 'groupme' in lower_text:
+                like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
     
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
@@ -246,6 +249,7 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
         )
         cursor = conn.cursor()
         for x in range(0, len(names)):
+            print("starting", names[x])
             cursor.execute(sql.SQL(
                 "SELECT workout_score FROM tribe_data WHERE name = %s"), (str(names[x]),))
             score = cursor.fetchall()[0][0]
@@ -359,10 +363,10 @@ def stringFromSeconds(seconds):
         return "%d days, %d hours, %d minutes, %d seconds" % (days, minutes, hours, seconds)
 
 
-def like_message(chan, time):
+def like_message(chan, time, reaction='robot_face'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
-    res = sc.api_call("reactions.add", name='robot_face', channel=chan, timestamp=time)
+    res = sc.api_call("reactions.add", name=reaction, channel=chan, timestamp=time)
 
 def like_file(f):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
