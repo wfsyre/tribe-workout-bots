@@ -34,7 +34,9 @@ def webhook():
     if 'username' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
+        print(names)
         repeat = add_num_posts([data['event']['user']], data['event_time'])
+        print(repeat)
         if not repeat:
             if "!leaderboard" in lower_text:
                 print_stats(3, True, channel=data['event']['channel'])
@@ -154,14 +156,6 @@ def add_num_posts(mention_id, event_time):
         send_debug_message(error)
 
 
-def handle_workouts(data, addition):
-    names, ids = get_names_ids_from_message(data, True)
-    if names is not None and ids is not None:
-        num = add_to_db(names, addition, ids)
-    if num == len(names):
-        like_message(data['group_id'], data['id'])
-
-
 def print_stats(datafield, rev, channel="#random"):
     try:
         urllib.parse.uses_netloc.append("postgres")
@@ -262,7 +256,7 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
                 send_debug_message("committed %s" % names[x])
                 num_committed += 1
             else:
-                send_debug_message("invalid workout poster found " + str(score))
+                send_debug_message("invalid workout poster found " + names[x])
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
