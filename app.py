@@ -104,6 +104,8 @@ def webhook():
             print("NUM: ", num)
             if num == len(names):
                 like_file(data['event']['file']['id']) 
+            else:
+                like_file(data['event']['file']['id'], reaction='skull_and_crossbones')
     else:
         print("Don't respond to myself")
     return "ok", 200
@@ -368,10 +370,10 @@ def like_message(chan, time, reaction='robot_face'):
     sc = SlackClient(slack_token)
     res = sc.api_call("reactions.add", name=reaction, channel=chan, timestamp=time)
 
-def like_file(f):
+def like_file(f, reaction='robot_face'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
-    res = sc.api_call("reactions.add", name='robot_face', file=f)
+    res = sc.api_call("reactions.add", name=reaction, file=f)
 
 
 def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from each of the "names" in the db
