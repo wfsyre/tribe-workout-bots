@@ -134,7 +134,7 @@ def add_num_posts(mention_id, event_time):
             conn.commit()
             cursor.close()
             conn.close()
-            send_debug_message("Found a repeat slack post")
+            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (mention_id[0], event_time, name))
             return True
         else:
             conn.commit()
