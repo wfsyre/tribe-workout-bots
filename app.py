@@ -62,6 +62,9 @@ def webhook():
                 print_stats(3, True, channel=data['event']['channel'])
                 reset_scores()
                 send_debug_message("Reseting leaderboard")
+            if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
+                send_debug_message("ADDING: " + lower_text[-3:] + " FROM: " + str(names))
+                num = add_to_db(names, lower_text[-3:], ids)
                 
     
 
