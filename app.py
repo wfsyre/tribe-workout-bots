@@ -131,10 +131,19 @@ def add_num_posts(mention_id, event_time):
             + "last_time = %s "
             + "WHERE name = %s AND last_time != %s"), [mention_id[0], event_time, name, event_time])
         if cursor.rowcount == 0:
+            #could also be a new person
+            cursor.execute(sql.SQL(
+                "UPDATE tribe_data SET num_posts=num_posts WHERE name = %s"), [name])
+            if cursor.rowcount == 0:
+                #new person
+                cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s)"),
+                               [name, mention_id[0], event_time])
+                send_debug_message("%s is new to Tribe" % name)
+            else:
+                send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (mention_id[0], event_time, name))
             conn.commit()
             cursor.close()
             conn.close()
-            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (mention_id[0], event_time, name))
             return True
         else:
             conn.commit()
@@ -173,8 +182,6 @@ def print_stats(datafield, rev, channel="#random"):
         string1 = "Leaderboard:\n"
         for x in range(0, len(leaderboard)):
             string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
-        # for x in range(15, len(leaderboard)):
-        #     string2 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
         send_tribe_message(string1, channel)
         cursor.close()
         conn.close()
@@ -251,12 +258,6 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
                     "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
                     "now(), slack_id=%s WHERE name = %s"),
                     (str(addition), ids[x], names[x],))
-                # if cursor.rowcount == 0:  # If a user does not have an id yet
-                #     cursor.execute(sql.SQL(
-                #         "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post "
-                #         "= now() WHERE name = %s"),
-                #         (str(addition), names[x],))
-                #     send_debug_message("%s does not have an id yet" % names[x])
                 conn.commit()
                 send_debug_message("committed %s" % names[x])
                 num_committed += 1
