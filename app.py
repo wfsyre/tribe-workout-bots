@@ -34,10 +34,9 @@ def webhook():
     count = 0
     if 'file' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
+        print(data)
         names, ids = get_names_ids_from_message(data['event']['text'])
-        print(names)
         repeat = add_num_posts([data['event']['user']], data['event_time'])
-        print(repeat)
         if not repeat:
             if "!leaderboard" in lower_text:
                 count += 1
@@ -79,6 +78,7 @@ def webhook():
                 like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
+        print(data)
         if data['event']['subtype'] == 'file_share':
             print("found an uploaded image")
             lower_text = data['event']['text'].lower()
