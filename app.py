@@ -31,6 +31,7 @@ def webhook():
         return jsonify({'challenge': data['challenge']})
 
 
+    count = 0
     if 'file' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
@@ -39,37 +40,43 @@ def webhook():
         print(repeat)
         if not repeat:
             if "!leaderboard" in lower_text:
+                count += 1
                 print_stats(3, True, channel=data['event']['channel'])
             if '!workouts' in lower_text:  # display the leaderboard for who works out the most
+                count +=1 
                 print_stats(2, True, channel=data['event']['channel'])
             if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
+                count +=1
                 print_stats(1, True, channel=data['event']['channel'])
             if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
+                count +=1
                 print_stats(1, True, channel=data['event']['channel'])
             if '!heatcheck' in lower_text:
+                count +=1
                 send_tribe_message("Kenta wins", channel=data['event']['channel'])
             if '!regionals' in lower_text:
+                count +=1
                 now = datetime.now()
                 regionals = datetime(2019, 4, 28, 8, 0, 0)
                 until = regionals - now
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=data['event']['channel'])
-            if '!' in lower_text:
-                like_message(data['event']['channel'], data['event']['ts'])
             if '!subtract' in lower_text and data['event']['channel'] == BOT_CHANNEL:
                 send_debug_message("SUBTRACTING: " + lower_text[-3:] + " FROM: " + str(names))
                 num = subtract_from_db(names, float(lower_text[-3:]), ids)
+                count +=1
             if '!reset' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
                 print_stats(3, True, channel=data['event']['channel'])
                 reset_scores()
                 send_debug_message("Reseting leaderboard")
+                count +=1
             if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
                 send_debug_message("ADDING: " + lower_text[-3:] + " TO: " + str(names))
                 num = add_to_db(names, lower_text[-3:], ids)
-            if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or 'pickup' in lower_text:
+                count +=1
+            if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or '!pickup' in lower_text or '!swim' in lower_text or '!bike' in lower_text:
                 like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
             if 'groupme' in lower_text:
                 like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
-    
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
         if data['event']['subtype'] == 'file_share':
@@ -108,6 +115,9 @@ def webhook():
                 like_file(data['event']['file']['id'], reaction='skull_and_crossbones')
     else:
         print("Don't respond to myself")
+
+    if count >= 1:
+        like_message(data['event']['channel'], data['event']['ts'])
     return "ok", 200
 
 
@@ -198,11 +208,6 @@ def send_message(msg, chan="#bot_testing"):
 
 def send_debug_message(msg):
     send_message(msg, chan="#bot_testing")
-
-def log(msg):
-    print(str(msg))
-    sys.stdout.flush()
-
 
 def get_group_info():
     url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
@@ -407,7 +412,7 @@ def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from ea
         return num_committed
 
 
-def reset_scores():  # add "addition" to each of the "names" in the db
+def reset_scores():  # reset the scores of everyone
     cursor = None
     conn = None
     try:
