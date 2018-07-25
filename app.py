@@ -31,7 +31,7 @@ def webhook():
         return jsonify({'challenge': data['challenge']})
 
 
-    if 'username' not in list(data['event'].keys()):    #messages without attachments go here
+    if 'file' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         names, ids = get_names_ids_from_message(data['event']['text'])
         print(names)
