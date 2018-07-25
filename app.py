@@ -35,6 +35,7 @@ def webhook():
     if 'file' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
         print(data)
+        print(data['event'].keys())
         names, ids = get_names_ids_from_message(data['event']['text'])
         repeat = add_num_posts([data['event']['user']], data['event_time'])
         if not repeat:
