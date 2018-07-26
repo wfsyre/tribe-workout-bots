@@ -32,8 +32,9 @@ def webhook():
 
 
     count = 0
-    if 'file' not in list(data['event'].keys()):    #messages without attachments go here
+    if 'files' not in list(data['event'].keys()):    #messages without attachments go here
         lower_text = data['event']['text'].lower()
+        print('no attachment found')
         print(data)
         print(data['event'].keys())
         names, ids = get_names_ids_from_message(data['event']['text'])
@@ -79,6 +80,7 @@ def webhook():
                 like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
 
     elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
+        print("attachment found")
         print(data)
         if data['event']['subtype'] == 'file_share':
             print("found an uploaded image")
