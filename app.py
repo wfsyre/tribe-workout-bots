@@ -442,3 +442,151 @@ def reset_scores():  # reset the scores of everyone
             cursor.close()
             conn.close()
         return num_committed
+
+class SlackResponse:
+    # event
+    # event_type
+    # event_subtype
+    # files = []
+    # ts
+    # text
+    # channel
+    # user_id
+    # bot
+    # username
+    # mentions = []
+    # points_to_add
+    # all_ids
+    # all_names
+    def __init__(self, json_data):
+        self._event = json_data['event']
+        self._event_type = self._event['type']
+        self._event_subtype = self._event['subtype']
+        if 'files' in list(self._event.keys()):
+            self._files = self._event['files']
+        else:
+            self._files = []
+        self._ts = self._event['ts']
+        if 'text' in list(self._event.keys()):
+            self._text = self._event['text']
+        else:
+            self._text = ''
+        self._channel = self._event['channel']
+        self._user_id = self._event['user']
+        self._bot = self._event['bot_id'] == None
+        self.parse_text_for_mentions()
+        self._all_ids = self._mentions + self._user_id
+        self.match_names_to_ids()
+        self._lower_text = self._text.lower()
+        self.parse_for_additions()
+        
+
+    def parse_text_for_mentions(self):
+        text = self._text
+        indicies = []
+        mention_ids = []
+        i = 0
+        while(i < len(text)):
+            temp = text.find('@', i)
+            if temp == -1:
+                i = len(text)
+            else:
+                indicies.append(temp)
+                i = temp + 1
+        for index in indicies:
+            mention_ids.append(text[index + 1:text.find('>', index)])
+        self._mentions = mention_ids
+
+    def match_names_to_ids(self):
+        mention_ids = self._all_ids
+        mention_names = []
+        info = get_group_info()
+        for id in mention_ids:
+            for member in info['members']:
+                if member['id'] == id:
+                    mention_names.append(member['real_name'])
+        self._all_names = mention_names
+    
+    def parse_for_additions(self):
+        GYM_POINTS = 1.0
+        TRACK_POINTS = 1.0
+        THROW_POINTS = 0.5
+        SWIM_POINTS = 1.0
+        PICKUP_POINTS = 0.5
+        BIKING_POINTS = 1.0
+        if '!gym' in self._lower_text:
+            self._points_to_add += GYM_POINTS
+        if '!track' in self._lower_text:
+            self._points_to_add += TRACK_POINTS
+        if '!throw' in self._lower_text:
+            self._points_to_add += THROW_POINTS
+        if '!swim' in self._lower_text:
+            self._points_to_add += SWIM_POINTS
+        if '!pickup' in self._lower_text:
+            self._points_to_add += PICKUP_POINTS
+        if '!bike' in self._lower_text:
+            self._points_to_add += BIKING_POINTS
+
+
+    def handle_db(self):
+        if not add_num_posts(self._user_id, self._ts):
+            self._repeat = False
+            num = add_to_db(self._all_names, self._points_to_add, self._all_ids)
+            if num == len(self._all_names):
+                like_file(self._files[0]['id']) 
+            else:
+                like_file(self._files[0]['id'], reaction='skull_and_crossbones')
+        else:
+            self._repeat = True
+            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s"
+                % (self._user_id, self._ts, self._all_names[-1]))
+
+    def execute_commands(self):
+        count = 0
+        self._repeat = add_num_posts([data['event']['user']], data['event_time'])
+        if not self._repeat:
+            if "!leaderboard" in self._lower_text:
+                count += 1
+                print_stats(3, True, channel=self._channel)
+            if '!workouts' in self._lower_text:  # display the leaderboard for who works out the most
+                count +=1 
+                print_stats(2, True, channel=self._channel)
+            if '!talkative' in self._lower_text:  # displays the leaderboard for who posts the most
+                count +=1
+                print_stats(1, True, channel=self._channel)
+            if '!handsome' in self._lower_text:  # displays the leaderboard for who posts the most
+                count +=1
+                print_stats(1, True, channel=self._channel)
+            if '!heatcheck' in self._lower_text:
+                count +=1
+                send_tribe_message("Kenta wins", channel=data['event']['channel'])
+            if '!regionals' in self._lower_text:
+                count +=1
+                now = datetime.now()
+                regionals = datetime(2019, 4, 28, 8, 0, 0)
+                until = regionals - now
+                send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=data['event']['channel'])
+            if '!subtract' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+                send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names))
+                num = subtract_from_db(self._all_names, float(self._lower_text[-3:]), self._all_ids)
+                count +=1
+            if '!reset' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
+                print_stats(3, True, channel=data['event']['channel'])
+                reset_scores()
+                send_debug_message("Reseting leaderboard")
+                count +=1
+            if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
+                send_debug_message("ADDING: " + lower_text[-3:] + " TO: " + str(names))
+                num = add_to_db(names, lower_text[-3:], ids)
+                count +=1
+            if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or '!pickup' in lower_text or '!swim' in lower_text or '!bike' in lower_text:
+                like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
+            if 'groupme' in lower_text:
+                like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
+        
+            
+    
+        
+        
+
+
