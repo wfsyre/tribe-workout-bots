@@ -467,7 +467,6 @@ class SlackResponse:
     def __init__(self, json_data):
         self._event = json_data['event']
         self._event_type = self._event['type']
-        self._event_subtype = self._event['subtype']
         if 'files' in list(self._event.keys()):
             self._files = self._event['files']
         else:
@@ -591,7 +590,7 @@ class SlackResponse:
                 self.like_message(reaction='thumbsdown')
 
     def like_message(self, reaction='robot_face'):
-        if self._event_subtype == 'file_share':
+        if len(self._files) > 0:
             slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
             sc = SlackClient(slack_token)
             res = sc.api_call("reactions.add", name=reaction, file=self._files[0]['id'])
