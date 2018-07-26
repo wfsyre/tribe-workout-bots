@@ -30,92 +30,93 @@ def webhook():
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
 
-
+        
     count = 0
-    if 'files' not in list(data['event'].keys()):    #messages without attachments go here
-        lower_text = data['event']['text'].lower()
-        print('no attachment found')
-        print(data)
-        print(data['event'].keys())
-        names, ids = get_names_ids_from_message(data['event']['text'])
-        repeat = add_num_posts([data['event']['user']], data['event_time'])
-        if not repeat:
-            if "!leaderboard" in lower_text:
-                count += 1
-                print_stats(3, True, channel=data['event']['channel'])
-            if '!workouts' in lower_text:  # display the leaderboard for who works out the most
-                count +=1 
-                print_stats(2, True, channel=data['event']['channel'])
-            if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
-                count +=1
-                print_stats(1, True, channel=data['event']['channel'])
-            if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
-                count +=1
-                print_stats(1, True, channel=data['event']['channel'])
-            if '!heatcheck' in lower_text:
-                count +=1
-                send_tribe_message("Kenta wins", channel=data['event']['channel'])
-            if '!regionals' in lower_text:
-                count +=1
-                now = datetime.now()
-                regionals = datetime(2019, 4, 28, 8, 0, 0)
-                until = regionals - now
-                send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=data['event']['channel'])
-            if '!subtract' in lower_text and data['event']['channel'] == BOT_CHANNEL:
-                send_debug_message("SUBTRACTING: " + lower_text[-3:] + " FROM: " + str(names))
-                num = subtract_from_db(names, float(lower_text[-3:]), ids)
-                count +=1
-            if '!reset' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
-                print_stats(3, True, channel=data['event']['channel'])
-                reset_scores()
-                send_debug_message("Reseting leaderboard")
-                count +=1
-            if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
-                send_debug_message("ADDING: " + lower_text[-3:] + " TO: " + str(names))
-                num = add_to_db(names, lower_text[-3:], ids)
-                count +=1
-            if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or '!pickup' in lower_text or '!swim' in lower_text or '!bike' in lower_text:
-                like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
-            if 'groupme' in lower_text:
-                like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
-
-    elif data['event']['username'] != "Workout Bot":  #messages with attachments go here
-        print("attachment found")
-        print(data)
-        if data['event']['subtype'] == 'file_share':
-            print("found an uploaded image")
+    if data['event']['bot_id'] is None:
+        if 'files' not in list(data['event'].keys()):    #messages without attachments go here
             lower_text = data['event']['text'].lower()
-            names, ids = get_names_ids_from_message(data['event']['text'] + ' ' + data['event']['user'])
-            print("names ", names, "ids", ids)
+            print('no attachment found')
+            print(data)
+            print(data['event'].keys())
+            names, ids = get_names_ids_from_message(data['event']['text'])
             repeat = add_num_posts([data['event']['user']], data['event_time'])
-            num = -1
             if not repeat:
-                if "!gym" in lower_text:
-                    print("gym found")
-                    num = add_to_db(names, GYM_POINTS, ids)
-                if "!track" in lower_text:
-                    print("track found")
-                    num = add_to_db(names, TRACK_POINTS, ids)
-                if "!throw" in lower_text:
-                    print("throw found")
-                    num = add_to_db(names, THROW_POINTS, ids)
-                if "!swim" in lower_text:
-                    print("swim found")
-                    num = add_to_db(names, SWIM_POINTS, ids)
-                if "!pickup" in lower_text:
-                    print("pickup found")
-                    num = add_to_db(names, PICKUP_POINTS, ids)
-                if "!bike" in lower_text:
-                    print("bike found")
-                    num = add_to_db(names, BIKING_POINTS, ids)
-                if "!test" in lower_text:
-                    print("test found")
-                    num = add_to_db(names, 0, ids)
-            print("NUM: ", num)
-            if num == len(names):
-                like_file(data['event']['file']['id']) 
-            else:
-                like_file(data['event']['file']['id'], reaction='skull_and_crossbones')
+                if "!leaderboard" in lower_text:
+                    count += 1
+                    print_stats(3, True, channel=data['event']['channel'])
+                if '!workouts' in lower_text:  # display the leaderboard for who works out the most
+                    count +=1 
+                    print_stats(2, True, channel=data['event']['channel'])
+                if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
+                    count +=1
+                    print_stats(1, True, channel=data['event']['channel'])
+                if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
+                    count +=1
+                    print_stats(1, True, channel=data['event']['channel'])
+                if '!heatcheck' in lower_text:
+                    count +=1
+                    send_tribe_message("Kenta wins", channel=data['event']['channel'])
+                if '!regionals' in lower_text:
+                    count +=1
+                    now = datetime.now()
+                    regionals = datetime(2019, 4, 28, 8, 0, 0)
+                    until = regionals - now
+                    send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=data['event']['channel'])
+                if '!subtract' in lower_text and data['event']['channel'] == BOT_CHANNEL:
+                    send_debug_message("SUBTRACTING: " + lower_text[-3:] + " FROM: " + str(names))
+                    num = subtract_from_db(names, float(lower_text[-3:]), ids)
+                    count +=1
+                if '!reset' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
+                    print_stats(3, True, channel=data['event']['channel'])
+                    reset_scores()
+                    send_debug_message("Reseting leaderboard")
+                    count +=1
+                if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
+                    send_debug_message("ADDING: " + lower_text[-3:] + " TO: " + str(names))
+                    num = add_to_db(names, lower_text[-3:], ids)
+                    count +=1
+                if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or '!pickup' in lower_text or '!swim' in lower_text or '!bike' in lower_text:
+                    like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
+                if 'groupme' in lower_text:
+                    like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
+
+        else:  #messages with attachments go here
+            print("attachment found")
+            print(data)
+            if data['event']['subtype'] == 'file_share':
+                print("found an uploaded image")
+                lower_text = data['event']['text'].lower()
+                names, ids = get_names_ids_from_message(data['event']['text'] + ' ' + data['event']['user'])
+                print("names ", names, "ids", ids)
+                repeat = add_num_posts([data['event']['user']], data['event_time'])
+                num = -1
+                if not repeat:
+                    if "!gym" in lower_text:
+                        print("gym found")
+                        num = add_to_db(names, GYM_POINTS, ids)
+                    if "!track" in lower_text:
+                        print("track found")
+                        num = add_to_db(names, TRACK_POINTS, ids)
+                    if "!throw" in lower_text:
+                        print("throw found")
+                        num = add_to_db(names, THROW_POINTS, ids)
+                    if "!swim" in lower_text:
+                        print("swim found")
+                        num = add_to_db(names, SWIM_POINTS, ids)
+                    if "!pickup" in lower_text:
+                        print("pickup found")
+                        num = add_to_db(names, PICKUP_POINTS, ids)
+                    if "!bike" in lower_text:
+                        print("bike found")
+                        num = add_to_db(names, BIKING_POINTS, ids)
+                    if "!test" in lower_text:
+                        print("test found")
+                        num = add_to_db(names, 0, ids)
+                print("NUM: ", num)
+                if num == len(names):
+                    like_file(data['event']['file']['id']) 
+                else:
+                    like_file(data['event']['file']['id'], reaction='skull_and_crossbones')
     else:
         print("Don't respond to myself")
 
