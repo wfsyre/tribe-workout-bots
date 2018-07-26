@@ -30,10 +30,10 @@ def webhook():
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
 
-        
+
     count = 0
-    if data['event']['bot_id'] is None:
-        if 'files' not in list(data['event'].keys()):    #messages without attachments go here
+    if 'files' not in list(data['event'].keys()):    #messages without attachments go here
+        if 'bot_id' not in list(data['event'].keys()):
             lower_text = data['event']['text'].lower()
             print('no attachment found')
             print(data)
@@ -79,8 +79,11 @@ def webhook():
                     like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
                 if 'groupme' in lower_text:
                     like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
+        else:
+            print("Don't respond to myself")
 
-        else:  #messages with attachments go here
+    else:  #messages with attachments go here
+        if data['event']['bot_id'] is None:
             print("attachment found")
             print(data)
             if data['event']['subtype'] == 'file_share':
@@ -117,12 +120,11 @@ def webhook():
                     like_file(data['event']['file']['id']) 
                 else:
                     like_file(data['event']['file']['id'], reaction='skull_and_crossbones')
-    else:
-        print("Don't respond to myself")
+        else:
+            print("Don't respond to myself")
 
     if count >= 1:
         like_message(data['event']['channel'], data['event']['ts'])
-    
     obj = SlackResponse(data)
     print(obj)
     return "ok", 200
@@ -211,7 +213,7 @@ def print_stats(datafield, rev, channel="#random"):
 def send_message(msg, chan="#bot_testing", url='', bot_name='Werkout Bot'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
-    if icon_url == '':
+    if url == '':
         sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name)
     else:
         sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name, icon_url=url)
