@@ -207,7 +207,7 @@ def print_stats(datafield, rev, channel="#random"):
 def send_message(msg, chan="#bot_testing", url='', bot_name='Werkout Bot'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
-    if icon_url != '':
+    if icon_url == '':
         sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name)
     else:
         sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name, icon_url=url)
