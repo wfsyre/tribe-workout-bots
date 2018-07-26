@@ -121,6 +121,9 @@ def webhook():
 
     if count >= 1:
         like_message(data['event']['channel'], data['event']['ts'])
+    
+    obj = SlackResponse(data)
+    print(obj)
     return "ok", 200
 
 
@@ -529,13 +532,13 @@ class SlackResponse:
 
 
     def handle_db(self):
-        if not add_num_posts(self._user_id, self._ts):
+        if not add_num_posts([self._user_id], self._event['event_time']):
             self._repeat = False
             num = add_to_db(self._all_names, self._points_to_add, self._all_ids)
             if num == len(self._all_names):
-                like_file(self._files[0]['id']) 
+                self.like_message() 
             else:
-                like_file(self._files[0]['id'], reaction='skull_and_crossbones')
+                self.like_message(reaction='skull_and_crossbones')
         else:
             self._repeat = True
             send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s"
@@ -543,7 +546,7 @@ class SlackResponse:
 
     def execute_commands(self):
         count = 0
-        self._repeat = add_num_posts([data['event']['user']], data['event_time'])
+        self._repeat = add_num_posts([self._user_id], self._event['event_time'])
         if not self._repeat:
             if "!leaderboard" in self._lower_text:
                 count += 1
@@ -559,31 +562,40 @@ class SlackResponse:
                 print_stats(1, True, channel=self._channel)
             if '!heatcheck' in self._lower_text:
                 count +=1
-                send_tribe_message("Kenta wins", channel=data['event']['channel'])
+                send_tribe_message("Kenta wins", channel=self._channel)
             if '!regionals' in self._lower_text:
                 count +=1
                 now = datetime.now()
                 regionals = datetime(2019, 4, 28, 8, 0, 0)
                 until = regionals - now
-                send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=data['event']['channel'])
+                send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
             if '!subtract' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names))
                 num = subtract_from_db(self._all_names, float(self._lower_text[-3:]), self._all_ids)
                 count +=1
-            if '!reset' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
-                print_stats(3, True, channel=data['event']['channel'])
+            if '!reset' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+                print_stats(3, True, channel=self._channel)
                 reset_scores()
                 send_debug_message("Reseting leaderboard")
                 count +=1
-            if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
-                send_debug_message("ADDING: " + lower_text[-3:] + " TO: " + str(names))
-                num = add_to_db(names, lower_text[-3:], ids)
+            if '!add' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+                send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names))
+                num = add_to_db(self._all_names, self._lower_text[-3:], self._all_ids)
                 count +=1
-            if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or '!pickup' in lower_text or '!swim' in lower_text or '!bike' in lower_text:
-                like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
-            if 'groupme' in lower_text:
-                like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
-        
+            if self._points_to_add >= 0:
+                self.like_message(reaction='angry')
+            if 'groupme' in self._lower_text:
+                self.like_message(reaction='thumbsdown')
+
+    def like_message(self, reaction='robot_face'):
+        if self._event_subtype == 'file_share':
+            slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+            sc = SlackClient(slack_token)
+            res = sc.api_call("reactions.add", name=reaction, file=self._files[0]['id'])
+        else:
+            slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+            sc = SlackClient(slack_token)
+            res = sc.api_call("reactions.add", name=reaction, channel=self._channel, timestamp=self._ts)
             
     
         
