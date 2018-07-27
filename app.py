@@ -476,6 +476,7 @@ class SlackResponse:
     def __init__(self, json_data):
         self._event = json_data['event']
         self._event_time = json_data['event_time']
+        self._bot = ('bot_id' in list(self._event.keys()) and self._event['bot_id'] != None) or self._user_id == 'UB5J40V7D'
         self._event_type = self._event['type']
         if 'files' in list(self._event.keys()):
             self._files = self._event['files']
@@ -487,8 +488,10 @@ class SlackResponse:
         else:
             self._text = ''
         self._channel = self._event['channel']
-        self._user_id = self._event['user']
-        self._bot = ('bot_id' in list(self._event.keys()) and self._event['bot_id'] != None) or self._user_id == 'UB5J40V7D'
+        if not self._bot:
+            self._user_id = self._event['user']
+        else:
+            self.user_id = self._event['bot_id']
         self.parse_text_for_mentions()
         self._all_ids = self._mentions + [self._user_id]
         self.match_names_to_ids()
