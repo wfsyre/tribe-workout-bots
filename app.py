@@ -29,7 +29,7 @@ def webhook():
         lower_text = data['event']['text'].lower()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
-    print(request)
+    print(request.__dict__)
 
 
     count = 0
