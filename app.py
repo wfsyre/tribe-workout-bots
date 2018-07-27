@@ -452,7 +452,6 @@ def reset_scores():  # reset the scores of everyone
 class SlackResponse:
     # event
     # event_type
-    # event_subtype
     # files = []
     # ts
     # text
@@ -603,11 +602,10 @@ class SlackResponse:
 
     def __repr__(self):
         return ("SlackResponse Object with parameters:\n event: %s\n, event_type: %s\n"
-            "event_subtype: %s\n files: %s\n ts: %s\n text: %s\n channel: %s\n user_id: %s\n"
+            "files: %s\n ts: %s\n text: %s\n channel: %s\n user_id: %s\n"
             "bot: %s\n username: %s\n mentions: %s\n points: %s\n all_ids: %s\n all_names: %s" % (
             self._event, 
             self._event_type,
-            self._event_subtype,
             str(self._files),
             str(self._ts),
             self._text,
