@@ -29,6 +29,7 @@ def webhook():
         lower_text = data['event']['text'].lower()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
+    print(request)
 
 
     count = 0
@@ -142,31 +143,6 @@ def get_group_info():
     url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
     json = requests.get(url).json()
     return json
-
-# def parse_text_for_mentions(text):
-#     indicies = []
-#     mention_ids = []
-#     i = 0
-#     while(i < len(text)):
-#         temp = text.find('@', i)
-#         if temp == -1:
-#             i = len(text)
-#         else:
-#             indicies.append(temp)
-#             i = temp + 1
-#     for index in indicies:
-#         mention_ids.append(text[index + 1:text.find('>', index)])
-#     return mention_ids
-
-# def match_names_to_ids(mention_ids):
-#     mention_names = []
-#     info = get_group_info()
-#     for id in mention_ids:
-#         for member in info['members']:
-#             if member['id'] == id:
-#                 mention_names.append(member['real_name'])
-#     return mention_names
-   
 
 
 def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in the db
@@ -297,13 +273,6 @@ def stringFromSeconds(seconds):
         fracMinutes = minutes - int(minutes)
         seconds = fracMinutes * 60
         return "%d days, %d hours, %d minutes, %d seconds" % (days, minutes, hours, seconds)
-
-
-# def like_message(chan, time, reaction='robot_face'):
-#     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
-#     sc = SlackClient(slack_token)
-#     res = sc.api_call("reactions.add", name=reaction, channel=chan, timestamp=time)
-#     print(res)
 
 # def like_file(f, reaction='robot_face'):
 #     print(f)
