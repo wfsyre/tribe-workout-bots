@@ -92,7 +92,7 @@ def webhook():
                 print(data['event']['text'])
                 print(data['event']['user'])
                 print(data['event']['text'] + " " + data['event']['user'])
-                names, ids = get_names_ids_from_message(data['event']['text'] + " " + data['event']['user'])
+                names, ids = get_names_ids_from_message(data['event']['text'] + " <@" + data['event']['user'] + ">")
                 print("names ", names, "ids", ids)
                 repeat = add_num_posts([data['event']['user']], data['event_time'])
                 num = -1
