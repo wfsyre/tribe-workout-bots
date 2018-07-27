@@ -10,7 +10,7 @@ from datetime import datetime
 from slackclient import SlackClient
 from psycopg2 import sql
 
-from flask import Flask, request, jsonify, redirect, url_for
+from flask import Flask, request, jsonify, make_response
 
 app = Flask(__name__)
 
@@ -46,9 +46,9 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
-    resp = jsonify({'ok': True}), 200
-    print(resp)
-    return jsonify({'ok': True}), 200
+    resp = make_response("OK", 200,)
+    print resp
+    return resp
 
 
 def send_tribe_message(msg, channel="#random"):
