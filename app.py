@@ -39,11 +39,12 @@ def webhook():
         if not obj.isRepeat():
             print("not a repeat")
             if obj._points_to_add > 0:
-                print("no points to add")
+                print("points to add")
                 obj.handle_db()
             else:
                 print("executing commands")
                 obj.execute_commands()
+    print(obj)
     return "ok", 200
     # if 'UB5J40V7D' not in data['event']['user']:
     #     if 'files' not in list(data['event'].keys()):    #messages without attachments go here
