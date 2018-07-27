@@ -89,7 +89,10 @@ def webhook():
             if data['event']['subtype'] == 'file_share':
                 print("found an uploaded image")
                 lower_text = data['event']['text'].lower()
-                names, ids = get_names_ids_from_message(data['event']['text'] + ' ' + data['event']['user'])
+                print(data['event']['text'])
+                print(data['event']['user'])
+                print(data['event']['text'] + " " + data['event']['user'])
+                names, ids = get_names_ids_from_message(data['event']['text'] + " " + data['event']['user'])
                 print("names ", names, "ids", ids)
                 repeat = add_num_posts([data['event']['user']], data['event_time'])
                 num = -1
@@ -117,9 +120,9 @@ def webhook():
                         num = add_to_db(names, 0, ids)
                 print("NUM: ", num)
                 if num == len(names):
-                    like_file(data['event']['file']['id']) 
+                    like_file(data['event']['files'][0]['id']) 
                 else:
-                    like_file(data['event']['file']['id'], reaction='skull_and_crossbones')
+                    like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
         else:
             print("Don't respond to myself")
 
