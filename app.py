@@ -110,13 +110,13 @@ def webhook():
                 if "!test" in lower_text:
                     print("test found")
                     num = add_to_db(names, 0, ids)
-            print("NUM: ", num)
-            if num == len(names):
-                print("Success, liking file now", len(names))
-                like_massage(data['event']['channel'], data['event']['ts']) 
-            else:
-                print("failure, skull", len(names))
-                like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
+                print("NUM: ", num)
+                if num == len(names):
+                    print("Success, liking file now", len(names))
+                    like_message(data['event']['channel'], data['event']['ts']) 
+                else:
+                    print("failure, skull", len(names))
+                    like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
     else:
         print("Don't respond to myself")
 
