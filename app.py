@@ -45,6 +45,7 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
+    return "ok", 200
     # if 'UB5J40V7D' not in data['event']['user']:
     #     if 'files' not in list(data['event'].keys()):    #messages without attachments go here
     #         print('no attachment found')
