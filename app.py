@@ -553,7 +553,7 @@ class SlackResponse:
     def isRepeat(self):
         self._repeat = add_num_posts([self._user_id], self._event['event_time'])
         if self._repeat:
-            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (self._user_id, self._ts, str(self._all_names))
+            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (self._user_id, self._ts, str(self._all_names)))
 
 
     def execute_commands(self):
