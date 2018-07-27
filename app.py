@@ -46,9 +46,7 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
-    resp = make_response("OK", 200,)
-    print(resp)
-    return resp
+    return make_response("OK", 200,)
 
 
 def send_tribe_message(msg, channel="#random"):
@@ -475,7 +473,7 @@ class SlackResponse:
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
             if '!subtract' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names))
-                num = subtract_from_db(self._all_names, float(self._lower_text[-3:]), self._all_ids)
+                num = subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
                 count +=1
             if '!reset' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 print_stats(3, True, channel=self._channel)
@@ -484,7 +482,7 @@ class SlackResponse:
                 count +=1
             if '!add' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names))
-                num = add_to_db(self._all_names, self._lower_text[-3:], self._all_ids)
+                num = add_to_db(self._all_names[:-1], self._lower_text[-3:], self._all_ids[:-1])
                 count +=1
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
