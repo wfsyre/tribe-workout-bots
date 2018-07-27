@@ -44,7 +44,6 @@ def webhook():
             else:
                 print("executing commands")
                 obj.execute_commands()
-    print(obj)
     return "ok", 200
     # if 'UB5J40V7D' not in data['event']['user']:
     #     if 'files' not in list(data['event'].keys()):    #messages without attachments go here
@@ -606,10 +605,12 @@ class SlackResponse:
                 send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names))
                 num = add_to_db(self._all_names, self._lower_text[-3:], self._all_ids)
                 count +=1
-            if self._points_to_add >= 0:
+            if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text:
                 self.like_message(reaction='thumbsdown')
+            if count >= 1:
+                self.like_message()
 
 
     def like_message(self, reaction='robot_face'):
