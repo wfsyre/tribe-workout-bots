@@ -32,8 +32,8 @@ def webhook():
 
 
     count = 0
-    if 'files' not in list(data['event'].keys()):    #messages without attachments go here
-        if 'bot_id' not in list(data['event'].keys()):
+    if 'UB5J40V7D' not in data['event']['user']:
+        if 'files' not in list(data['event'].keys()):    #messages without attachments go here
             print('no attachment found')
             print(data)
             print(data['event'].keys())
@@ -79,11 +79,7 @@ def webhook():
                     like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
                 if 'groupme' in lower_text:
                     like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
-        else:
-            print("Don't respond to myself")
-
-    else:  #messages with attachments go here
-        if data['event']['bot_id'] is None:
+        else: # messages with attachments
             print("attachment found")
             print(data)
             if data['event']['subtype'] == 'file_share':
@@ -123,8 +119,8 @@ def webhook():
                     like_file(data['event']['files'][0]['id']) 
                 else:
                     like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
-        else:
-            print("Don't respond to myself")
+    else:
+        print("Don't respond to myself")
 
     if count >= 1:
         like_message(data['event']['channel'], data['event']['ts'])
