@@ -113,7 +113,7 @@ def webhook():
             print("NUM: ", num)
             if num == len(names):
                 print("Success, liking file now", len(names))
-                like_file(data['event']['files'][0]['id']) 
+                like_massage(data['event']['channel'], data['event']['ts']) 
             else:
                 print("failure, skull", len(names))
                 like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
