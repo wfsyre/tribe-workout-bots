@@ -45,7 +45,7 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
-    return jsonify({'ok': True})
+    return jsonify({'ok': True}), 200
 
 
 def send_tribe_message(msg, channel="#random"):
