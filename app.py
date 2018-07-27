@@ -483,7 +483,7 @@ class SlackResponse:
         self._user_id = self._event['user']
         self._bot = 'bot_id' not in list(self._event.keys()) or self._event['bot_id'] == None
         self.parse_text_for_mentions()
-        self._all_ids = self._mentions + self._user_id
+        self._all_ids = self._mentions + [self._user_id]
         self.match_names_to_ids()
         self._lower_text = self._text.lower()
         self.parse_for_additions()
