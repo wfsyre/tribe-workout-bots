@@ -522,6 +522,7 @@ class SlackResponse:
         SWIM_POINTS = 1.0
         PICKUP_POINTS = 0.5
         BIKING_POINTS = 1.0
+        self._points_to_add = 0
         if '!gym' in self._lower_text:
             self._points_to_add += GYM_POINTS
         if '!track' in self._lower_text:
