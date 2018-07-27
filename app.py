@@ -383,11 +383,14 @@ def like_message(chan, time, reaction='robot_face'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     res = sc.api_call("reactions.add", name=reaction, channel=chan, timestamp=time)
+    print(res)
 
 def like_file(f, reaction='robot_face'):
+    print(f)
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     res = sc.api_call("reactions.add", name=reaction, file=f)
+    print(res)
 
 
 def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from each of the "names" in the db
