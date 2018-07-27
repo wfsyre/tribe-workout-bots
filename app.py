@@ -32,6 +32,7 @@ def webhook():
 
 
     count = 0
+    print(data)
     obj = SlackResponse(data)
     if not obj._bot:
         print("not a bot")
@@ -44,97 +45,97 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
-    if 'UB5J40V7D' not in data['event']['user']:
-        if 'files' not in list(data['event'].keys()):    #messages without attachments go here
-            print('no attachment found')
-            print(data)
-            print(data['event'].keys())
-            lower_text = data['event']['text'].lower()
-            names, ids = get_names_ids_from_message(data['event']['text'])
-            repeat = add_num_posts([data['event']['user']], data['event_time'])
-            if not repeat:
-                if "!leaderboard" in lower_text:
-                    count += 1
-                    print_stats(3, True, channel=data['event']['channel'])
-                if '!workouts' in lower_text:  # display the leaderboard for who works out the most
-                    count +=1 
-                    print_stats(2, True, channel=data['event']['channel'])
-                if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
-                    count +=1
-                    print_stats(1, True, channel=data['event']['channel'])
-                if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
-                    count +=1
-                    print_stats(1, True, channel=data['event']['channel'])
-                if '!heatcheck' in lower_text:
-                    count +=1
-                    send_tribe_message("Kenta wins", channel=data['event']['channel'])
-                if '!regionals' in lower_text:
-                    count +=1
-                    now = datetime.now()
-                    regionals = datetime(2019, 4, 28, 8, 0, 0)
-                    until = regionals - now
-                    send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=data['event']['channel'])
-                if '!subtract' in lower_text and data['event']['channel'] == BOT_CHANNEL:
-                    send_debug_message("SUBTRACTING: " + lower_text[-3:] + " FROM: " + str(names))
-                    num = subtract_from_db(names, float(lower_text[-3:]), ids)
-                    count +=1
-                if '!reset' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
-                    print_stats(3, True, channel=data['event']['channel'])
-                    reset_scores()
-                    send_debug_message("Reseting leaderboard")
-                    count +=1
-                if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
-                    send_debug_message("ADDING: " + lower_text[-3:] + " TO: " + str(names))
-                    num = add_to_db(names, lower_text[-3:], ids)
-                    count +=1
-                if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or '!pickup' in lower_text or '!swim' in lower_text or '!bike' in lower_text:
-                    like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
-                if 'groupme' in lower_text:
-                    like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
-        else: # messages with attachments
-            print("attachment found")
-            print(data)
-            lower_text = data['event']['text'].lower()
-            print(data['event']['text'] + " " + data['event']['user'])
-            names, ids = get_names_ids_from_message(data['event']['text'] + " <@" + data['event']['user'] + ">")
-            print("names ", names, "ids", ids)
-            repeat = add_num_posts([data['event']['user']], data['event_time'])
-            num = -1
-            if not repeat:
-                if "!gym" in lower_text:
-                    print("gym found")
-                    num = add_to_db(names, GYM_POINTS, ids)
-                if "!track" in lower_text:
-                    print("track found")
-                    num = add_to_db(names, TRACK_POINTS, ids)
-                if "!throw" in lower_text:
-                    print("throw found")
-                    num = add_to_db(names, THROW_POINTS, ids)
-                if "!swim" in lower_text:
-                    print("swim found")
-                    num = add_to_db(names, SWIM_POINTS, ids)
-                if "!pickup" in lower_text:
-                    print("pickup found")
-                    num = add_to_db(names, PICKUP_POINTS, ids)
-                if "!bike" in lower_text:
-                    print("bike found")
-                    num = add_to_db(names, BIKING_POINTS, ids)
-                if "!test" in lower_text:
-                    print("test found")
-                    num = add_to_db(names, 0, ids)
-                print("NUM: ", num)
-                if num == len(names):
-                    print("Success, liking file now", len(names))
-                    like_message(data['event']['channel'], data['event']['ts']) 
-                else:
-                    print("failure, skull", len(names))
-                    like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
-    else:
-        print("Don't respond to myself")
+    # if 'UB5J40V7D' not in data['event']['user']:
+    #     if 'files' not in list(data['event'].keys()):    #messages without attachments go here
+    #         print('no attachment found')
+    #         print(data)
+    #         print(data['event'].keys())
+    #         lower_text = data['event']['text'].lower()
+    #         names, ids = get_names_ids_from_message(data['event']['text'])
+    #         repeat = add_num_posts([data['event']['user']], data['event_time'])
+    #         if not repeat:
+    #             if "!leaderboard" in lower_text:
+    #                 count += 1
+    #                 print_stats(3, True, channel=data['event']['channel'])
+    #             if '!workouts' in lower_text:  # display the leaderboard for who works out the most
+    #                 count +=1 
+    #                 print_stats(2, True, channel=data['event']['channel'])
+    #             if '!talkative' in lower_text:  # displays the leaderboard for who posts the most
+    #                 count +=1
+    #                 print_stats(1, True, channel=data['event']['channel'])
+    #             if '!handsome' in lower_text:  # displays the leaderboard for who posts the most
+    #                 count +=1
+    #                 print_stats(1, True, channel=data['event']['channel'])
+    #             if '!heatcheck' in lower_text:
+    #                 count +=1
+    #                 send_tribe_message("Kenta wins", channel=data['event']['channel'])
+    #             if '!regionals' in lower_text:
+    #                 count +=1
+    #                 now = datetime.now()
+    #                 regionals = datetime(2019, 4, 28, 8, 0, 0)
+    #                 until = regionals - now
+    #                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=data['event']['channel'])
+    #             if '!subtract' in lower_text and data['event']['channel'] == BOT_CHANNEL:
+    #                 send_debug_message("SUBTRACTING: " + lower_text[-3:] + " FROM: " + str(names))
+    #                 num = subtract_from_db(names, float(lower_text[-3:]), ids)
+    #                 count +=1
+    #             if '!reset' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
+    #                 print_stats(3, True, channel=data['event']['channel'])
+    #                 reset_scores()
+    #                 send_debug_message("Reseting leaderboard")
+    #                 count +=1
+    #             if '!add' in lower_text and data['event']['user'] == 'UAPHZ3SJZ':
+    #                 send_debug_message("ADDING: " + lower_text[-3:] + " TO: " + str(names))
+    #                 num = add_to_db(names, lower_text[-3:], ids)
+    #                 count +=1
+    #             if '!gym' in lower_text or '!throw' in lower_text or '!track' in lower_text or '!pickup' in lower_text or '!swim' in lower_text or '!bike' in lower_text:
+    #                 like_message(data['event']['channel'], data['event']['ts'], reaction='angry')
+    #             if 'groupme' in lower_text:
+    #                 like_message(data['event']['channel'], data['event']['ts'], reaction='thumbsdown')
+    #     else: # messages with attachments
+    #         print("attachment found")
+    #         print(data)
+    #         lower_text = data['event']['text'].lower()
+    #         print(data['event']['text'] + " " + data['event']['user'])
+    #         names, ids = get_names_ids_from_message(data['event']['text'] + " <@" + data['event']['user'] + ">")
+    #         print("names ", names, "ids", ids)
+    #         repeat = add_num_posts([data['event']['user']], data['event_time'])
+    #         num = -1
+    #         if not repeat:
+    #             if "!gym" in lower_text:
+    #                 print("gym found")
+    #                 num = add_to_db(names, GYM_POINTS, ids)
+    #             if "!track" in lower_text:
+    #                 print("track found")
+    #                 num = add_to_db(names, TRACK_POINTS, ids)
+    #             if "!throw" in lower_text:
+    #                 print("throw found")
+    #                 num = add_to_db(names, THROW_POINTS, ids)
+    #             if "!swim" in lower_text:
+    #                 print("swim found")
+    #                 num = add_to_db(names, SWIM_POINTS, ids)
+    #             if "!pickup" in lower_text:
+    #                 print("pickup found")
+    #                 num = add_to_db(names, PICKUP_POINTS, ids)
+    #             if "!bike" in lower_text:
+    #                 print("bike found")
+    #                 num = add_to_db(names, BIKING_POINTS, ids)
+    #             if "!test" in lower_text:
+    #                 print("test found")
+    #                 num = add_to_db(names, 0, ids)
+    #             print("NUM: ", num)
+    #             if num == len(names):
+    #                 print("Success, liking file now", len(names))
+    #                 like_message(data['event']['channel'], data['event']['ts']) 
+    #             else:
+    #                 print("failure, skull", len(names))
+    #                 like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
+    # else:
+    #     print("Don't respond to myself")
 
-    if count >= 1:
-        like_message(data['event']['channel'], data['event']['ts'])
-    return "ok", 200
+    # if count >= 1:
+    #     like_message(data['event']['channel'], data['event']['ts'])
+    # return "ok", 200
 
 
 def send_tribe_message(msg, channel="#random"):
@@ -233,29 +234,29 @@ def get_group_info():
     json = requests.get(url).json()
     return json
 
-def parse_text_for_mentions(text):
-    indicies = []
-    mention_ids = []
-    i = 0
-    while(i < len(text)):
-        temp = text.find('@', i)
-        if temp == -1:
-            i = len(text)
-        else:
-            indicies.append(temp)
-            i = temp + 1
-    for index in indicies:
-        mention_ids.append(text[index + 1:text.find('>', index)])
-    return mention_ids
+# def parse_text_for_mentions(text):
+#     indicies = []
+#     mention_ids = []
+#     i = 0
+#     while(i < len(text)):
+#         temp = text.find('@', i)
+#         if temp == -1:
+#             i = len(text)
+#         else:
+#             indicies.append(temp)
+#             i = temp + 1
+#     for index in indicies:
+#         mention_ids.append(text[index + 1:text.find('>', index)])
+#     return mention_ids
 
-def match_names_to_ids(mention_ids):
-    mention_names = []
-    info = get_group_info()
-    for id in mention_ids:
-        for member in info['members']:
-            if member['id'] == id:
-                mention_names.append(member['real_name'])
-    return mention_names
+# def match_names_to_ids(mention_ids):
+#     mention_names = []
+#     info = get_group_info()
+#     for id in mention_ids:
+#         for member in info['members']:
+#             if member['id'] == id:
+#                 mention_names.append(member['real_name'])
+#     return mention_names
    
 
 
@@ -389,18 +390,18 @@ def stringFromSeconds(seconds):
         return "%d days, %d hours, %d minutes, %d seconds" % (days, minutes, hours, seconds)
 
 
-def like_message(chan, time, reaction='robot_face'):
-    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
-    sc = SlackClient(slack_token)
-    res = sc.api_call("reactions.add", name=reaction, channel=chan, timestamp=time)
-    print(res)
+# def like_message(chan, time, reaction='robot_face'):
+#     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+#     sc = SlackClient(slack_token)
+#     res = sc.api_call("reactions.add", name=reaction, channel=chan, timestamp=time)
+#     print(res)
 
-def like_file(f, reaction='robot_face'):
-    print(f)
-    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
-    sc = SlackClient(slack_token)
-    res = sc.api_call("reactions.add", name=reaction, file=f)
-    print(res)
+# def like_file(f, reaction='robot_face'):
+#     print(f)
+#     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+#     sc = SlackClient(slack_token)
+#     res = sc.api_call("reactions.add", name=reaction, file=f)
+#     print(res)
 
 
 def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from each of the "names" in the db
