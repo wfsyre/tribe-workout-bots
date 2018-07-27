@@ -15,6 +15,13 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
+
+@app.route('/test', methods=['POST'])
+def testMethod():
+    print(test)
+
+
+
 @app.route('/', methods=['POST'])
 def webhook():
     GYM_POINTS = 1.0
@@ -46,6 +53,7 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
+    redirect('test')
     return jsonify({'ok': True}), 200
 
 
