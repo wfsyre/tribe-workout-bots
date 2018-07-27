@@ -32,6 +32,18 @@ def webhook():
 
 
     count = 0
+    obj = SlackResponse(data)
+    if not obj._bot:
+        print("not a bot")
+        if not obj.isRepeat():
+            print("not a repeat")
+            if obj._points_to_add > 0:
+                print("no points to add")
+                obj.handle_db()
+            else:
+                print("executing commands")
+                obj.execute_commands()
+    print(obj)
     if 'UB5J40V7D' not in data['event']['user']:
         if 'files' not in list(data['event'].keys()):    #messages without attachments go here
             print('no attachment found')
@@ -122,8 +134,6 @@ def webhook():
 
     if count >= 1:
         like_message(data['event']['channel'], data['event']['ts'])
-    obj = SlackResponse(data)
-    print(obj)
     return "ok", 200
 
 
@@ -533,17 +543,18 @@ class SlackResponse:
 
 
     def handle_db(self):
-        if not add_num_posts([self._user_id], self._event['event_time']):
-            self._repeat = False
-            num = add_to_db(self._all_names, self._points_to_add, self._all_ids)
-            if num == len(self._all_names):
-                self.like_message() 
-            else:
-                self.like_message(reaction='skull_and_crossbones')
+        num = add_to_db(self._all_names, self._points_to_add, self._all_ids)
+        if num == len(self._all_names):
+            self.like_message() 
         else:
-            self._repeat = True
-            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s"
-                % (self._user_id, self._ts, self._all_names[-1]))
+            self.like_message(reaction='skull_and_crossbones')
+
+
+    def isRepeat(self):
+        self._repeat = add_num_posts([self._user_id], self._event['event_time'])
+        if self._repeat:
+            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (self._user_id, self._ts, str(self._all_names))
+
 
     def execute_commands(self):
         count = 0
@@ -589,14 +600,9 @@ class SlackResponse:
                 self.like_message(reaction='thumbsdown')
 
     def like_message(self, reaction='robot_face'):
-        if len(self._files) > 0:
-            slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
-            sc = SlackClient(slack_token)
-            res = sc.api_call("reactions.add", name=reaction, file=self._files[0]['id'])
-        else:
-            slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
-            sc = SlackClient(slack_token)
-            res = sc.api_call("reactions.add", name=reaction, channel=self._channel, timestamp=self._ts)
+        slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+        sc = SlackClient(slack_token)
+        res = sc.api_call("reactions.add", name=reaction, channel=self._channel, timestamp=self._ts)
             
 
     def __repr__(self):
