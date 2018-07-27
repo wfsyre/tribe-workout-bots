@@ -53,7 +53,7 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
-    redirect(url_for('test'))
+    redirect('test')
     return jsonify({'ok': True}), 200
 
 
