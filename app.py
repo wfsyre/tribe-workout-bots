@@ -16,11 +16,6 @@ app = Flask(__name__)
 
 
 
-@app.route('/test', methods=['POST'])
-def testMethod():
-    print("test")
-
-
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -36,8 +31,6 @@ def webhook():
         lower_text = data['event']['text'].lower()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
-    print(request.__dict__)
-
 
     count = 0
     print(data)
@@ -53,7 +46,6 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
-    redirect('test')
     return jsonify({'ok': True}), 200
 
 
