@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 @app.route('/test', methods=['POST'])
 def testMethod():
-    print(test)
+    print("test")
 
 
 
