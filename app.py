@@ -147,8 +147,7 @@ def get_names_ids_from_message(lower_text):
     return names, ids
 
 
-def add_num_posts(mention_id, event_time):
-    name = match_names_to_ids(mention_id)[0]
+def add_num_posts(mention_id, event_time, name):
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
     try:
         urllib.parse.uses_netloc.append("postgres")
@@ -524,6 +523,7 @@ class SlackResponse:
                 if member['id'] == id:
                     mention_names.append(member['real_name'])
         self._all_names = mention_names
+        self._name = self._all_names[-1]
     
     def parse_for_additions(self):
         GYM_POINTS = 1.0
@@ -557,7 +557,7 @@ class SlackResponse:
 
 
     def isRepeat(self):
-        self._repeat = add_num_posts([self._user_id], self._event_time)
+        self._repeat = add_num_posts([self._user_id], self._event_time, self._name)
         if self._repeat:
             send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (self._user_id, self._ts, str(self._all_names)))
 
