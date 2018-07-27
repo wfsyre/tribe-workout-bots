@@ -488,13 +488,15 @@ class SlackResponse:
         else:
             self._text = ''
         self._channel = self._event['channel']
-        self._all_ids = self._mentions
         if not self._bot:
             self._user_id = self._event['user']
-            self._all_ids = self._mentions + [self._user_id]
         else:
             self.user_id = self._event['bot_id']
         self.parse_text_for_mentions()
+        if not self._bot:
+            self._all_ids = self._mentions + [self._user_id]
+        else:
+            self._all_ids = self._mentions
         self.match_names_to_ids()
         self._lower_text = self._text.lower()
         self.parse_for_additions()
