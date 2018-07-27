@@ -620,21 +620,7 @@ class SlackResponse:
             
 
     def __repr__(self):
-        return ("SlackResponse Object with parameters:\n event: %s\n, event_type: %s\n"
-            "files: %s\n ts: %s\n text: %s\n channel: %s\n user_id: %s\n"
-            "bot: %s\n mentions: %s\n points: %s\n all_ids: %s\n all_names: %s" % (
-            self._event, 
-            self._event_type,
-            str(self._files),
-            str(self._ts),
-            self._text,
-            self._channel,
-            self._user_id,
-            str(self._bot),
-            str(self._mentions),
-            str(self._points_to_add),
-            str(self._all_ids),
-            str(self._all_names)))
+        return str(self.__dict__)
     
         
         
