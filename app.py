@@ -527,7 +527,10 @@ class SlackResponse:
                 if member['id'] == id:
                     mention_names.append(member['real_name'])
         self._all_names = mention_names
-        self._name = self._all_names[-1]
+        if len(self._all_names) > 0:
+            self._name = self._all_names[-1]
+        else:
+            self._name = ""
     
     def parse_for_additions(self):
         GYM_POINTS = 1.0
