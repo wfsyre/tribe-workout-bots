@@ -82,43 +82,41 @@ def webhook():
         else: # messages with attachments
             print("attachment found")
             print(data)
-            if data['event']['subtype'] == 'file_share':
-                print("found an uploaded image")
-                lower_text = data['event']['text'].lower()
-                print(data['event']['text'])
-                print(data['event']['user'])
-                print(data['event']['text'] + " " + data['event']['user'])
-                names, ids = get_names_ids_from_message(data['event']['text'] + " <@" + data['event']['user'] + ">")
-                print("names ", names, "ids", ids)
-                repeat = add_num_posts([data['event']['user']], data['event_time'])
-                num = -1
-                if not repeat:
-                    if "!gym" in lower_text:
-                        print("gym found")
-                        num = add_to_db(names, GYM_POINTS, ids)
-                    if "!track" in lower_text:
-                        print("track found")
-                        num = add_to_db(names, TRACK_POINTS, ids)
-                    if "!throw" in lower_text:
-                        print("throw found")
-                        num = add_to_db(names, THROW_POINTS, ids)
-                    if "!swim" in lower_text:
-                        print("swim found")
-                        num = add_to_db(names, SWIM_POINTS, ids)
-                    if "!pickup" in lower_text:
-                        print("pickup found")
-                        num = add_to_db(names, PICKUP_POINTS, ids)
-                    if "!bike" in lower_text:
-                        print("bike found")
-                        num = add_to_db(names, BIKING_POINTS, ids)
-                    if "!test" in lower_text:
-                        print("test found")
-                        num = add_to_db(names, 0, ids)
-                print("NUM: ", num)
-                if num == len(names):
-                    like_file(data['event']['files'][0]['id']) 
-                else:
-                    like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
+            lower_text = data['event']['text'].lower()
+            print(data['event']['text'] + " " + data['event']['user'])
+            names, ids = get_names_ids_from_message(data['event']['text'] + " <@" + data['event']['user'] + ">")
+            print("names ", names, "ids", ids)
+            repeat = add_num_posts([data['event']['user']], data['event_time'])
+            num = -1
+            if not repeat:
+                if "!gym" in lower_text:
+                    print("gym found")
+                    num = add_to_db(names, GYM_POINTS, ids)
+                if "!track" in lower_text:
+                    print("track found")
+                    num = add_to_db(names, TRACK_POINTS, ids)
+                if "!throw" in lower_text:
+                    print("throw found")
+                    num = add_to_db(names, THROW_POINTS, ids)
+                if "!swim" in lower_text:
+                    print("swim found")
+                    num = add_to_db(names, SWIM_POINTS, ids)
+                if "!pickup" in lower_text:
+                    print("pickup found")
+                    num = add_to_db(names, PICKUP_POINTS, ids)
+                if "!bike" in lower_text:
+                    print("bike found")
+                    num = add_to_db(names, BIKING_POINTS, ids)
+                if "!test" in lower_text:
+                    print("test found")
+                    num = add_to_db(names, 0, ids)
+            print("NUM: ", num)
+            if num == len(names):
+                print("Success, liking file now", len(names))
+                like_file(data['event']['files'][0]['id']) 
+            else:
+                print("failure, skull", len(names))
+                like_file(data['event']['files'][0]['id'], reaction='skull_and_crossbones')
     else:
         print("Don't respond to myself")
 
