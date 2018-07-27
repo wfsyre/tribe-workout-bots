@@ -47,7 +47,7 @@ def webhook():
                 obj.execute_commands()
     print(obj)
     resp = make_response("OK", 200,)
-    print resp
+    print(resp)
     return resp
 
 
