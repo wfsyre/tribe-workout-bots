@@ -474,6 +474,7 @@ class SlackResponse:
     # all_names
     def __init__(self, json_data):
         self._event = json_data['event']
+        self._event_time = json_data['event_time']
         self._event_type = self._event['type']
         if 'files' in list(self._event.keys()):
             self._files = self._event['files']
@@ -543,22 +544,22 @@ class SlackResponse:
 
 
     def handle_db(self):
-        num = add_to_db(self._all_names, self._points_to_add, self._all_ids)
-        if num == len(self._all_names):
-            self.like_message() 
-        else:
-            self.like_message(reaction='skull_and_crossbones')
+        if not self._repeat()
+            num = add_to_db(self._all_names, self._points_to_add, self._all_ids)
+            if num == len(self._all_names):
+                self.like_message() 
+            else:
+                self.like_message(reaction='skull_and_crossbones')
 
 
     def isRepeat(self):
-        self._repeat = add_num_posts([self._user_id], self._event['event_time'])
+        self._repeat = add_num_posts([self._user_id], self._event_time)
         if self._repeat:
             send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (self._user_id, self._ts, str(self._all_names)))
 
 
     def execute_commands(self):
         count = 0
-        self._repeat = add_num_posts([self._user_id], self._event['event_time'])
         if not self._repeat:
             if "!leaderboard" in self._lower_text:
                 count += 1
@@ -598,6 +599,7 @@ class SlackResponse:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text:
                 self.like_message(reaction='thumbsdown')
+
 
     def like_message(self, reaction='robot_face'):
         slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
