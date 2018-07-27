@@ -10,7 +10,7 @@ from datetime import datetime
 from slackclient import SlackClient
 from psycopg2 import sql
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, url_for
 
 app = Flask(__name__)
 
@@ -53,7 +53,7 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
-    redirect('test')
+    redirect(url_for('test'))
     return jsonify({'ok': True}), 200
 
 
