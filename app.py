@@ -46,6 +46,8 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
+    resp = jsonify({'ok': True}), 200
+    print(resp)
     return jsonify({'ok': True}), 200
 
 
