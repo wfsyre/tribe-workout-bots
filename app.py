@@ -544,7 +544,7 @@ class SlackResponse:
 
 
     def handle_db(self):
-        if not self._repeat()
+        if not self._repeat:
             num = add_to_db(self._all_names, self._points_to_add, self._all_ids)
             if num == len(self._all_names):
                 self.like_message() 
