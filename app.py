@@ -34,6 +34,7 @@ def webhook():
         return jsonify({'challenge': data['challenge']})
 
     count = 0
+    print(request)
     print(data)
     obj = SlackResponse(data)
     if not obj._bot:
