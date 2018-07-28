@@ -46,16 +46,11 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
-    return make_response("OK", 200,)
+    return make_response("Ok", 200,)
 
 
 def send_tribe_message(msg, channel="#random"):
     send_message(msg, channel)
-
-def get_names_ids_from_message(lower_text):
-    ids = parse_text_for_mentions(lower_text)
-    names = match_names_to_ids(ids)
-    return names, ids
 
 
 def add_num_posts(mention_id, event_time, name):
@@ -336,7 +331,7 @@ def reset_scores():  # reset the scores of everyone
         if cursor is not None:
             cursor.close()
             conn.close()
-        return num_committed
+
 
 class SlackResponse:
     # event
@@ -500,8 +495,3 @@ class SlackResponse:
 
     def __repr__(self):
         return str(self.__dict__)
-    
-        
-        
-
-
