@@ -19,6 +19,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def webhook():
+    print("event received")
     GYM_POINTS = 1.0
     TRACK_POINTS = 1.0
     THROW_POINTS = 0.5
@@ -46,6 +47,7 @@ def webhook():
                 print("executing commands")
                 obj.execute_commands()
     print(obj)
+    print("responding")
     return make_response("Ok", 200,)
 
 
@@ -168,6 +170,7 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
                     (str(addition), ids[x], names[x],))
                 conn.commit()
                 send_debug_message("committed %s" % names[x])
+                print("committed %s" % names[x])
                 num_committed += 1
             else:
                 send_debug_message("invalid workout poster found " + names[x])
