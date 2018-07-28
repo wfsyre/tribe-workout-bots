@@ -84,7 +84,7 @@ def add_num_posts(mention_id, event_time, name):
                                [name, mention_id[0], event_time])
                 send_debug_message("%s is new to Tribe" % name)
             else:
-                send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (mention_id[0], event_time, name))
+                send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (mention_id[0], event_time, name), bot_name=name)
             conn.commit()
             cursor.close()
             conn.close()
