@@ -126,7 +126,7 @@ def print_stats(datafield, rev, channel="#random"):
         send_debug_message(error)
 
 
-def send_message(msg, chan="#bot_testing", url='', bot_name='Werkout Bot'):
+def send_message(msg, chan="#bot_testing", url='', bot_name='Workout Bot'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     if url == '':
@@ -134,8 +134,8 @@ def send_message(msg, chan="#bot_testing", url='', bot_name='Werkout Bot'):
     else:
         sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name, icon_url=url)
 
-def send_debug_message(msg):
-    send_message(msg, chan="#bot_testing")
+def send_debug_message(msg, bot_name='Workout Bot'):
+    send_message(msg, chan="#bot_testing", bot_name=bot_name)
 
 def get_group_info():
     url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
@@ -170,7 +170,7 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
                     "now(), slack_id=%s WHERE name = %s"),
                     (str(addition), ids[x], names[x],))
                 conn.commit()
-                send_debug_message("committed %s" % names[x])
+                send_debug_message("committed %s with %s points" % names[x], str(addition))
                 print("committed %s" % names[x])
                 num_committed += 1
             else:
