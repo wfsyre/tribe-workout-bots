@@ -34,8 +34,6 @@ def webhook():
         return jsonify({'challenge': data['challenge']})
 
     count = 0
-    print(request.__dict__)
-    print(request.__dict__.keys())
     print('HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()))
     if 'HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()):
         print("Retry Number" + request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM'])
@@ -57,10 +55,6 @@ def webhook():
     print(obj)
     print("responding")
     return make_response("Ok", 200,)
-
-
-def send_tribe_message(msg, channel="#random"):
-    send_message(msg, channel)
 
 
 def add_num_posts(mention_id, event_time, name):
@@ -106,7 +100,7 @@ def add_num_posts(mention_id, event_time, name):
         send_debug_message(error)
 
 
-def print_stats(datafield, rev, channel="#random"):
+def collect_stats(datafield, rev):
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -126,7 +120,7 @@ def print_stats(datafield, rev, channel="#random"):
         string1 = "Leaderboard:\n"
         for x in range(0, len(leaderboard)):
             string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
-        send_tribe_message(string1, channel)
+        return string1
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -143,6 +137,9 @@ def send_message(msg, chan="#bot_testing", url='', bot_name='Workout Bot'):
 
 def send_debug_message(msg, bot_name='Workout Bot'):
     send_message(msg, chan="#bot_testing", bot_name=bot_name)
+
+def send_tribe_message(msg, channel="#random", bot_name="Workout Bot"):
+    send_message(msg, channel, bot_name=bot_name)
 
 def get_group_info():
     url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
@@ -456,16 +453,20 @@ class SlackResponse:
         if not self._repeat:
             if "!leaderboard" in self._lower_text:
                 count += 1
-                print_stats(3, True, channel=self._channel)
+                to_print = collect_stats(3, True)
+                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
             if '!workouts' in self._lower_text:  # display the leaderboard for who works out the most
                 count +=1 
-                print_stats(2, True, channel=self._channel)
+                to_print = collect_stats(2, True)
+                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
             if '!talkative' in self._lower_text:  # displays the leaderboard for who posts the most
                 count +=1
-                print_stats(1, True, channel=self._channel)
+                to_print = collect_stats(1, True)
+                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
             if '!handsome' in self._lower_text:  # displays the leaderboard for who posts the most
                 count +=1
-                print_stats(1, True, channel=self._channel)
+                to_print = collect_stats(1, True)
+                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
             if '!heatcheck' in self._lower_text:
                 count +=1
                 send_tribe_message("Kenta wins", channel=self._channel)
@@ -480,7 +481,8 @@ class SlackResponse:
                 num = subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
                 count +=1
             if '!reset' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
-                print_stats(3, True, channel=self._channel)
+                to_print = collect_stats(3, True)
+                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
                 reset_scores()
                 send_debug_message("Reseting leaderboard")
                 count +=1
@@ -490,7 +492,7 @@ class SlackResponse:
                 count +=1
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
-            if 'groupme' in self._lower_text:
+            if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
                 self.like_message(reaction='thumbsdown')
             if count >= 1:
                 self.like_message()
