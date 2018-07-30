@@ -52,6 +52,10 @@ def webhook():
             else:
                 print("executing commands")
                 obj.execute_commands()
+        else:
+            print("found a repeat")
+    else:
+        print("found a bot")
     print(obj)
     print("responding")
     return make_response("Ok", 200,)
