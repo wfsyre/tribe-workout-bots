@@ -363,7 +363,7 @@ class SlackResponse:
             self._bot = True
             self._channel = self._event['channel']
             if self._channel != 'GBR6LQBMJ':
-                send_debug_message("Found a deleted message in channel %s" % (self._channel))
+                send_debug_message("Found a deleted message in channel %s written by %s" % (self._channel, self._previous_message['user']))
                 send_debug_message(self._previous_message['text'])
         elif self._subtype == 'bot_message':
             self._bot = True
