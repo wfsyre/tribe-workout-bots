@@ -522,7 +522,7 @@ class SlackResponse:
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
                 self.like_message(reaction='thumbsdown')
             if 'good bot' in self._lower_text:
-                self.like_message(reaction='grin')
+                self.like_message(reaction='woman-tipping-hand')
             if count >= 1:
                 self.like_message(reaction='octopus')
 
