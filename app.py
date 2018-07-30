@@ -495,7 +495,7 @@ class SlackResponse:
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
                 self.like_message(reaction='thumbsdown')
             if count >= 1:
-                self.like_message()
+                self.like_message(reaction='octopus')
 
 
     def like_message(self, reaction='robot_face'):
