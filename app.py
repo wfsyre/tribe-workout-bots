@@ -127,13 +127,13 @@ def collect_stats(datafield, rev):
         send_debug_message(error)
 
 
-def send_message(msg, chan="#bot_testing", url='', bot_name='Workout Bot'):
+def send_message(msg, channel="#bot_testing", url='', bot_name='Workout Bot'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     if url == '':
-        sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name)
+        sc.api_call("chat.postMessage",channel=channel, text=msg, username=bot_name)
     else:
-        sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name, icon_url=url)
+        sc.api_call("chat.postMessage",channel=channel, text=msg, username=bot_name, icon_url=url)
 
 def send_debug_message(msg, bot_name='Workout Bot'):
     send_message(msg, chan="#bot_testing", bot_name=bot_name)
