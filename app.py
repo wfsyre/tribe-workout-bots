@@ -357,31 +357,38 @@ class SlackResponse:
     def __init__(self, json_data):
         self._event = json_data['event']
         self._event_time = json_data['event_time']
-        self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
-        self._event_type = self._event['type']
-        if 'files' in list(self._event.keys()):
-            self._files = self._event['files']
-        else:
-            self._files = []
-        self._ts = self._event['ts']
-        if 'text' in list(self._event.keys()):
-            self._text = self._event['text']
-        else:
-            self._text = ''
-        self._channel = self._event['channel']
-        self._channel_type = self._event['channel_type']
-        if not self._bot:
-            self._user_id = self._event['user']
-        else:
-            self.user_id = self._event['bot_id'] if 'bot_id' in list(self._event.keys()) else ''
-        self.parse_text_for_mentions()
-        if not self._bot:
-            self._all_ids = self._mentions + [self._user_id]
-        else:
-            self._all_ids = self._mentions
-        self.match_names_to_ids()
-        self._lower_text = self._text.lower()
-        self.parse_for_additions()
+        self._subtype = self._event['subtype'] if 'subtype' in list(self._event.keys()) else 'message'
+        if self._subtype == 'message_deleted':
+            self._previous_message = self._event['previous_message']
+            self._bot = True
+        elif self._subtype == 'bot_message':
+            self._bot = True
+        elif self._subtype == 'message' or self._subtype == 'file_share:
+            self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
+            self._event_type = self._event['type']
+            if 'files' in list(self._event.keys()):
+                self._files = self._event['files']
+            else:
+                self._files = []
+            self._ts = self._event['ts']
+            if 'text' in list(self._event.keys()):
+                self._text = self._event['text']
+            else:
+                self._text = ''
+            self._channel = self._event['channel']
+            self._channel_type = self._event['channel_type']
+            if not self._bot:
+                self._user_id = self._event['user']
+            else:
+                self.user_id = self._event['bot_id'] if 'bot_id' in list(self._event.keys()) else ''
+            self.parse_text_for_mentions()
+            if not self._bot:
+                self._all_ids = self._mentions + [self._user_id]
+            else:
+                self._all_ids = self._mentions
+            self.match_names_to_ids()
+            self._lower_text = self._text.lower()
+            self.parse_for_additions()
         
 
     def parse_text_for_mentions(self):
