@@ -363,7 +363,7 @@ class SlackResponse:
             self._bot = True
         elif self._subtype == 'bot_message':
             self._bot = True
-        elif self._subtype == 'message' or self._subtype == 'file_share:
+        elif self._subtype == 'message' or self._subtype == 'file_share':
             self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
             self._event_type = self._event['type']
             if 'files' in list(self._event.keys()):
