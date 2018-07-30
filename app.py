@@ -357,7 +357,7 @@ class SlackResponse:
     def __init__(self, json_data):
         self._event = json_data['event']
         self._event_time = json_data['event_time']
-        self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None
+        self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
         self._event_type = self._event['type']
         if 'files' in list(self._event.keys()):
             self._files = self._event['files']
