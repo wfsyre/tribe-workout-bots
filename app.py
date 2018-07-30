@@ -361,22 +361,30 @@ class SlackResponse:
         if self._subtype == 'message_deleted':
             self._previous_message = self._event['previous_message']
             self._bot = True
+            self._channel = self._event['channel']
+            if self._channel != 'GBR6LQBMJ':
+                send_debug_message("Found a deleted message in channel %s" % (self._channel))
+                send_debug_message(self._previous_message['text'])
         elif self._subtype == 'bot_message':
             self._bot = True
+            self._channel_type = self._event['channel_type']
+            self._channel = self._event['channel']
         elif self._subtype == 'message' or self._subtype == 'file_share':
             self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
             self._event_type = self._event['type']
+            self._ts = self._event['ts']
+            self._channel = self._event['channel']
+            self._channel_type = self._event['channel_type']
             if 'files' in list(self._event.keys()):
                 self._files = self._event['files']
             else:
                 self._files = []
-            self._ts = self._event['ts']
+            
             if 'text' in list(self._event.keys()):
                 self._text = self._event['text']
             else:
                 self._text = ''
-            self._channel = self._event['channel']
-            self._channel_type = self._event['channel_type']
+            
             if not self._bot:
                 self._user_id = self._event['user']
             else:
