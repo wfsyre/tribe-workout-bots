@@ -371,9 +371,9 @@ class SlackResponse:
         self._channel = self._event['channel']
         self._channel_type = self._event['channel_type']
         if not self._bot:
-            self._user_id = self._event['user'] if 'user' in list(self._event.keys()) else self._event['message']['bot_id']
+            self._user_id = self._event['user']
         else:
-            self.user_id = self._event['bot_id']
+            self.user_id = self._event['bot_id'] if 'bot_id' in list(self._event.keys()) else ''
         self.parse_text_for_mentions()
         if not self._bot:
             self._all_ids = self._mentions + [self._user_id]
