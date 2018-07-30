@@ -136,7 +136,7 @@ def send_message(msg, channel="#bot_testing", url='', bot_name='Workout Bot'):
         sc.api_call("chat.postMessage",channel=channel, text=msg, username=bot_name, icon_url=url)
 
 def send_debug_message(msg, bot_name='Workout Bot'):
-    send_message(msg, chan="#bot_testing", bot_name=bot_name)
+    send_message(msg, channel="#bot_testing", bot_name=bot_name)
 
 def send_tribe_message(msg, channel="#random", bot_name="Workout Bot"):
     send_message(msg, channel, bot_name=bot_name)
@@ -369,6 +369,7 @@ class SlackResponse:
         else:
             self._text = ''
         self._channel = self._event['channel']
+        self._channel_type = self._event['channel_type']
         if not self._bot:
             self._user_id = self._event['user']
         else:
@@ -461,15 +462,15 @@ class SlackResponse:
             if '!workouts' in self._lower_text:  # display the leaderboard for who works out the most
                 count +=1 
                 to_print = collect_stats(2, True)
-                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
+                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
             if '!talkative' in self._lower_text:  # displays the leaderboard for who posts the most
                 count +=1
                 to_print = collect_stats(1, True)
-                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
+                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
             if '!handsome' in self._lower_text:  # displays the leaderboard for who posts the most
                 count +=1
                 to_print = collect_stats(1, True)
-                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
+                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
             if '!heatcheck' in self._lower_text:
                 count +=1
                 send_tribe_message("Kenta wins", channel=self._channel)
