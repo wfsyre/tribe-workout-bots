@@ -36,10 +36,10 @@ def webhook():
     count = 0
     print(request.__dict__)
     print(request.__dict__.keys())
-    print('HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__.keys()))
-    if 'HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__.keys()):
-        print("Retry Number" + request.__dict__['HTTP_X_SLACK_RETRY_NUM'])
-        send_debug_message(str(request.__dict__['HTTP_X_SLACK_RETRY_NUM']))
+    print('HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()))
+    if 'HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()):
+        print("Retry Number" + request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM'])
+        send_debug_message(str(request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM']))
     print(data)
     obj = SlackResponse(data)
     if not obj._bot:
@@ -447,8 +447,6 @@ class SlackResponse:
 
     def isRepeat(self):
         self._repeat = add_num_posts([self._user_id], self._event_time, self._name)
-        if self._repeat:
-            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (self._user_id, self._ts, str(self._all_names)))
 
 
     def execute_commands(self):
