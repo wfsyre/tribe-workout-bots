@@ -35,11 +35,11 @@ def webhook():
 
     count = 0
     print(request.__dict__)
-    print(request.keys())
-    print('HTTP_X_SLACK_RETRY_NUM' in list(request.keys()))
-    if 'HTTP_X_SLACK_RETRY_NUM' in list(request.keys()):
-        print("Retry Number" + request['HTTP_X_SLACK_RETRY_NUM'])
-        send_debug_message(str(request['HTTP_X_SLACK_RETRY_NUM']))
+    print(request.__dict__.keys())
+    print('HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__.keys()))
+    if 'HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__.keys()):
+        print("Retry Number" + request.__dict__['HTTP_X_SLACK_RETRY_NUM'])
+        send_debug_message(str(request.__dict__['HTTP_X_SLACK_RETRY_NUM']))
     print(data)
     obj = SlackResponse(data)
     if not obj._bot:
