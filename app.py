@@ -379,6 +379,7 @@ class SlackResponse:
             self._ts = self._event['ts']
             self._channel = self._event['channel']
             self._channel_type = self._event['channel_type']
+
             if 'files' in list(self._event.keys()):
                 self._files = self._event['files']
             else:
@@ -393,11 +394,14 @@ class SlackResponse:
                 self._user_id = self._event['user']
             else:
                 self.user_id = self._event['bot_id'] if 'bot_id' in list(self._event.keys()) else ''
+
             self.parse_text_for_mentions()
+
             if not self._bot:
                 self._all_ids = self._mentions + [self._user_id]
             else:
                 self._all_ids = self._mentions
+
             self.match_names_to_ids()
             self._lower_text = self._text.lower()
             self.parse_for_additions()
@@ -517,6 +521,8 @@ class SlackResponse:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
                 self.like_message(reaction='thumbsdown')
+            if 'good bot' in self._lower_text:
+                self.like_message(reaction='grin')
             if count >= 1:
                 self.like_message(reaction='octopus')
 
