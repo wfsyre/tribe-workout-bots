@@ -401,15 +401,18 @@ class SlackResponse:
 
     def match_names_to_ids(self):
         mention_ids = self._all_ids
+        self._all_avatars = []
         mention_names = []
         info = get_group_info()
         for id in mention_ids:
             for member in info['members']:
                 if member['id'] == id:
                     mention_names.append(member['real_name'])
+                    self._all_avatars.append(member['profile']['image_512'])
         self._all_names = mention_names
         if len(self._all_names) > 0:
             self._name = self._all_names[-1]
+            self._avatar_url = self._all_avatars[-1]
         else:
             self._name = ""
     
@@ -454,7 +457,7 @@ class SlackResponse:
             if "!leaderboard" in self._lower_text:
                 count += 1
                 to_print = collect_stats(3, True)
-                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
+                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
             if '!workouts' in self._lower_text:  # display the leaderboard for who works out the most
                 count +=1 
                 to_print = collect_stats(2, True)
