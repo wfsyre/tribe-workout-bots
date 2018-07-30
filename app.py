@@ -166,16 +166,16 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
         for x in range(0, len(names)):
             print("starting", names[x])
             cursor.execute(sql.SQL(
-                "SELECT workout_score FROM tribe_data WHERE name = %s"), (str(names[x]),))
+                "SELECT workout_score FROM tribe_data WHERE name = %s"), [str(names[x])])
             score = cursor.fetchall()[0][0]
             score = int(score)
             if score != -1:
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
                     "now(), slack_id=%s WHERE name = %s"),
-                    (str(addition), ids[x], names[x],))
+                    [str(addition), ids[x], names[x]])
                 conn.commit()
-                send_debug_message("committed %s with %s points" % names[x], str(addition))
+                send_debug_message("committed %s with %s points" % (names[x], str(addition)))
                 print("committed %s" % names[x])
                 num_committed += 1
             else:
@@ -476,7 +476,7 @@ class SlackResponse:
                 until = regionals - now
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
             if '!subtract' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
-                send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names))
+                send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]))
                 num = subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
                 count +=1
             if '!reset' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
@@ -485,7 +485,7 @@ class SlackResponse:
                 send_debug_message("Reseting leaderboard")
                 count +=1
             if '!add' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
-                send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names))
+                send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]))
                 num = add_to_db(self._all_names[:-1], self._lower_text[-3:], self._all_ids[:-1])
                 count +=1
             if self._points_to_add > 0:
