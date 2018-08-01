@@ -37,7 +37,6 @@ def webhook():
     print('HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()))
     if 'HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()):
         print("Retry Number" + request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM'])
-        send_debug_message("Slack retry number: " + str(request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM']))
         if int(request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM']):
             return make_response("Ok", 200,)
     print(data)
