@@ -43,6 +43,8 @@ def webhook():
     obj = SlackResponse(data)
     if not obj._bot:
         print("not a bot")
+        obj.isRepeat()
+        obj._repeat = False
         if obj._points_to_add > 0:
             print("points to add")
             obj.handle_db()
@@ -355,6 +357,7 @@ class SlackResponse:
     # all_names
     def __init__(self, json_data):
         self._event = json_data['event']
+        self._repeat = False
         self._event_time = json_data['event_time']
         self._subtype = self._event['subtype'] if 'subtype' in list(self._event.keys()) else 'message'
         if self._subtype == 'message_deleted':
