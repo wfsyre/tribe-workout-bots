@@ -43,16 +43,12 @@ def webhook():
     obj = SlackResponse(data)
     if not obj._bot:
         print("not a bot")
-        if not obj.isRepeat():
-            print("not a repeat")
-            if obj._points_to_add > 0:
-                print("points to add")
-                obj.handle_db()
-            else:
-                print("executing commands")
-                obj.execute_commands()
+        if obj._points_to_add > 0:
+            print("points to add")
+            obj.handle_db()
         else:
-            print("found a repeat")
+            print("executing commands")
+            obj.execute_commands()
     else:
         print("found a bot")
     print(obj)
