@@ -52,6 +52,10 @@ def webhook():
             else:
                 print("executing commands")
                 obj.execute_commands()
+    elif obj._calendar:
+        print("found a calendar reminder")
+        send_debug_message(obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date)
+
     print(obj)
     print("responding")
     return make_response("Ok", 200,)
@@ -364,6 +368,19 @@ class SlackResponse:
             self._files = self._event['files']
         else:
             self._files = []
+        if 'attachments' in list(self._event.keys()):
+            self._calendar = True
+            self._calendar_text = self._event['attachments']['text']
+            self._calendar_title = self._event['attachments']['title']
+            if self._calendar_title == 'Practice':
+                self._calendar_date = self._calendar_text[self._calendar_text.index('|'):]
+                print(self._calendar_date)
+                self._calendar_date = self._calendar_date[0:self._calendar_date.index('from') - 1]
+                print(self._calendar_date)
+                self._calendar_date = datetime.strptime(self._calendar_date, '%m %d, %y')
+                print(self._calendar_date)
+        else:
+            self._calendar = False
         self._ts = self._event['ts']
         if 'text' in list(self._event.keys()):
             self._text = self._event['text']
