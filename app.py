@@ -34,35 +34,31 @@ def webhook():
         return jsonify({'challenge': data['challenge']})
 
     count = 0
-    print(request.__dict__)
-    print(request.keys())
-    print('HTTP_X_SLACK_RETRY_NUM' in list(request.keys()))
-    if 'HTTP_X_SLACK_RETRY_NUM' in list(request.keys()):
-        print("Retry Number" + request['HTTP_X_SLACK_RETRY_NUM'])
-        send_debug_message(str(request['HTTP_X_SLACK_RETRY_NUM']))
+    print('HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()))
+    if 'HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()):
+        print("Retry Number" + request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM'])
+        if int(request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM']):
+            return make_response("Ok", 200,)
     print(data)
     obj = SlackResponse(data)
     if not obj._bot:
         print("not a bot")
-        if not obj.isRepeat():
-            print("not a repeat")
-            if obj._points_to_add > 0:
-                print("points to add")
-                obj.handle_db()
-            else:
-                print("executing commands")
-                obj.execute_commands()
+        obj.isRepeat()
+        obj._repeat = False
+        if obj._points_to_add > 0:
+            print("points to add")
+            obj.handle_db()
+        else:
+            print("executing commands")
+            obj.execute_commands()
     elif obj._calendar:
         print("found a calendar reminder")
         send_debug_message(obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date)
-
+    else:
+        print("found a bot")
     print(obj)
     print("responding")
     return make_response("Ok", 200,)
-
-
-def send_tribe_message(msg, channel="#random"):
-    send_message(msg, channel)
 
 
 def add_num_posts(mention_id, event_time, name):
@@ -108,7 +104,7 @@ def add_num_posts(mention_id, event_time, name):
         send_debug_message(error)
 
 
-def print_stats(datafield, rev, channel="#random"):
+def collect_stats(datafield, rev):
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -128,23 +124,26 @@ def print_stats(datafield, rev, channel="#random"):
         string1 = "Leaderboard:\n"
         for x in range(0, len(leaderboard)):
             string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
-        send_tribe_message(string1, channel)
+        return string1
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
 
 
-def send_message(msg, chan="#bot_testing", url='', bot_name='Workout Bot'):
+def send_message(msg, channel="#bot_testing", url='', bot_name='Workout Bot'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     if url == '':
-        sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name)
+        sc.api_call("chat.postMessage",channel=channel, text=msg, username=bot_name)
     else:
-        sc.api_call("chat.postMessage",channel=chan, text=msg, username=bot_name, icon_url=url)
+        sc.api_call("chat.postMessage",channel=channel, text=msg, username=bot_name, icon_url=url)
 
 def send_debug_message(msg, bot_name='Workout Bot'):
-    send_message(msg, chan="#bot_testing", bot_name=bot_name)
+    send_message(msg, channel="#bot_testing", bot_name=bot_name)
+
+def send_tribe_message(msg, channel="#random", bot_name="Workout Bot"):
+    send_message(msg, channel, bot_name=bot_name)
 
 def get_group_info():
     url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
@@ -170,16 +169,16 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
         for x in range(0, len(names)):
             print("starting", names[x])
             cursor.execute(sql.SQL(
-                "SELECT workout_score FROM tribe_data WHERE name = %s"), (str(names[x]),))
+                "SELECT workout_score FROM tribe_data WHERE name = %s"), [str(names[x])])
             score = cursor.fetchall()[0][0]
             score = int(score)
             if score != -1:
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
                     "now(), slack_id=%s WHERE name = %s"),
-                    (str(addition), ids[x], names[x],))
+                    [str(addition), ids[x], names[x]])
                 conn.commit()
-                send_debug_message("committed %s with %s points" % names[x], str(addition))
+                send_debug_message("committed %s with %s points" % (names[x], str(addition)))
                 print("committed %s" % names[x])
                 num_committed += 1
             else:
@@ -361,6 +360,7 @@ class SlackResponse:
     # all_names
     def __init__(self, json_data):
         self._event = json_data['event']
+        self._repeat = False
         self._event_time = json_data['event_time']
         self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None
         self._event_type = self._event['type']
@@ -399,8 +399,51 @@ class SlackResponse:
         self.match_names_to_ids()
         self._lower_text = self._text.lower()
         self.parse_for_additions()
-        
+        self._subtype = self._event['subtype'] if 'subtype' in list(self._event.keys()) else 'message'
+        if self._subtype == 'message_deleted':
+            self._previous_message = self._event['previous_message']
+            self._bot = True
+            self._channel = self._event['channel']
+            if self._channel != 'GBR6LQBMJ':
+                send_debug_message("Found a deleted message in channel %s written by %s" % (self._channel, self._previous_message['user']))
+                send_debug_message(self._previous_message['text'])
+        elif self._subtype == 'bot_message':
+            self._bot = True
+            self._channel_type = self._event['channel_type']
+            self._channel = self._event['channel']
+        elif self._subtype == 'message' or self._subtype == 'file_share':
+            self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
+            self._event_type = self._event['type']
+            self._ts = self._event['ts']
+            self._channel = self._event['channel']
+            self._channel_type = self._event['channel_type']
 
+            if 'files' in list(self._event.keys()):
+                self._files = self._event['files']
+            else:
+                self._files = []
+            
+            if 'text' in list(self._event.keys()):
+                self._text = self._event['text']
+            else:
+                self._text = ''
+            
+            if not self._bot:
+                self._user_id = self._event['user']
+            else:
+                self.user_id = self._event['bot_id'] if 'bot_id' in list(self._event.keys()) else ''
+
+            self.parse_text_for_mentions()
+
+            if not self._bot:
+                self._all_ids = self._mentions + [self._user_id]
+            else:
+                self._all_ids = self._mentions
+
+            self.match_names_to_ids()
+            self._lower_text = self._text.lower()
+            self.parse_for_additions()
+        
     def parse_text_for_mentions(self):
         text = self._text
         indicies = []
@@ -419,15 +462,18 @@ class SlackResponse:
 
     def match_names_to_ids(self):
         mention_ids = self._all_ids
+        self._all_avatars = []
         mention_names = []
         info = get_group_info()
         for id in mention_ids:
             for member in info['members']:
                 if member['id'] == id:
                     mention_names.append(member['real_name'])
+                    self._all_avatars.append(member['profile']['image_512'])
         self._all_names = mention_names
         if len(self._all_names) > 0:
             self._name = self._all_names[-1]
+            self._avatar_url = self._all_avatars[-1]
         else:
             self._name = ""
     
@@ -464,8 +510,6 @@ class SlackResponse:
 
     def isRepeat(self):
         self._repeat = add_num_posts([self._user_id], self._event_time, self._name)
-        if self._repeat:
-            send_debug_message("Found a repeat slack post from ID: %s, TIME: %s, NAME: %s" % (self._user_id, self._ts, str(self._all_names)))
 
 
     def execute_commands(self):
@@ -473,16 +517,20 @@ class SlackResponse:
         if not self._repeat:
             if "!leaderboard" in self._lower_text:
                 count += 1
-                print_stats(3, True, channel=self._channel)
+                to_print = collect_stats(3, True)
+                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
             if '!workouts' in self._lower_text:  # display the leaderboard for who works out the most
                 count +=1 
-                print_stats(2, True, channel=self._channel)
+                to_print = collect_stats(2, True)
+                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
             if '!talkative' in self._lower_text:  # displays the leaderboard for who posts the most
                 count +=1
-                print_stats(1, True, channel=self._channel)
+                to_print = collect_stats(1, True)
+                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
             if '!handsome' in self._lower_text:  # displays the leaderboard for who posts the most
                 count +=1
-                print_stats(1, True, channel=self._channel)
+                to_print = collect_stats(1, True)
+                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
             if '!heatcheck' in self._lower_text:
                 count +=1
                 send_tribe_message("Kenta wins", channel=self._channel)
@@ -493,24 +541,27 @@ class SlackResponse:
                 until = regionals - now
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
             if '!subtract' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
-                send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names))
+                send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]))
                 num = subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
                 count +=1
             if '!reset' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
-                print_stats(3, True, channel=self._channel)
+                to_print = collect_stats(3, True)
+                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
                 reset_scores()
                 send_debug_message("Reseting leaderboard")
                 count +=1
             if '!add' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
-                send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names))
+                send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]))
                 num = add_to_db(self._all_names[:-1], self._lower_text[-3:], self._all_ids[:-1])
                 count +=1
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
-            if 'groupme' in self._lower_text:
+            if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
                 self.like_message(reaction='thumbsdown')
+            if 'good bot' in self._lower_text:
+                self.like_message(reaction='woman-tipping-hand')
             if count >= 1:
-                self.like_message()
+                self.like_message(reaction='octopus')
 
 
     def like_message(self, reaction='robot_face'):
