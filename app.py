@@ -370,8 +370,8 @@ class SlackResponse:
             self._files = []
         if 'attachments' in list(self._event.keys()):
             self._calendar = True
-            self._calendar_text = self._event['attachments']['text']
-            self._calendar_title = self._event['attachments']['title']
+            self._calendar_text = self._event['attachments'][0]['text']
+            self._calendar_title = self._event['attachments'][0]['title']
             if self._calendar_title == 'Practice':
                 self._calendar_date = self._calendar_text[self._calendar_text.index('|'):]
                 print(self._calendar_date)
@@ -443,7 +443,7 @@ class SlackResponse:
             self.match_names_to_ids()
             self._lower_text = self._text.lower()
             self.parse_for_additions()
-        
+
     def parse_text_for_mentions(self):
         text = self._text
         indicies = []
