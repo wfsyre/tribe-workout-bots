@@ -375,7 +375,7 @@ class SlackResponse:
             if self._calendar_title == 'Practice':
                 self._calendar_date = self._calendar_text[self._calendar_text.index('|'):]
                 print(self._calendar_date)
-                self._calendar_date = self._calendar_date[0:self._calendar_date.index('from') - 1]
+                self._calendar_date = self._calendar_date[1:self._calendar_date.index('from') - 1]
                 print(self._calendar_date)
                 self._calendar_date = datetime.strptime(self._calendar_date, '%m %d, %y')
                 print(self._calendar_date)
