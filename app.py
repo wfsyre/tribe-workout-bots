@@ -53,7 +53,7 @@ def webhook():
             obj.execute_commands()
     elif obj._calendar:
         print("found a calendar reminder")
-        send_debug_message(obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date)
+        send_debug_message(obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date.strftime("%B %d, %Y"))
     else:
         print("found a bot")
     print(obj)
