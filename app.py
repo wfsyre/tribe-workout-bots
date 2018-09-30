@@ -54,6 +54,9 @@ def webhook():
     elif obj._calendar:
         print("found a calendar reminder")
         send_debug_message(obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date.strftime("%B %d, %Y"))
+        send_debug_message(":yea: react if you are attending " + obj._calendar_title + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime("%B %d, %Y")
+                           + " :nay: if you will be missing practice"
+                           + " and :alienjeff: if you will be attending but not playing")
     else:
         print("found a bot")
     print(obj)
