@@ -54,9 +54,11 @@ def webhook():
     elif obj._calendar:
         print("found a calendar reminder")
         send_debug_message(obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date.strftime("%B %d, %Y"))
-        send_debug_message(":yea: react if you are attending " + obj._calendar_title + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime("%B %d, %Y")
-                           + " :nay: if you will be missing practice"
-                           + " and :alienjeff: if you will be attending but not playing")
+        send_calendar_message(obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime("%B %d, %Y") + "\n"
+                              + ":yea: if you are playing \n"
+                              + ":alienjeff: if you are only doing drills\n"
+                              + ":conni: if you are attending but not playing\n"
+                              + ":nay: if you are not attending")
     else:
         print("found a bot")
     print(obj)
@@ -147,6 +149,10 @@ def send_debug_message(msg, bot_name='Workout Bot'):
 
 def send_tribe_message(msg, channel="#random", bot_name="Workout Bot"):
     send_message(msg, channel, bot_name=bot_name)
+
+
+def send_calendar_message(msg):
+    send_message(msg, channel="#announcements", bot_name='Reminder Bot')
 
 def get_group_info():
     url = "https://slack.com/api/users.list?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN')
