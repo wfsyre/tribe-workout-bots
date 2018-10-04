@@ -400,7 +400,6 @@ class SlackResponse:
             self._text = self._event['text']
         else:
             self._text = ''
-        self._channel = self._event['channel']
         if not self._bot:
             self._user_id = self._event['user']
         else:
@@ -430,6 +429,7 @@ class SlackResponse:
             self._reaction_removed = not self._reaction_added
             self._item = self._event['item']
             self._reaction = self._event['reaction']
+            self._channel = self._item['channel']
             self._item_ts = self._item['ts']
         elif self._subtype == 'message' or self._subtype == 'file_share':
             self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
