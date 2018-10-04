@@ -42,7 +42,7 @@ def webhook():
             return make_response("Ok", 200,)
     print(data)
     obj = SlackResponse(data)
-    if not obj._bot:
+    if not obj._bot and not obj._reaction_added and not obj._reaction_removed:
         print("not a bot")
         obj.isRepeat()
         obj._repeat = False
