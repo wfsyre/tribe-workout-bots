@@ -69,9 +69,9 @@ def webhook():
         # add to reaction_info the emojis used in the message
         add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured)
     elif obj._reaction_added:
-        send_debug_message(obj._user + " added a reaction " + obj._reaction)
+        send_debug_message(obj._user + " added a reaction :" + obj._reaction + ":")
     elif obj._reaction_removed:
-        send_debug_message(obj._user + " removed a reaction " + obj._reaction)
+        send_debug_message(obj._user + " removed a reaction :" + obj._reaction + ":")
     else:
         if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
             if obj._event['text'][0:8] == 'Practice':
