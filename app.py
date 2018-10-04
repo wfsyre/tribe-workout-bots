@@ -66,18 +66,30 @@ def webhook():
                               + no + " if you are only doing drills\n"
                               + drills + " if you are attending but not playing\n"
                               + injured + " if you are not attending")
-        # add to reaction_info the emojis used in the message
         add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured)
+        add_practice_date(obj._calendar_date.strftime("%Y-%B-%d"))
     elif obj._reaction_added:
-        send_debug_message(obj._user + " added a reaction :" + obj._reaction + ":")
+        check = check_reaction_timestamp(obj._item_ts)
+        if check:
+            send_debug_message(obj._user + " added a reaction :" + obj._reaction + ":")
+        else:
+            print("worthless reaction added by " + obj._user + " :" + obj._reaction + ":")
+        # need to update scores in tribe_attendance
     elif obj._reaction_removed:
-        send_debug_message(obj._user + " removed a reaction :" + obj._reaction + ":")
+        check = check_reaction_timestamp(obj._item_ts)
+        if check:
+            send_debug_message(obj._user + " added a reaction :" + obj._reaction + ":")
+        else:
+            print("worthless reaction added by " + obj._user + " :" + obj._reaction + ":")
+        # need to update scores in tribe_attendance
     else:
         if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
             if obj._event['text'][0:8] == 'Practice':
                 # need to record timestamp of message here
-                send_debug_message("Found practice reminder with timestamp %s" % (obj._ts))
-                add_reaction_info_ts(obj._ts)
+                send_debug_message("Found practice reminder with timestamp %s" % (obj._item_ts))
+                if not add_reaction_info_ts(obj._item_ts):
+                    pass
+                    #need to remind people who haven't reacted yet
     print(obj)
     print("responding")
     return make_response("Ok", 200,)
@@ -390,7 +402,7 @@ def add_reaction_info_date(date, yes, drills, injured, no):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("INSERT INTO reaction_info (date, yes, no, drills, injured) VALUES (%s, %s, %s, %s)"),
+        cursor.execute(sql.SQL("INSERT INTO reaction_info (date, yes, no, drills, injured) VALUES (%s, %s, %s, %s, %s)"),
                        [date.strftime("%Y-%B-%d"), yes, no, drills, injured])
         conn.commit()
         cursor.close()
@@ -416,11 +428,72 @@ def add_reaction_info_ts(ts):
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("UPDATE reaction_info SET timestamp = %s where timestamp is NULL"),
                        [ts])
+        if cursor.rowcount == 1:
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return True
+        else:
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return False
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
+
+
+def add_practice_date(date_string):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL("ALTER TABLE tribe_attendance ADD %s SMALLINT"),
+                       [date_string])
+        cursor.execute(sql.SQL("UPDATE tribe_attendance SET %s = -1 WHERE %s IS NULL"), [date_string])
         conn.commit()
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
+
+
+def check_reaction_timestamp(ts):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL("SELECT * FROM reaction_info WHERE timestamp = %s"), [ts])
+        if cursor.rowcount == 1:
+            conn.commit()
+            cursor.close()
+            conn.close()
+            stuff = cursor.fetchall()
+            print(stuff)
+            return stuff
+        else:
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return []
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
+        return []
 
 
 class SlackResponse:
