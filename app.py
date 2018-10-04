@@ -370,6 +370,8 @@ class SlackResponse:
     def __init__(self, json_data):
         self._event = json_data['event']
         self._repeat = False
+        self._reaction_added = False
+        self._reaction_removed = False
         self._event_time = json_data['event_time']
         self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None
         self._event_type = self._event['type']
@@ -394,7 +396,6 @@ class SlackResponse:
                 print(self._calendar_date)
         else:
             self._calendar = False
-        self._ts = self._event['ts']
         if 'text' in list(self._event.keys()):
             self._text = self._event['text']
         else:
@@ -424,6 +425,12 @@ class SlackResponse:
             self._bot = True
             self._channel_type = self._event['channel_type']
             self._channel = self._event['channel']
+        elif self._event['type'] == 'reaction_added' or self._event['type'] == 'reaction_removed':
+            self._reaction_added = self._event['type'] == 'reaction_added'
+            self._reaction_removed = not self._reaction_added
+            self._item = self._event['item']
+            self._reaction = self._event['reaction']
+            self._item_ts = self._item['ts']
         elif self._subtype == 'message' or self._subtype == 'file_share':
             self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
             self._event_type = self._event['type']
