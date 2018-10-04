@@ -56,10 +56,16 @@ def webhook():
         print("found a calendar reminder")
         emojis = list(get_emojis()['emoji'].keys())
         numbers = random.sample(range(0, len(emojis)), 4)
-        yes = emojis[numbers[0]]
-        drills = emojis[numbers[1]]
-        injured = emojis[numbers[2]]
-        no = emojis[numbers[3]]
+        if emojis:
+            yes = ":" + emojis[numbers[0]] + ":"
+            drills = ":" + emojis[numbers[1]] + ":"
+            injured = ":" + emojis[numbers[2]] + ":"
+            no = ":" + emojis[numbers[3]] + ":"
+        else:
+            yes = ":yea:"
+            drills = ":alienjeff:"
+            no = ":nay:"
+            injured = ":conni:"
         send_debug_message(obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date.strftime("%B %d, %Y"))
         send_calendar_message(obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime("%B %d, %Y") + "\n"
                               + yes + " if you are playing \n"
@@ -70,13 +76,15 @@ def webhook():
         add_practice_date(obj._calendar_date.strftime("%Y-%B-%d"))
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
+        print(check)
         if check:
             send_debug_message(obj._user + " added a reaction :" + obj._reaction + ":")
+            # need to update scores in tribe_attendance
         else:
             print("worthless reaction added by " + obj._user + " :" + obj._reaction + ":")
-        # need to update scores in tribe_attendance
     elif obj._reaction_removed:
         check = check_reaction_timestamp(obj._item_ts)
+        print(check)
         if check:
             send_debug_message(obj._user + " added a reaction :" + obj._reaction + ":")
         else:
