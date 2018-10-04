@@ -4,6 +4,7 @@ import urllib.parse
 import sys
 import urllib.request
 import time
+import random
 import psycopg2
 import requests
 from datetime import datetime
@@ -53,14 +54,30 @@ def webhook():
             obj.execute_commands()
     elif obj._calendar:
         print("found a calendar reminder")
+        emojis = list(get_emojis()['emoji'].keys())
+        numbers = random.sample(range(0, len(emojis)), 4)
+        yes = emojis[numbers[0]]
+        drills = emojis[numbers[1]]
+        injured = emojis[numbers[2]]
+        no = emojis[numbers[3]]
         send_debug_message(obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date.strftime("%B %d, %Y"))
         send_calendar_message(obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime("%B %d, %Y") + "\n"
-                              + ":yea: if you are playing \n"
-                              + ":alienjeff: if you are only doing drills\n"
-                              + ":conni: if you are attending but not playing\n"
-                              + ":nay: if you are not attending")
+                              + yes + " if you are playing \n"
+                              + no + " if you are only doing drills\n"
+                              + drills + " if you are attending but not playing\n"
+                              + injured + " if you are not attending")
+        # add to reaction_info the emojis used in the message
+        add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured)
+    elif obj._reaction_added:
+        send_debug_message(obj._user + " added a reaction " + obj._reaction)
+    elif obj._reaction_removed:
+        send_debug_message(obj._user + " removed a reaction " + + obj._reaction)
     else:
-        print("found a bot")
+        if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
+            if obj._event['text'][0:8] == 'Practice':
+                # need to record timestamp of message here
+                send_debug_message("Found practice reminder with timestamp %s" % (obj._ts))
+                add_reaction_info_ts(obj._ts)
     print(obj)
     print("responding")
     return make_response("Ok", 200,)
@@ -82,7 +99,7 @@ def add_num_posts(mention_id, event_time, name):
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
             "UPDATE tribe_data SET num_posts=num_posts+1, "
-            + "slack_id=%s, "
+            + "slack_id = %s, "
             + "last_time = %s "
             + "WHERE name = %s AND last_time != %s"), [mention_id[0], event_time, name, event_time])
         if cursor.rowcount == 0:
@@ -159,6 +176,11 @@ def get_group_info():
     json = requests.get(url).json()
     return json
 
+def get_emojis():
+    url = 'https://slack.com/api/emoji.list?token=' + os.getenv('OATH_ACCESS_TOKEN')
+    json = requests.get(url).json()
+    return json
+
 
 def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in the db
     cursor = None
@@ -184,7 +206,7 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
             if score != -1:
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET num_workouts = num_workouts+1, workout_score = workout_score+%s, last_post = "
-                    "now(), slack_id=%s WHERE name = %s"),
+                    "now(), slack_id = %s WHERE name = %s"),
                     [str(addition), ids[x], names[x]])
                 conn.commit()
                 send_debug_message("committed %s with %s points" % (names[x], str(addition)))
@@ -344,7 +366,7 @@ def reset_scores():  # reset the scores of everyone
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL(
-            "UPDATE tribe_data SET num_workouts = 0, workout_score = 0, last_post = now()"))
+            "UPDATE tribe_data SET num_workouts = 0, workout_score = 0, last_post = now() where workout_score != -1"))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
@@ -352,6 +374,53 @@ def reset_scores():  # reset the scores of everyone
         if cursor is not None:
             cursor.close()
             conn.close()
+
+
+def add_reaction_info_date(date, yes, drills, injured, no):
+    # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL("INSERT INTO reaction_info (date, yes, no, drills, injured) VALUES (%s, %s, %s, %s)"),
+                       [date.strftime("%Y-%B-%d"), yes, no, drills, injured])
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
+
+
+
+def add_reaction_info_ts(ts):
+    # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL("UPDATE reaction_info SET timestamp = %s where timestamp is NULL"),
+                       [ts])
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
 
 
 class SlackResponse:
@@ -431,6 +500,7 @@ class SlackResponse:
             self._reaction = self._event['reaction']
             self._channel = self._item['channel']
             self._item_ts = self._item['ts']
+            self._user = self._event['user']
         elif self._subtype == 'message' or self._subtype == 'file_share':
             self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
             self._event_type = self._event['type']
