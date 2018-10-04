@@ -78,23 +78,23 @@ def webhook():
         check = check_reaction_timestamp(obj._item_ts)
         print(check)
         if check:
-            send_debug_message(obj._user + " added a reaction :" + obj._reaction + ":")
+            send_debug_message(obj._user_id + " added a reaction :" + obj._reaction + ":")
             # need to update scores in tribe_attendance
         else:
-            print("worthless reaction added by " + obj._user + " :" + obj._reaction + ":")
+            print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
     elif obj._reaction_removed:
         check = check_reaction_timestamp(obj._item_ts)
         print(check)
         if check:
-            send_debug_message(obj._user + " added a reaction :" + obj._reaction + ":")
+            send_debug_message(obj._user_id + " added a reaction :" + obj._reaction + ":")
         else:
-            print("worthless reaction added by " + obj._user + " :" + obj._reaction + ":")
+            print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
         # need to update scores in tribe_attendance
     else:
         if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
             if obj._event['text'][0:8] == 'Practice':
                 # need to record timestamp of message here
-                send_debug_message("Found practice reminder with timestamp %s" % (obj._item_ts))
+                send_debug_message("Found practice reminder with timestamp %s" % obj._item_ts)
                 if not add_reaction_info_ts(obj._item_ts):
                     pass
                     #need to remind people who haven't reacted yet
@@ -581,7 +581,7 @@ class SlackResponse:
             self._reaction = self._event['reaction']
             self._channel = self._item['channel']
             self._item_ts = self._item['ts']
-            self._user = self._event['user']
+            self._user_id = self._event['user']
         elif self._subtype == 'message' or self._subtype == 'file_share':
             self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(self._event.keys())
             self._event_type = self._event['type']
