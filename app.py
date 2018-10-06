@@ -35,7 +35,7 @@ def webhook():
     count = 0
     print('HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()))
     if 'HTTP_X_SLACK_RETRY_NUM' in list(request.__dict__['environ'].keys()):
-        print("Retry Number" + request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM'])
+        print("Retry Number " + request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM'])
         if int(request.__dict__['environ']['HTTP_X_SLACK_RETRY_NUM']):
             return make_response("Ok", 200, )
     print(data)
@@ -465,14 +465,7 @@ class SlackResponse:
             self._text = self._event['text']
         else:
             self._text = ''
-        self.parse_text_for_mentions()
-        if not self._bot:
-            self._all_ids = self._mentions + [self._user_id]
-        else:
-            self._all_ids = self._mentions
-        self.match_names_to_ids()
-        self._lower_text = self._text.lower()
-        self.parse_for_additions()
+
         self._subtype = self._event['subtype'] if 'subtype' in list(self._event.keys()) else 'message'
         if self._subtype == 'message_deleted':
             self._previous_message = self._event['previous_message']
@@ -501,6 +494,14 @@ class SlackResponse:
             self._item_ts = self._item['ts']
             self._user_id = self._event['user']
         elif self._subtype == 'message' or self._subtype == 'file_share':
+            self.parse_text_for_mentions()
+            if not self._bot:
+                self._all_ids = self._mentions + [self._user_id]
+            else:
+                self._all_ids = self._mentions
+            self.match_names_to_ids()
+            self._lower_text = self._text.lower()
+            self.parse_for_additions()
             self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(
                 self._event.keys())
             self._event_type = self._event['type']
