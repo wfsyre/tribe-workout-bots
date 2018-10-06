@@ -159,6 +159,7 @@ class SlackResponse:
             self._previous_message_text = self._previous_message['text']
             self._text = self._event['message']['text']
             self._channel = self._event['channel']
+            self._ts = self._event['message']['ts']
             send_debug_message("Found a edited message in channel %s that used to say:" % self._channel)
             send_debug_message(self._previous_message_text)
         elif self._subtype == 'bot_message':
