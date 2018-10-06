@@ -116,6 +116,7 @@ class SlackResponse:
         self._repeat = False
         self._reaction_added = False
         self._reaction_removed = False
+        self._check_for_commands = False
         self._event_time = json_data['event_time']
         self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None
         self._event_type = self._event['type']
@@ -152,6 +153,7 @@ class SlackResponse:
                 self._channel, self._previous_message['user']))
                 send_debug_message(self._previous_message['text'])
         elif self._subtype == 'message_changed':
+            self._check_for_commands = True
             self._previous_message = self._event['previous_message']
             self._user_id = self._previous_message['user']
             self._previous_message_text = self._previous_message['text']
@@ -178,6 +180,7 @@ class SlackResponse:
             self._item_ts = self._item['ts']
             self._user_id = self._event['user']
         elif self._subtype == 'message' or self._subtype == 'file_share':
+            self._check_for_commands = True
             self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None or 'user' not in list(
                 self._event.keys())
             self._event_type = self._event['type']
@@ -199,6 +202,7 @@ class SlackResponse:
             else:
                 self.user_id = self._event['bot_id'] if 'bot_id' in list(self._event.keys()) else ''
 
+        if self._check_for_commands:
             self.parse_text_for_mentions()
 
             if not self._bot:
