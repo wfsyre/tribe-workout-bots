@@ -244,9 +244,8 @@ def add_practice_date(date_string):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("ALTER TABLE tribe_attendance ADD \"%s\" SMALLINT"),
-                       [date_string])
-        cursor.execute(sql.SQL("UPDATE tribe_attendance SET %s = -1 WHERE %s IS NULL"), [date_string])
+        cursor.execute(sql.SQL("ALTER TABLE tribe_attendance ADD\"" + date_string + "\"SMALLINT"))
+        cursor.execute(sql.SQL("UPDATE tribe_attendance SET %s = -1 WHERE " + date_string + " IS NULL"))
         conn.commit()
         cursor.close()
         conn.close()
