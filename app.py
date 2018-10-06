@@ -465,10 +465,6 @@ class SlackResponse:
             self._text = self._event['text']
         else:
             self._text = ''
-        if not self._bot:
-            self._user_id = self._event['user']
-        else:
-            self.user_id = self._event['bot_id']
         self.parse_text_for_mentions()
         if not self._bot:
             self._all_ids = self._mentions + [self._user_id]
@@ -491,8 +487,13 @@ class SlackResponse:
             self._channel_type = self._event['channel_type']
             self._channel = self._event['channel']
             self._ts = self._event['ts']
+            self.user_id = self._event['bot_id']
         elif self._event['type'] == 'reaction_added' or self._event['type'] == 'reaction_removed':
             self._reaction_added = self._event['type'] == 'reaction_added'
+            if not self._bot:
+                self._user_id = self._event['user']
+            else:
+                self.user_id = self._event['bot_id']
             self._reaction_removed = not self._reaction_added
             self._item = self._event['item']
             self._reaction = self._event['reaction']
@@ -506,7 +507,6 @@ class SlackResponse:
             self._ts = self._event['ts']
             self._channel = self._event['channel']
             self._channel_type = self._event['channel_type']
-
             if 'files' in list(self._event.keys()):
                 self._files = self._event['files']
             else:
