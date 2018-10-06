@@ -151,6 +151,14 @@ class SlackResponse:
                 send_debug_message("Found a deleted message in channel %s written by %s" % (
                 self._channel, self._previous_message['user']))
                 send_debug_message(self._previous_message['text'])
+        elif self._subtype == 'message_changed':
+            self._previous_message = self._event['previous_message']
+            self._user_id = self._previous_message['user']
+            self._previous_message_text = self._previous_message['text']
+            self._text = self._event['message']['text']
+            self._channel = self._event['channel']
+            send_debug_message("Found a edited message in channel %s that used to say %s" %
+                               (self._channel, self._previous_message_text))
         elif self._subtype == 'bot_message':
             self._bot = True
             self._channel_type = self._event['channel_type']
