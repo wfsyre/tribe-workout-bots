@@ -2,10 +2,9 @@ import os
 import urllib.parse
 import urllib.request
 import psycopg2
-import requests
 
 from psycopg2 import sql
-from app import send_debug_message, send_calendar_message, send_tribe_message, send_message
+from slack_api import *
 
 from flask import Flask, request, jsonify, make_response
 
