@@ -120,7 +120,7 @@ def add_num_posts(mention_id, event_time, name):
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
-            "UPDATE tribe_data SET num_posts=num_posts+1 WHERE id = %s"),
+            "UPDATE tribe_data SET num_posts=num_posts+1 WHERE slack_id = %s"),
             [mention_id[0]])
         if cursor.rowcount == 0:
             cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s)"),
@@ -132,6 +132,7 @@ def add_num_posts(mention_id, event_time, name):
         return True
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
+        return True
 
 
 def collect_stats(datafield, rev):
