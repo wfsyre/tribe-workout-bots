@@ -212,13 +212,13 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
         for x in range(0, len(names)):
             print("starting", names[x])
             cursor.execute(sql.SQL(
-                "SELECT workout_score FROM tribe_data WHERE id = %s"), [str(ids[x])])
+                "SELECT workout_score FROM tribe_data WHERE slack_id = %s"), [str(ids[x])])
             score = cursor.fetchall()[0][0]
             score = int(score)
             if score != -1:
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET num_workouts=num_workouts+1, workout_score=workout_score+%s, last_post="
-                    "now() WHERE id = %s"),
+                    "now() WHERE slack_id = %s"),
                     [str(addition), ids[x]])
                 conn.commit()
                 send_debug_message("committed %s with %s points" % (names[x], str(addition)))
