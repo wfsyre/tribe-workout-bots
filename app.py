@@ -76,16 +76,16 @@ def webhook():
             print(obj._user_id + " added a reaction :" + obj._reaction + ":")
             if obj._reaction == check[0][1].strip(":"):
                 print("Found a yes")
-                count_practice(obj._user_id, check[0][0], 1)
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 1)
             elif obj._reaction == check[0][2].strip(":"):
                 print("Found a no")
-                count_practice(obj._user_id, check[0][0], 0)
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 0)
             elif obj._reaction == check[0][3].strip(":"):
                 print("Found a drills")
-                count_practice(obj._user_id, check[0][0], 1)
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 1)
             elif obj._reaction == check[0][4].strip(":"):
-                print("Found a injured")
-                count_practice(obj._user_id, check[0][0], 1)
+                print("Found an injured")
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 1)
             # need to update scores in tribe_attendance
         else:
             print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
@@ -93,7 +93,7 @@ def webhook():
         check = check_reaction_timestamp(obj._item_ts)
         print(check)
         if check:
-            count_practice(obj._user_id, check[0][0], -1)
+            count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), -1)
         else:
             print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
         # need to update scores in tribe_attendance
