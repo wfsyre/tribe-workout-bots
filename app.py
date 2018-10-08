@@ -57,9 +57,9 @@ def webhook():
             drills = ":alienjeff:"
             no = ":nay:"
             injured = ":conni:"
-        print(
-            obj._calendar_title + " found with text " + obj._calendar_text + " with date " + obj._calendar_date.strftime(
-                "%B %d, %Y"))
+        print(obj._calendar_title + " found with text "
+              + obj._calendar_text + " with date "
+              + obj._calendar_date.strftime("%B %d, %Y"))
         send_calendar_message(
             obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime(
                 "%B %d, %Y") + "\n"
