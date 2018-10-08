@@ -339,8 +339,7 @@ class SlackResponse:
                 num = add_to_db(self._all_names[:-1], self._lower_text[-3:], self._all_ids[:-1])
                 count += 1
             if '!test' in self._lower_text:
-                send_debug_message("@William Syre")
-                send_debug_message("<!UAPHZ3SJZ>")
+                send_debug_message("<@UAPHZ3SJZ>")
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
