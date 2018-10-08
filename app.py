@@ -71,9 +71,9 @@ def webhook():
         add_practice_date(obj._calendar_date.strftime("%Y-%m-%d"))
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
-        print(check)
         if check:
-            send_debug_message(obj._user_id + " added a reaction :" + obj._reaction + ":")
+            print(check)
+            print(obj._user_id + " added a reaction :" + obj._reaction + ":")
             if obj._reaction == check[1].strip(":"):
                 print("Found a yes")
             elif obj._reaction == check[2].strip(":"):
