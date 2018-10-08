@@ -296,7 +296,7 @@ def count_practice(id, date, number):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("UPDATE tribe_data SET " + date + "= %s where slack_id = %s"), [number, id])
+        cursor.execute(sql.SQL("UPDATE tribe_attendance SET " + date + "=%s where slack_id = %s"), [number, id])
         if cursor.rowcount == 1:
             conn.commit()
             cursor.close()
