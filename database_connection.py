@@ -191,12 +191,20 @@ def add_reaction_info_date(date, yes, drills, injured, no):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(
-            sql.SQL("INSERT INTO reaction_info (date, yes, no, drills, injured) VALUES (%s, %s, %s, %s, %s)"),
-            [date.strftime("%Y-%B-%d"), yes, no, drills, injured])
-        conn.commit()
-        cursor.close()
-        conn.close()
+        cursor.execute(sql.SQL("SELECT * FROM reaction_info WHERE date = %s"), [date])
+        if cursor.rowcount == 0:
+            cursor.execute(
+                sql.SQL("INSERT INTO reaction_info (date, yes, no, drills, injured) VALUES (%s, %s, %s, %s, %s)"),
+                [date.strftime("%Y-%B-%d"), yes, no, drills, injured])
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return True
+        else:
+            conn.commit()
+            cursor.close()
+            conn.close()
+            send_debug_message("Found a repeat calendar post")
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
 

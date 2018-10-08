@@ -60,15 +60,19 @@ def webhook():
         print(obj._calendar_title + " found with text "
               + obj._calendar_text + " with date "
               + obj._calendar_date.strftime("%B %d, %Y"))
-        send_calendar_message(
-            obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime(
-                "%B %d, %Y") + "\n"
-            + yes + " if you are playing \n"
-            + drills + " if you are only doing drills\n"
-            + injured + " if you are attending but not playing\n"
-            + no + " if you are not attending")
-        add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured)
-        add_practice_date(obj._calendar_date.strftime("%Y-%m-%d"))
+
+        if add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured):
+            add_practice_date(obj._calendar_date.strftime("%Y-%m-%d"))
+            send_calendar_message(
+                obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime(
+                    "%B %d, %Y") + "\n"
+                + yes + " if you are playing \n"
+                + drills + " if you are only doing drills\n"
+                + injured + " if you are attending but not playing\n"
+                + no + " if you are not attending")
+        else:
+            # need to send reminders
+            send_debug_message("@William Syre")
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
         if check:
@@ -334,6 +338,9 @@ class SlackResponse:
                 send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]))
                 num = add_to_db(self._all_names[:-1], self._lower_text[-3:], self._all_ids[:-1])
                 count += 1
+            if '!test' in self._lower_text:
+                send_debug_message("@William Syre")
+                send_debug_message("<!UAPHZ3SJZ>")
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
