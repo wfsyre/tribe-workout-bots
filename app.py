@@ -72,7 +72,11 @@ def webhook():
                 + no + " if you are not attending")
         else:
             # need to send reminders
-            send_debug_message("@William Syre")
+            unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))
+            string = ""
+            for item in unanswered:
+                string += "<@" + str(item) + ">\n"
+            send_debug_message(string)
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
         if check:
@@ -106,9 +110,15 @@ def webhook():
             if obj._event['text'][0:8] == 'Practice':
                 # need to record timestamp of message here
                 send_debug_message("Found practice reminder with timestamp %s" % obj._ts)
-                if not add_reaction_info_ts(obj._ts):
-                    pass
-                    # need to remind people who haven't reacted yet
+                if add_reaction_info_ts(obj._ts):
+                    reactions = check_reaction_timestamp(obj._ts)
+                    reactions = reactions[0]
+                    date, yes, no, drills, injured, ts = reactions
+                    reactions = [yes, no, drills, injured]
+                    reactions = [x.strip(":") for x in reactions]
+                    for reaction in reactions:
+                        obj.like_message(reaction=reaction)
+
     print(obj)
     print("responding")
     return make_response("Ok", 200, )
@@ -339,7 +349,7 @@ class SlackResponse:
                 num = add_to_db(self._all_names[:-1], self._lower_text[-3:], self._all_ids[:-1])
                 count += 1
             if '!test' in self._lower_text:
-                send_debug_message("<@UAPHZ3SJZ>")
+                pass
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:

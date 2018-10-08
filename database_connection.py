@@ -190,7 +190,6 @@ def add_reaction_info_date(date, yes, drills, injured, no):
             port=url.port
         )
         cursor = conn.cursor()
-        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("SELECT * FROM reaction_info WHERE date = %s"), [date])
         if cursor.rowcount == 0:
             cursor.execute(
@@ -222,7 +221,6 @@ def add_reaction_info_ts(ts):
             port=url.port
         )
         cursor = conn.cursor()
-        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("UPDATE reaction_info SET timestamp = %s WHERE timestamp IS NULL"),
                        [ts])
         if cursor.rowcount == 1:
@@ -251,7 +249,6 @@ def add_practice_date(date_string):
             port=url.port
         )
         cursor = conn.cursor()
-        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("ALTER TABLE tribe_attendance ADD COLUMN \"" + date_string + "\"SMALLINT DEFAULT -1"))
         conn.commit()
         cursor.close()
@@ -272,7 +269,6 @@ def check_reaction_timestamp(ts):
             port=url.port
         )
         cursor = conn.cursor()
-        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("SELECT * FROM reaction_info WHERE timestamp = %s"), [ts])
         if cursor.rowcount == 1:
             stuff = cursor.fetchall()
@@ -314,5 +310,26 @@ def count_practice(id, date, number):
             conn.commit()
             cursor.close()
             conn.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
+
+
+def get_unanswered(date):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL("SELECT slack_id FROM tribe_attendance WHERE \"" + date + "\" = -1"))
+        unanswered = cursor.fetchall()
+        print(unanswered)
+        return unanswered
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
