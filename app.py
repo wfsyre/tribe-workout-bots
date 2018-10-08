@@ -64,9 +64,9 @@ def webhook():
             obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime(
                 "%B %d, %Y") + "\n"
             + yes + " if you are playing \n"
-            + no + " if you are only doing drills\n"
-            + drills + " if you are attending but not playing\n"
-            + injured + " if you are not attending")
+            + drills + " if you are only doing drills\n"
+            + injured + " if you are attending but not playing\n"
+            + no + " if you are not attending")
         add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured)
         add_practice_date(obj._calendar_date.strftime("%Y-%m-%d"))
     elif obj._reaction_added:
@@ -76,12 +76,16 @@ def webhook():
             print(obj._user_id + " added a reaction :" + obj._reaction + ":")
             if obj._reaction == check[0][1].strip(":"):
                 print("Found a yes")
+                count_practice(obj._user_id, obj._calendar_date.strftime("%Y-%m-%d"), 1)
             elif obj._reaction == check[0][2].strip(":"):
                 print("Found a no")
+                count_practice(obj._user_id, obj._calendar_date.strftime("%Y-%m-%d"), 0)
             elif obj._reaction == check[0][3].strip(":"):
                 print("Found a drills")
+                count_practice(obj._user_id, obj._calendar_date.strftime("%Y-%m-%d"), 1)
             elif obj._reaction == check[0][4].strip(":"):
                 print("Found a injured")
+                count_practice(obj._user_id, obj._calendar_date.strftime("%Y-%m-%d"), 1)
             # need to update scores in tribe_attendance
         else:
             print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
@@ -89,7 +93,7 @@ def webhook():
         check = check_reaction_timestamp(obj._item_ts)
         print(check)
         if check:
-            send_debug_message(obj._user_id + " added a reaction :" + obj._reaction + ":")
+            count_practice(obj._user_id, obj._calendar_date.strftime("%Y-%m-%d"), -1)
         else:
             print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
         # need to update scores in tribe_attendance
