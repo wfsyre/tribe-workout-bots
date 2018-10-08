@@ -267,10 +267,10 @@ def check_reaction_timestamp(ts):
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("SELECT * FROM reaction_info WHERE timestamp = %s"), [ts])
         if cursor.rowcount == 1:
+            stuff = cursor.fetchall()
             conn.commit()
             cursor.close()
             conn.close()
-            stuff = cursor.fetchall()
             print(stuff)
             return stuff
         else:
