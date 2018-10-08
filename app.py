@@ -74,13 +74,13 @@ def webhook():
         if check:
             print(check)
             print(obj._user_id + " added a reaction :" + obj._reaction + ":")
-            if obj._reaction == check[1].strip(":"):
+            if obj._reaction == check[0][1].strip(":"):
                 print("Found a yes")
-            elif obj._reaction == check[2].strip(":"):
+            elif obj._reaction == check[0][2].strip(":"):
                 print("Found a no")
-            elif obj._reaction == check[3].strip(":"):
+            elif obj._reaction == check[0][3].strip(":"):
                 print("Found a drills")
-            elif obj._reaction == check[4].strip(":"):
+            elif obj._reaction == check[0][4].strip(":"):
                 print("Found a injured")
             # need to update scores in tribe_attendance
         else:
