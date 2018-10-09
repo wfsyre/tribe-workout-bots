@@ -73,11 +73,7 @@ def webhook():
         else:
             #send reminders
             unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))
-            string = ""
             unanswered = [x[0] for x in unanswered]
-            for item in unanswered:
-                string += "<@" + str(item) + ">\n"
-            send_debug_message(string)
             for user_id in unanswered:
                 im_data = open_im(user_id)
                 if 'channel' in list(im_data.keys()):
