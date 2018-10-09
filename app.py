@@ -86,6 +86,7 @@ def webhook():
                         "<@" + user_id + "> please react to the message in announcements about practice attendance",
                         channel=channel,
                         bot_name="Reminder Bot")
+                    send_debug_message(" Sent reminder to <@" + user_id + ">")
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
         if check:
@@ -367,11 +368,11 @@ class SlackResponse:
                     im_data = open_im(user_id)
                     if 'channel' in list(im_data.keys()):
                         channel = im_data['channel']['id']
-                        msg = send_message(
+                        send_message(
                             "<@" + user_id + "> please react to the message in announcements about practice attendance",
                             channel=channel,
                             bot_name="Reminder Bot")
-                        send_debug_message(str(msg) + " Sent reminder to " + user_id)
+                        send_debug_message(" Sent reminder to <@" + user_id + ">")
             if '!attendance' in self._lower_text:
                 date = self._lower_text[-10:]
                 attendance = get_practice_attendance(date)
