@@ -367,7 +367,10 @@ def get_practice_attendance(date):
         cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE \"" + date + "\" = 4"))
         missing = cursor.fetchall()
         missing = [x[0] for x in missing]
-        return {'playing': playing, 'injured': injured, 'drills': drills, 'unanswered': unanswered, "missing": missing}
+
+        toRet = {'playing': playing, 'injured': injured, 'drills': drills, 'unanswered': unanswered, "missing": missing}
+        print(toRet)
+        return toRet
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
         return []
