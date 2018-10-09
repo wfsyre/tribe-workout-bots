@@ -375,7 +375,7 @@ class SlackResponse:
             if '!attendance' in self._lower_text:
                 date = self._lower_text[-10:]
                 attendance = get_practice_attendance(date)
-                if 'failure' not in list(attendance.keys):
+                if 'failure' not in list(attendance.keys()):
                     send_tribe_message("practicing: " + str(attendance['playing']) + "\n"
                                        + "drills: " + str(attendance['drills']) + "\n"
                                        + "not playing: " + str(attendance['injured']) + "\n"
