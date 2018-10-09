@@ -71,12 +71,21 @@ def webhook():
                 + injured + " if you are attending but not playing\n"
                 + no + " if you are not attending")
         else:
-            # need to send reminders
+            #send reminders
             unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))
             string = ""
+            unanswered = [x[0] for x in unanswered]
             for item in unanswered:
                 string += "<@" + str(item) + ">\n"
             send_debug_message(string)
+            for user_id in unanswered:
+                im_data = open_im(user_id)
+                if 'channel' in list(im_data.keys):
+                    channel = im_data['channel']['id']
+                    send_message(
+                        "<@" + user_id + "> please react to the message in announcements about practice attendance",
+                        channel=channel,
+                        bot_name="Reminder Bot")
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
         if check:
@@ -84,13 +93,13 @@ def webhook():
             print(obj._user_id + " added a reaction :" + obj._reaction + ":")
             if obj._reaction == check[0][1].strip(":"):
                 print("Found a yes")
-                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 1)
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 3)
             elif obj._reaction == check[0][2].strip(":"):
                 print("Found a no")
                 count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 0)
             elif obj._reaction == check[0][3].strip(":"):
                 print("Found a drills")
-                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 1)
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 2)
             elif obj._reaction == check[0][4].strip(":"):
                 print("Found an injured")
                 count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 1)
@@ -350,6 +359,16 @@ class SlackResponse:
                 count += 1
             if '!test' in self._lower_text:
                 pass
+            if '!attendance' in self._lower_text:
+                date = self._lower_text[-10]
+                attendance = get_practice_attendance(date)
+                send_tribe_message("practicing: " + str(attendance['playing']) + "\n"
+                                   + "drills: " + str(attendance['drills']) + "\n"
+                                   + "not playing: " + str(attendance['injured']) + "\n"
+                                   + "not attending: " + str(attendance['missing']) + "\n"
+                                   + "unanswered: " + str(attendance['unanswered']) + "\n",
+                                   channel=self._channel,
+                                   bot_name='Attendance Bot')
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
