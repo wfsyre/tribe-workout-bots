@@ -359,6 +359,19 @@ class SlackResponse:
                 count += 1
             if '!test' in self._lower_text:
                 pass
+            if '!remind' in self._lower_text:
+                date = self._lower_text[-10:]
+                unanswered = get_unanswered(date)
+                unanswered = [x[0] for x in unanswered]
+                for user_id in unanswered:
+                    im_data = open_im(user_id)
+                    if 'channel' in list(im_data.keys):
+                        channel = im_data['channel']['id']
+                        msg = send_message(
+                            "<@" + user_id + "> please react to the message in announcements about practice attendance",
+                            channel=channel,
+                            bot_name="Reminder Bot")
+                        send_debug_message(str(msg) + " Sent reminder to " + user_id)
             if '!attendance' in self._lower_text:
                 date = self._lower_text[-10:]
                 attendance = get_practice_attendance(date)
