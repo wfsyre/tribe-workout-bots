@@ -362,13 +362,16 @@ class SlackResponse:
             if '!attendance' in self._lower_text:
                 date = self._lower_text[-10:]
                 attendance = get_practice_attendance(date)
-                send_tribe_message("practicing: " + str(attendance['playing']) + "\n"
-                                   + "drills: " + str(attendance['drills']) + "\n"
-                                   + "not playing: " + str(attendance['injured']) + "\n"
-                                   + "not attending: " + str(attendance['missing']) + "\n"
-                                   + "unanswered: " + str(attendance['unanswered']) + "\n",
-                                   channel=self._channel,
-                                   bot_name='Attendance Bot')
+                if 'failure' not in list(attendance.keys):
+                    send_tribe_message("practicing: " + str(attendance['playing']) + "\n"
+                                       + "drills: " + str(attendance['drills']) + "\n"
+                                       + "not playing: " + str(attendance['injured']) + "\n"
+                                       + "not attending: " + str(attendance['missing']) + "\n"
+                                       + "unanswered: " + str(attendance['unanswered']) + "\n",
+                                       channel=self._channel,
+                                       bot_name='Attendance Bot')
+                else:
+                    send_tribe_message("Either the date was improperly formatted or information on this date does not exist")
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:

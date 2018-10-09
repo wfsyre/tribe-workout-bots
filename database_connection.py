@@ -373,4 +373,4 @@ def get_practice_attendance(date):
         return toRet
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
-        return []
+        return {'failure': []}
