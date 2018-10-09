@@ -386,7 +386,10 @@ class SlackResponse:
                                        channel=self._channel,
                                        bot_name='Attendance Bot')
                 else:
-                    send_tribe_message("Either the date was improperly formatted or information on this date does not exist")
+                    send_tribe_message(
+                        "Either the date was improperly formatted or information on this date does not exist",
+                        channel=self._channel,
+                        bot_name="Reminder Bot")
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
