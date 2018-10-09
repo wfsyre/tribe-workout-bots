@@ -80,7 +80,7 @@ def webhook():
             send_debug_message(string)
             for user_id in unanswered:
                 im_data = open_im(user_id)
-                if 'channel' in list(im_data.keys):
+                if 'channel' in list(im_data.keys()):
                     channel = im_data['channel']['id']
                     send_message(
                         "<@" + user_id + "> please react to the message in announcements about practice attendance",
@@ -365,7 +365,7 @@ class SlackResponse:
                 unanswered = [x[0] for x in unanswered]
                 for user_id in unanswered:
                     im_data = open_im(user_id)
-                    if 'channel' in list(im_data.keys):
+                    if 'channel' in list(im_data.keys()):
                         channel = im_data['channel']['id']
                         msg = send_message(
                             "<@" + user_id + "> please react to the message in announcements about practice attendance",
