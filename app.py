@@ -362,6 +362,7 @@ class SlackResponse:
                 pass
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
+                send_debug_message("reminder batch being sent for " + date)
                 unanswered = get_unanswered(date)
                 unanswered = [x[0] for x in unanswered]
                 for user_id in unanswered:
