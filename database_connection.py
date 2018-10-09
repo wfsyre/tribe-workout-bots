@@ -364,7 +364,7 @@ def get_practice_attendance(date):
         playing = cursor.fetchall()
         playing = [x[0] for x in playing]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE \"" + date + "\" = 4"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE \"" + date + "\" = 0"))
         missing = cursor.fetchall()
         missing = [x[0] for x in missing]
 
