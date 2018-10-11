@@ -305,7 +305,7 @@ def count_practice(id, date, number):
             conn.commit()
             cursor.close()
             conn.close()
-            send_debug_message("marked  " + str(id) + " as " + str(number) + " for practice on " + date)
+            send_debug_message("marked  <@" + str(id) + "> as " + str(number) + " for practice on " + date)
         else:
             conn.commit()
             cursor.close()
