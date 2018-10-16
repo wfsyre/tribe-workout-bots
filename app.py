@@ -394,7 +394,7 @@ class SlackResponse:
                                + "not playing: " + str(attendance['injured']) + "\n"\
                                + "not attending: " + str(attendance['missing']) + "\n"\
                                + "unanswered: " + str(attendance['unanswered']) + "\n"
-                    send_str.replace("'", '')
+                    send_str = send_str.replace("'", '')
                     send_tribe_message(send_str, channel=self._channel, bot_name='Attendance Bot')
                 else:
                     send_tribe_message(
