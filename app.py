@@ -374,13 +374,28 @@ class SlackResponse:
                 date = self._lower_text[-10:]
                 attendance = get_practice_attendance(date)
                 if 'failure' not in list(attendance.keys()):
-                    send_tribe_message("practicing: " + str(attendance['playing']) + "\n"
-                                       + "drills: " + str(attendance['drills']) + "\n"
-                                       + "not playing: " + str(attendance['injured']) + "\n"
-                                       + "not attending: " + str(attendance['missing']) + "\n"
-                                       + "unanswered: " + str(attendance['unanswered']) + "\n",
-                                       channel=self._channel,
-                                       bot_name='Attendance Bot')
+                    # playing = ""
+                    # drills = ""
+                    # injured = ""
+                    # missing = ""
+                    # unanswered = ""
+                    # for name in attendance['playing']:
+                    #     playing += name + ", "
+                    # for name in attendance['drills']:
+                    #     drills += name + ", "
+                    # for name in attendance['injured']:
+                    #     injured += name + ", "
+                    # for name in attendance['missing']:
+                    #     missing += name + ", "
+                    # for name in attendance['unanswered']:
+                    #     unanswered += name + ", "
+                    send_str = "practicing: " + str(attendance['playing']) + "\n"\
+                               + "drills: " + str(attendance['drills']) + "\n"\
+                               + "not playing: " + str(attendance['injured']) + "\n"\
+                               + "not attending: " + str(attendance['missing']) + "\n"\
+                               + "unanswered: " + str(attendance['unanswered']) + "\n"
+                    send_str.replace("'", '')
+                    send_tribe_message(send_str, channel=self._channel, bot_name='Attendance Bot')
                 else:
                     send_tribe_message(
                         "Either the date was improperly formatted or information on this date does not exist",
