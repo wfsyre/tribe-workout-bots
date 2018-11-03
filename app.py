@@ -315,6 +315,9 @@ class SlackResponse:
     def execute_commands(self):
         count = 0
         if not self._repeat:
+            if "!help" in self._lower_text:
+                send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals",
+                                   channel=self._channel, bot_name="Helper Bot")
             if "!leaderboard" in self._lower_text:
                 count += 1
                 to_print = collect_stats(3, True)
@@ -374,21 +377,6 @@ class SlackResponse:
                 date = self._lower_text[-10:]
                 attendance = get_practice_attendance(date)
                 if 'failure' not in list(attendance.keys()):
-                    # playing = ""
-                    # drills = ""
-                    # injured = ""
-                    # missing = ""
-                    # unanswered = ""
-                    # for name in attendance['playing']:
-                    #     playing += name + ", "
-                    # for name in attendance['drills']:
-                    #     drills += name + ", "
-                    # for name in attendance['injured']:
-                    #     injured += name + ", "
-                    # for name in attendance['missing']:
-                    #     missing += name + ", "
-                    # for name in attendance['unanswered']:
-                    #     unanswered += name + ", "
                     send_str = "practicing: " + str(attendance['playing']) + "\n"\
                                + "drills: " + str(attendance['drills']) + "\n"\
                                + "not playing: " + str(attendance['injured']) + "\n"\
