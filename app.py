@@ -146,6 +146,12 @@ class SlackResponse:
     def __init__(self, json_data):
         self._event = json_data['event']
         self._repeat = False
+        self.GYM_POINTS = 1.0
+        self.TRACK_POINTS = 1.0
+        self.THROW_POINTS = 0.5
+        self.SWIM_POINTS = 1.0
+        self.PICKUP_POINTS = 0.5
+        self.BIKING_POINTS = 1.0
         self._reaction_added = False
         self._reaction_removed = False
         self._check_for_commands = False
@@ -281,25 +287,20 @@ class SlackResponse:
             self._name = ""
 
     def parse_for_additions(self):
-        GYM_POINTS = 1.0
-        TRACK_POINTS = 1.0
-        THROW_POINTS = 0.5
-        SWIM_POINTS = 1.0
-        PICKUP_POINTS = 0.5
-        BIKING_POINTS = 1.0
+
         self._points_to_add = 0
         if '!gym' in self._lower_text:
-            self._points_to_add += GYM_POINTS
+            self._points_to_add += self.GYM_POINTS
         if '!track' in self._lower_text:
-            self._points_to_add += TRACK_POINTS
+            self._points_to_add += self.TRACK_POINTS
         if '!throw' in self._lower_text:
-            self._points_to_add += THROW_POINTS
+            self._points_to_add += self.THROW_POINTS
         if '!swim' in self._lower_text:
-            self._points_to_add += SWIM_POINTS
+            self._points_to_add += self.SWIM_POINTS
         if '!pickup' in self._lower_text:
-            self._points_to_add += PICKUP_POINTS
+            self._points_to_add += self.PICKUP_POINTS
         if '!bike' in self._lower_text:
-            self._points_to_add += BIKING_POINTS
+            self._points_to_add += self.BIKING_POINTS
 
     def handle_db(self):
         if not self._repeat:
@@ -316,8 +317,13 @@ class SlackResponse:
         count = 0
         if not self._repeat:
             if "!help" in self._lower_text:
-                send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals",
+                send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
+                                   "\n!gym\n!track\n!pickup\n!throw\n!swim\n!bike",
                                    channel=self._channel, bot_name="Helper Bot")
+            if "!points" in self._lower_text:
+                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f"
+                                   % (self.GYM_POINTS, self.TRACK_POINTS, self.PICKUP_POINTS,
+                                      self.THROW_POINTS, self.SWIM_POINTS, self.BIKING_POINTS), channel=self._channel)
             if "!leaderboard" in self._lower_text:
                 count += 1
                 to_print = collect_stats(3, True)
