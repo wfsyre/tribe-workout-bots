@@ -120,7 +120,7 @@ def webhook():
                     reactions = check_reaction_timestamp(obj._ts)
                     reactions = reactions[0]
                     date, yes, no, drills, injured, ts = reactions
-                    reactions = [yes, no, drills, injured]
+                    reactions = [yes, drills, injured, no]
                     reactions = [x.strip(":") for x in reactions]
                     for reaction in reactions:
                         obj.like_message(reaction=reaction)
