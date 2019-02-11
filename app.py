@@ -412,7 +412,7 @@ class SlackResponse:
             if '!since':
                 print("found !since")
                 #!since YYYY-MM-DD type @name
-                params = self._lower_text.split(" ")
+                params = self._text.split(" ")
                 print(params)
                 workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
                 for workout in workouts:
