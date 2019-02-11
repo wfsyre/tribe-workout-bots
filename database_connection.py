@@ -80,7 +80,7 @@ def get_emojis():
     return json
 
 
-def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in the db
+def add_to_db(names, addition, num_workouts, ids):  # add "addition" to each of the "names" in the db
     cursor = None
     conn = None
     num_committed = 0
@@ -103,9 +103,9 @@ def add_to_db(names, addition, ids):  # add "addition" to each of the "names" in
             score = int(score)
             if score != -1:
                 cursor.execute(sql.SQL(
-                    "UPDATE tribe_data SET num_workouts=num_workouts+1, workout_score=workout_score+%s, last_post="
+                    "UPDATE tribe_data SET num_workouts=num_workouts+%s, workout_score=workout_score+%s, last_post="
                     "now() WHERE slack_id = %s"),
-                    [str(addition), ids[x]])
+                    [str(num_workouts), str(addition), ids[x]])
                 conn.commit()
                 send_debug_message("committed %s with %s points" % (names[x], str(addition)))
                 print("committed %s" % names[x])
@@ -374,3 +374,27 @@ def get_practice_attendance(date):
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
         return {'failure': []}
+
+def add_workout(name, slack_id, workout_type):
+    cursor = None
+    conn = None
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL("INSERT INTO tribe_workouts VALUES (%s, %s, %s, now())"), [str(name), str(slack_id), str(workout_type)])
+        conn.commit()
+        send_debug_message("Committed " + name + " to the workout list")
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(str(error))
+    finally:
+        if cursor is not None:
+            cursor.close()
+            conn.close()

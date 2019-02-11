@@ -18,6 +18,7 @@ def webhook():
     SWIM_POINTS = 1.0
     PICKUP_POINTS = 0.5
     BIKING_POINTS = 1.0
+    RUN_POINTS = 1.0
     BOT_CHANNEL = "CBJAJPZ8B"
     data = request.get_json()
     if 'text' in list(data['event'].keys()):
@@ -152,6 +153,7 @@ class SlackResponse:
         self.SWIM_POINTS = 1.0
         self.PICKUP_POINTS = 0.5
         self.BIKING_POINTS = 1.0
+        self._additions = []
         self._reaction_added = False
         self._reaction_removed = False
         self._check_for_commands = False
@@ -291,20 +293,32 @@ class SlackResponse:
         self._points_to_add = 0
         if '!gym' in self._lower_text:
             self._points_to_add += self.GYM_POINTS
+            self._additions.append('!gym')
         if '!track' in self._lower_text:
             self._points_to_add += self.TRACK_POINTS
+            self._additions.append('!track')
         if '!throw' in self._lower_text:
             self._points_to_add += self.THROW_POINTS
+            self._additions.append('!throw')
         if '!swim' in self._lower_text:
             self._points_to_add += self.SWIM_POINTS
+            self._additions.append('!swim')
         if '!pickup' in self._lower_text:
             self._points_to_add += self.PICKUP_POINTS
+            self._additions.append('!pickup')
         if '!bike' in self._lower_text:
             self._points_to_add += self.BIKING_POINTS
+            self._additions.append('!bike')
+        if '!run' in self._lower_text:
+            self._points_to_add += self.BIKING_POINTS
+            self._additions.append('!run')
 
     def handle_db(self):
         if not self._repeat:
-            num = add_to_db(self._all_names, self._points_to_add, self._all_ids)
+            num = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids)
+            for i in range(len(self._all_names)):
+                for workout in self._additions:
+                    add_workout(self._all_names[i], self._all_ids[i], workout)
             if num == len(self._all_names):
                 self.like_message()
             else:
