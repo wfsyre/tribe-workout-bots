@@ -418,7 +418,6 @@ class SlackResponse:
                 for workout in workouts:
                     print(workout)
                     send_tribe_message(("Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))), channel=self._channel)
-                    send_debug_message(str(workout))
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
