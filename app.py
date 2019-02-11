@@ -415,6 +415,7 @@ class SlackResponse:
                 params = self._text.split(" ")
                 print(params)
                 workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
+                send_tribe_message(("%d total workouts found" % (len(workouts))), channel=self._channel)
                 for workout in workouts:
                     print(workout)
                     send_tribe_message(("Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))), channel=self._channel)
