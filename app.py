@@ -409,6 +409,14 @@ class SlackResponse:
                         "Either the date was improperly formatted or information on this date does not exist",
                         channel=self._channel,
                         bot_name="Reminder Bot")
+            if '!since':
+                #!since YYYY-MM-DD type @name
+                date = self._lower_text[-10:]
+                params = self._lower_text.split(" ")
+                workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
+                for workout in workouts:
+                    print(workout)
+                    send_debug_message(str(workout))
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
