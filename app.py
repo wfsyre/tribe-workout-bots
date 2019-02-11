@@ -411,8 +411,8 @@ class SlackResponse:
                         bot_name="Reminder Bot")
             if '!since':
                 #!since YYYY-MM-DD type @name
-                date = self._lower_text[-10:]
                 params = self._lower_text.split(" ")
+                print(params)
                 workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
                 for workout in workouts:
                     print(workout)

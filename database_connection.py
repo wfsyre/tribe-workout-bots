@@ -399,7 +399,7 @@ def add_workout(name, slack_id, workout_type):
             cursor.close()
             conn.close()
 
-def get_workouts_after_date(name, date, type):
+def get_workouts_after_date(slack_id, date, type):
     cursor = None
     conn = None
     workouts = []
@@ -414,10 +414,10 @@ def get_workouts_after_date(name, date, type):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT * from tribe_workouts WHERE slack_id=%s and workout_date BETWEEN %s and now()"))
+        cursor.execute(sql.SQL("SELECT * from tribe_workouts WHERE slack_id=%s and workout_date BETWEEN %s and now() and workout_type=%s"),
+                       [slack_id, date, "!" + type])
         workouts = cursor.fetchall()
         conn.commit()
-        send_debug_message("Committed " + name + " to the workout list")
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
