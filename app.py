@@ -153,6 +153,7 @@ class SlackResponse:
         self.SWIM_POINTS = 1.0
         self.PICKUP_POINTS = 0.5
         self.BIKING_POINTS = 1.0
+        self.RUN_POINTS = 1.0
         self._additions = []
         self._reaction_added = False
         self._reaction_removed = False
@@ -332,12 +333,12 @@ class SlackResponse:
         if not self._repeat:
             if "!help" in self._lower_text:
                 send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                                   "\n!gym\n!track\n!pickup\n!throw\n!swim\n!bike",
+                                   "\n!gym\n!track\n!pickup\n!throw\n!swim\n!bike\n!run",
                                    channel=self._channel, bot_name="Helper Bot")
             if "!points" in self._lower_text:
-                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f"
+                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f\nrun %.1f"
                                    % (self.GYM_POINTS, self.TRACK_POINTS, self.PICKUP_POINTS,
-                                      self.THROW_POINTS, self.SWIM_POINTS, self.BIKING_POINTS), channel=self._channel)
+                                      self.THROW_POINTS, self.SWIM_POINTS, self.BIKING_POINTS, self.RUN_POINTS), channel=self._channel)
             if "!leaderboard" in self._lower_text:
                 count += 1
                 to_print = collect_stats(3, True)
