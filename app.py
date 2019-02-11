@@ -410,6 +410,7 @@ class SlackResponse:
                         channel=self._channel,
                         bot_name="Reminder Bot")
             if '!since':
+                print("found !since")
                 #!since YYYY-MM-DD type @name
                 params = self._lower_text.split(" ")
                 print(params)
