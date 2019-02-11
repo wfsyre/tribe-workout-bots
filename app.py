@@ -425,7 +425,7 @@ class SlackResponse:
                 #groupsince YYYY-MM-DD type
                 params = self._text.split(" ")
                 print(params)
-                workouts = get_group_workouts_after_date(params[1], params[2].strip)
+                workouts = get_group_workouts_after_date(params[1], params[2])
                 send_tribe_message(("%d total workouts found" % (len(workouts))), channel=self._channel)
                 for workout in workouts:
                     print(workout)

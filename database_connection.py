@@ -430,6 +430,7 @@ def get_group_workouts_after_date(date, type):
     cursor = None
     conn = None
     workouts = []
+    print(date, type)
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
