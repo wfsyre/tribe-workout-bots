@@ -417,7 +417,7 @@ class SlackResponse:
                 workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
                 for workout in workouts:
                     print(workout)
-                    send_tribe_message(("Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%B %d, %Y"))), channel=self._channel)
+                    send_tribe_message(("Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))), channel=self._channel)
                     send_debug_message(str(workout))
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
