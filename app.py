@@ -333,7 +333,7 @@ class SlackResponse:
         if not self._repeat:
             if "!help" in self._lower_text:
                 send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                                   "\n!gym\n!track\n!pickup\n!throw\n!swim\n!bike\n!run",
+                                   "\n!gym\n!track\n!pickup\n!throw\n!swim\n!bike\n!run\n!since",
                                    channel=self._channel, bot_name="Helper Bot")
             if "!points" in self._lower_text:
                 send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f\nrun %.1f"
@@ -410,12 +410,22 @@ class SlackResponse:
                         "Either the date was improperly formatted or information on this date does not exist",
                         channel=self._channel,
                         bot_name="Reminder Bot")
-            if '!since':
+            if '!since' in self._lower_text:
                 print("found !since")
                 #!since YYYY-MM-DD type @name
                 params = self._text.split(" ")
                 print(params)
                 workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
+                send_tribe_message(("%d total workouts found" % (len(workouts))), channel=self._channel)
+                for workout in workouts:
+                    print(workout)
+                    send_tribe_message(("Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))), channel=self._channel)
+            if '!groupsince' in self._lower_text:
+                print("found !groupsince")
+                #groupsince YYYY-MM-DD type
+                params = self._text.split(" ")
+                print(params)
+                workouts = get_group_workouts_after_date(params[1], params[2].strip)
                 send_tribe_message(("%d total workouts found" % (len(workouts))), channel=self._channel)
                 for workout in workouts:
                     print(workout)
