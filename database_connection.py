@@ -399,7 +399,7 @@ def add_workout(name, slack_id, workout_type):
             cursor.close()
             conn.close()
 
-def get_workouts_after_date(date, type, name):
+def get_workouts_after_date(date, type, slack_id):
     cursor = None
     conn = None
     workouts = []
