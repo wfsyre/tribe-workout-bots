@@ -333,7 +333,8 @@ class SlackResponse:
         if not self._repeat:
             if "!help" in self._lower_text:
                 send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                                   "\n!gym\n!track\n!pickup\n!throw\n!swim\n!bike\n!run\n!since",
+                                   "\n!gym\n!track\n!pickup\n!throw\n!swim\n!bike\n!run\n!since [YYYY-MM-DD] [type] [@name]"
+                                   "\n!groupsince [YYYY-MM-DD] [type]",
                                    channel=self._channel, bot_name="Helper Bot")
             if "!points" in self._lower_text:
                 send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f\nrun %.1f"
