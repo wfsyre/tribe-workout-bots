@@ -368,16 +368,24 @@ class SlackResponse:
             if '!subtract' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]))
                 num = subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
+                print(num)
                 count += 1
             if '!reset' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 to_print = collect_stats(3, True)
                 send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
                 reset_scores()
-                send_debug_message("Reseting leaderboard")
+                send_debug_message("Resetting leaderboard")
+                count += 1
+            if '!silence' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+                to_print = collect_stats(1, True)
+                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
+                reset_talkative()
+                send_debug_message("Resetting talkative")
                 count += 1
             if '!add' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]))
-                num = add_to_db(self._all_names[:-1], self._lower_text[-3:], self._all_ids[:-1])
+                num = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
+                print(num)
                 count += 1
             if '!test' in self._lower_text:
                 pass
@@ -417,20 +425,24 @@ class SlackResponse:
                 params = self._text.split(" ")
                 print(params)
                 workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
-                send_tribe_message(("%d total workouts found" % (len(workouts))), channel=self._channel)
+                send_str = ""
+                send_str += "%d total workouts found" % (len(workouts))
                 for workout in workouts:
                     print(workout)
-                    send_tribe_message(("Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))), channel=self._channel)
+                    send_str += "Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                send_tribe_message(send_str, channel=self._channel)
             if '!groupsince' in self._lower_text:
                 print("found !groupsince")
                 #groupsince YYYY-MM-DD type
                 params = self._text.split(" ")
                 print(params)
                 workouts = get_group_workouts_after_date(params[1], params[2])
-                send_tribe_message(("%d total workouts found" % (len(workouts))), channel=self._channel)
+                send_str = ""
+                send_str += "%d total workouts found" % (len(workouts))
                 for workout in workouts:
                     print(workout)
-                    send_tribe_message(("Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))), channel=self._channel)
+                    send_str += "Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                send_tribe_message(send_str, channel=self._channel)
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
             if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
