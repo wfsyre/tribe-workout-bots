@@ -308,7 +308,7 @@ def count_practice(id, date, number):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("UPDATE tribe_attendance SET \"" + date + "\" =%s where slack_id = %s"), [number, id])
+        cursor.execute(sql.SQL("UPDATE tribe_attendance SET attendance_code=%s, date_responded=now() where slack_id = %s and practice_date=date"), [number, id, date])
         if cursor.rowcount == 1:
             conn.commit()
             cursor.close()
@@ -323,7 +323,6 @@ def count_practice(id, date, number):
 
 
 def add_dummy_responses(date):
-    print(date)
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -344,9 +343,7 @@ def add_dummy_responses(date):
         conn.commit()
         cursor.close()
         conn.close()
-        send_debug_message("populated -1s for practice on " + date)
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message("here")
         send_debug_message(error)
 
 
@@ -363,7 +360,7 @@ def get_unanswered(date):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("SELECT slack_id FROM tribe_attendance WHERE \"" + date + "\" = -1"))
+        cursor.execute(sql.SQL("SELECT slack_id FROM tribe_attendance WHERE practice_date = date and attendance_code = -1"))
         unanswered = cursor.fetchall()
         print(unanswered)
         return unanswered
@@ -384,23 +381,23 @@ def get_practice_attendance(date):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE \"" + date + "\" = 1"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = 1"))
         injured = cursor.fetchall()
         injured = [x[0] for x in injured]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE \"" + date + "\" = -1"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = -1"))
         unanswered = cursor.fetchall()
         unanswered = [x[0] for x in unanswered]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE \"" + date + "\" = 2"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = 2"))
         drills = cursor.fetchall()
         drills = [x[0] for x in drills]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE \"" + date + "\" = 3"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = 3"))
         playing = cursor.fetchall()
         playing = [x[0] for x in playing]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE \"" + date + "\" = 0"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = 0"))
         missing = cursor.fetchall()
         missing = [x[0] for x in missing]
 

@@ -63,7 +63,7 @@ def webhook():
               + obj._calendar_date.strftime("%B %d, %Y"))
 
         if add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured):
-            # need to update everyone with -1's
+            add_dummy_responses(obj._calendar_date.strftime("%Y-%m-%d"))
             send_calendar_message(
                 obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime(
                     "%B %d, %Y") + "\n"
@@ -72,7 +72,7 @@ def webhook():
                 + injured + " if you are attending but not playing\n"
                 + no + " if you are not attending")
         else:
-            #send reminders
+            # send reminders
             unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))
             unanswered = [x[0] for x in unanswered]
             for user_id in unanswered:
@@ -388,7 +388,7 @@ class SlackResponse:
                 print(num)
                 count += 1
             if '!test' in self._lower_text:
-                add_dummy_responses(datetime(2019, 4, 3).strftime("%Y-%m-%d"))
+                pass
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)
