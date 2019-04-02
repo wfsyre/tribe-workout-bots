@@ -324,8 +324,29 @@ def count_practice(id, date, number):
 
 def add_dummy_responses(date):
     print(date)
+    member_and_id = []
     for member in get_group_info()['members']:
-        print(member['id'], member['real_name'])
+        member_and_id.append((member['id'], member['real_name']))
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        for slack_id, real_name in member_and_id:
+            cursor.execute(sql.SQL("INSERT INTO tribe_attendance VALUES(%s, %s, -1, %s, now())",
+                                   [real_name, slack_id, date]))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        send_debug_message("populated -1s for practice on " + date)
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
 
 
 def get_unanswered(date):

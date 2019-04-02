@@ -388,7 +388,7 @@ class SlackResponse:
                 print(num)
                 count += 1
             if '!test' in self._lower_text:
-                add_dummy_responses(datetime(2019, 4, 2))
+                add_dummy_responses(datetime(2019, 4, 3))
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)
