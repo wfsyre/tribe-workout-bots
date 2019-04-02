@@ -326,8 +326,8 @@ def add_dummy_responses(date):
     print(date)
     member_and_id = []
     for member in get_group_info()['members']:
-        print(member)
-        member_and_id.append((member['id'], member['real_name']))
+        if 'bot_id' not in member:
+            member_and_id.append((member['id'], member['real_name']))
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
