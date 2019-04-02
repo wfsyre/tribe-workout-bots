@@ -340,7 +340,7 @@ def add_dummy_responses(date):
         cursor = conn.cursor()
         for slack_id, real_name in member_and_id:
             cursor.execute(sql.SQL("INSERT INTO tribe_attendance VALUES(%s, %s, -1, %s, now())"),
-                           [real_name, slack_id, str(date.strftime("%Y-%m-%d"))])
+                           [real_name, slack_id, date.strftime("%Y-%m-%d")])
         conn.commit()
         cursor.close()
         conn.close()
