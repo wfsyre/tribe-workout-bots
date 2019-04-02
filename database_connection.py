@@ -335,7 +335,7 @@ def add_dummy_responses(date):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT name, slack_id FROM tribe_data WHERE workout_score != -1"))
+        cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE workout_score != -1"))
         stuff = cursor.fetchall()
         print(stuff)
         for slack_id, real_name in stuff:
