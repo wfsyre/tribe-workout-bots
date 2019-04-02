@@ -346,6 +346,7 @@ def add_dummy_responses(date):
         conn.close()
         send_debug_message("populated -1s for practice on " + date)
     except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message("here")
         send_debug_message(error)
 
 
