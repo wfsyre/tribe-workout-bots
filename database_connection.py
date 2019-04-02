@@ -324,11 +324,6 @@ def count_practice(id, date, number):
 
 def add_dummy_responses(date):
     print(date)
-    member_and_id = []
-    for member in get_group_info()['members']:
-        if 'bot_id' not in member['profile'] and member['id'] != 'USLACKBOT':
-            print(member)
-            member_and_id.append((member['id'], member['real_name']))
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -340,7 +335,10 @@ def add_dummy_responses(date):
             port=url.port
         )
         cursor = conn.cursor()
-        for slack_id, real_name in member_and_id:
+        cursor.execute(sql.SQL("SELECT name, slack_id FROM tribe_data WHERE workout_score != -1"))
+        stuff = cursor.fetchall()
+        print(stuff)
+        for slack_id, real_name in stuff:
             cursor.execute(sql.SQL("INSERT INTO tribe_attendance VALUES(%s, %s, -1, %s, now())"),
                            [real_name, slack_id, date])
         conn.commit()
