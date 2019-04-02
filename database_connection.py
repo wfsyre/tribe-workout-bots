@@ -340,14 +340,14 @@ def add_dummy_responses(date):
         cursor = conn.cursor()
         for slack_id, real_name in member_and_id:
             cursor.execute(sql.SQL("INSERT INTO tribe_attendance VALUES(%s, %s, -1, %s, now())"),
-                           [real_name, slack_id, date.strftime("%Y-%m-%d")])
+                           [real_name, slack_id, str(date.strftime("%Y-%m-%d"))])
         conn.commit()
         cursor.close()
         conn.close()
         send_debug_message("populated -1s for practice on " + date)
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message("here")
-        send_debug_message(date.strftime("%Y-%m-%d"))
+        send_debug_message(type(date.strftime("%Y-%m-%d")))
         send_debug_message(error)
 
 
