@@ -44,74 +44,74 @@ def webhook():
         else:
             print("executing commands")
             obj.execute_commands()
-    # elif obj._calendar:
-    #     print("found a calendar reminder")
-    #     emojis = list(get_emojis()['emoji'].keys())
-    #     numbers = random.sample(range(0, len(emojis)), 4)
-    #     if emojis:
-    #         yes = ":" + emojis[numbers[0]] + ":"
-    #         drills = ":" + emojis[numbers[1]] + ":"
-    #         injured = ":" + emojis[numbers[2]] + ":"
-    #         no = ":" + emojis[numbers[3]] + ":"
-    #     else:
-    #         yes = ":yea:"
-    #         drills = ":alienjeff:"
-    #         no = ":nay:"
-    #         injured = ":conni:"
-    #     print(obj._calendar_title + " found with text "
-    #           + obj._calendar_text + " with date "
-    #           + obj._calendar_date.strftime("%B %d, %Y"))
-    #
-    #     if add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured):
-    #         add_practice_date(obj._calendar_date.strftime("%Y-%m-%d"))
-    #         send_calendar_message(
-    #             obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime(
-    #                 "%B %d, %Y") + "\n"
-    #             + yes + " if you are playing \n"
-    #             + drills + " if you are only doing drills\n"
-    #             + injured + " if you are attending but not playing\n"
-    #             + no + " if you are not attending")
-    #     else:
-    #         #send reminders
-    #         unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))
-    #         unanswered = [x[0] for x in unanswered]
-    #         for user_id in unanswered:
-    #             im_data = open_im(user_id)
-    #             if 'channel' in list(im_data.keys()):
-    #                 channel = im_data['channel']['id']
-    #                 send_message(
-    #                     "<@" + user_id + "> please react to the message in announcements about practice attendance",
-    #                     channel=channel,
-    #                     bot_name="Reminder Bot")
-    #                 send_debug_message(" Sent reminder to <@" + user_id + ">")
-    # elif obj._reaction_added:
-    #     check = check_reaction_timestamp(obj._item_ts)
-    #     if check:
-    #         print(check)
-    #         print(obj._user_id + " added a reaction :" + obj._reaction + ":")
-    #         if obj._reaction == check[0][1].strip(":"):
-    #             print("Found a yes")
-    #             count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 3)
-    #         elif obj._reaction == check[0][2].strip(":"):
-    #             print("Found a no")
-    #             count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 0)
-    #         elif obj._reaction == check[0][3].strip(":"):
-    #             print("Found a drills")
-    #             count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 2)
-    #         elif obj._reaction == check[0][4].strip(":"):
-    #             print("Found an injured")
-    #             count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 1)
-    #         # need to update scores in tribe_attendance
-    #     else:
-    #         print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
-    # elif obj._reaction_removed:
-    #     check = check_reaction_timestamp(obj._item_ts)
-    #     print(check)
-    #     if check:
-    #         count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), -1)
-    #     else:
-    #         print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
-    #     # need to update scores in tribe_attendance
+    elif obj._calendar:
+        print("found a calendar reminder")
+        emojis = list(get_emojis()['emoji'].keys())
+        numbers = random.sample(range(0, len(emojis)), 4)
+        if emojis:
+            yes = ":" + emojis[numbers[0]] + ":"
+            drills = ":" + emojis[numbers[1]] + ":"
+            injured = ":" + emojis[numbers[2]] + ":"
+            no = ":" + emojis[numbers[3]] + ":"
+        else:
+            yes = ":yea:"
+            drills = ":alienjeff:"
+            no = ":nay:"
+            injured = ":conni:"
+        print(obj._calendar_title + " found with text "
+              + obj._calendar_text + " with date "
+              + obj._calendar_date.strftime("%B %d, %Y"))
+
+        if add_reaction_info_date(obj._calendar_date, yes=yes, no=no, drills=drills, injured=injured):
+            # need to update everyone with -1's
+            send_calendar_message(
+                obj._calendar_title + " " + obj._calendar_text.lower() + " on " + obj._calendar_date.strftime(
+                    "%B %d, %Y") + "\n"
+                + yes + " if you are playing \n"
+                + drills + " if you are only doing drills\n"
+                + injured + " if you are attending but not playing\n"
+                + no + " if you are not attending")
+        else:
+            #send reminders
+            unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))
+            unanswered = [x[0] for x in unanswered]
+            for user_id in unanswered:
+                im_data = open_im(user_id)
+                if 'channel' in list(im_data.keys()):
+                    channel = im_data['channel']['id']
+                    send_message(
+                        "<@" + user_id + "> please react to the message in announcements about practice attendance",
+                        channel=channel,
+                        bot_name="Reminder Bot")
+                    send_debug_message(" Sent reminder to <@" + user_id + ">")
+    elif obj._reaction_added:
+        check = check_reaction_timestamp(obj._item_ts)
+        if check:
+            print(check)
+            print(obj._user_id + " added a reaction :" + obj._reaction + ":")
+            if obj._reaction == check[0][1].strip(":"):
+                print("Found a yes")
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 3)
+            elif obj._reaction == check[0][2].strip(":"):
+                print("Found a no")
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 0)
+            elif obj._reaction == check[0][3].strip(":"):
+                print("Found a drills")
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 2)
+            elif obj._reaction == check[0][4].strip(":"):
+                print("Found an injured")
+                count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), 1)
+            # need to update scores in tribe_attendance
+        else:
+            print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
+    elif obj._reaction_removed:
+        check = check_reaction_timestamp(obj._item_ts)
+        print(check)
+        if check:
+            count_practice(obj._user_id, check[0][0].strftime("%Y-%m-%d"), -1)
+        else:
+            print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
+        # need to update scores in tribe_attendance
     else:
         if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
             if obj._event['text'][0:8] == 'Practice':
@@ -165,20 +165,20 @@ class SlackResponse:
             self._files = self._event['files']
         else:
             self._files = []
-        # if 'attachments' in list(self._event.keys()):
-        #     self._calendar = True
-        #     self._calendar_text = self._event['attachments'][0]['text']
-        #     self._calendar_title = self._event['attachments'][0]['title']
-        #     if 'practice' in self._calendar_title.lower():
-        #         date_text = self._calendar_text[self._calendar_text.index('|'):]
-        #         date_text = date_text[1:date_text.index('from') - 1]
-        #         # September 30th, 2018
-        #         comma = date_text.index(",")
-        #         date_text = date_text[0:comma - 2] + date_text[comma:]
-        #         # September 30, 2018
-        #         self._calendar_date = datetime.strptime(date_text, '%B %d, %Y')
-        # else:
-        #     self._calendar = False
+        if 'attachments' in list(self._event.keys()):
+            self._calendar = True
+            self._calendar_text = self._event['attachments'][0]['text']
+            self._calendar_title = self._event['attachments'][0]['title']
+            if 'practice' in self._calendar_title.lower():
+                date_text = self._calendar_text[self._calendar_text.index('|'):]
+                date_text = date_text[1:date_text.index('from') - 1]
+                # September 30th, 2018
+                comma = date_text.index(",")
+                date_text = date_text[0:comma - 2] + date_text[comma:]
+                # September 30, 2018
+                self._calendar_date = datetime.strptime(date_text, '%B %d, %Y')
+        else:
+            self._calendar = False
         if 'text' in list(self._event.keys()):
             self._text = self._event['text']
         else:
@@ -388,7 +388,7 @@ class SlackResponse:
                 print(num)
                 count += 1
             if '!test' in self._lower_text:
-                pass
+                add_dummy_responses(datetime(2019, 4, 2))
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)

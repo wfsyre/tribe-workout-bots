@@ -265,27 +265,6 @@ def add_reaction_info_ts(ts):
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
 
-
-def add_practice_date(date_string):
-    try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
-        cursor.execute(sql.SQL("ALTER TABLE tribe_attendance ADD COLUMN \"" + date_string + "\"SMALLINT DEFAULT -1"))
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
-
-
 def check_reaction_timestamp(ts):
     try:
         urllib.parse.uses_netloc.append("postgres")
@@ -341,6 +320,11 @@ def count_practice(id, date, number):
             conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
+
+
+def add_dummy_responses(date):
+    print(date)
+    print(get_group_info())
 
 
 def get_unanswered(date):
