@@ -324,7 +324,8 @@ def count_practice(id, date, number):
 
 def add_dummy_responses(date):
     print(date)
-    print(get_group_info())
+    for member in get_group_info()['members']:
+        print(member['id'], member['real_name'])
 
 
 def get_unanswered(date):
