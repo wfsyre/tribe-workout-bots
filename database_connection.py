@@ -326,7 +326,7 @@ def add_dummy_responses(date):
     print(date)
     member_and_id = []
     for member in get_group_info()['members']:
-        if 'bot_id' not in member['profile']:
+        if 'bot_id' not in member['profile'] and member['id'] != 'USLACKBOT':
             print(member)
             member_and_id.append((member['id'], member['real_name']))
     try:
