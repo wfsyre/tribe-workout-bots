@@ -326,6 +326,7 @@ def add_dummy_responses(date):
     print(date)
     member_and_id = []
     for member in get_group_info()['members']:
+        print(member)
         member_and_id.append((member['id'], member['real_name']))
     try:
         urllib.parse.uses_netloc.append("postgres")
