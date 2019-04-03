@@ -233,6 +233,7 @@ def add_reaction_info_date(date, yes, drills, injured, no):
             cursor.close()
             conn.close()
             send_debug_message("Found a repeat calendar post")
+            return False
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
 
@@ -360,7 +361,7 @@ def get_unanswered(date):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("SELECT slack_id FROM tribe_attendance WHERE practice_date = date and attendance_code = -1"))
+        cursor.execute(sql.SQL("SELECT slack_id FROM tribe_attendance WHERE practice_date = %s and attendance_code = -1"), [date])
         unanswered = cursor.fetchall()
         print(unanswered)
         return unanswered

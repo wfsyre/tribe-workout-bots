@@ -73,6 +73,7 @@ def webhook():
                 + no + " if you are not attending")
         else:
             # send reminders
+            #problem with get_unanswered
             unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))
             unanswered = [x[0] for x in unanswered]
             for user_id in unanswered:
