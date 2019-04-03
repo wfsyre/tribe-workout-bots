@@ -309,7 +309,7 @@ def count_practice(id, date, number):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("UPDATE tribe_attendance SET attendance_code=%s, date_responded=now() where slack_id = %s and practice_date=%s"), [number, id, date])
+        cursor.execute(sql.SQL("UPDATE tribe_attendance SET attendance_code = %s, date_responded=now() where slack_id = %s and practice_date = %s"), [number, id, date])
         if cursor.rowcount == 1:
             conn.commit()
             cursor.close()
@@ -337,6 +337,7 @@ def add_dummy_responses(date):
         cursor = conn.cursor()
         cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE workout_score != -1"))
         stuff = cursor.fetchall()
+        print("This is the stuff")
         print(stuff)
         for slack_id, real_name in stuff:
             cursor.execute(sql.SQL("INSERT INTO tribe_attendance VALUES(%s, %s, -1, %s, now())"),
