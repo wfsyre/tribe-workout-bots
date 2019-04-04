@@ -383,23 +383,23 @@ def get_practice_attendance(date):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = 1"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 1"), [date])
         injured = cursor.fetchall()
         injured = [x[0] for x in injured]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = -1"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = -1"), [date])
         unanswered = cursor.fetchall()
         unanswered = [x[0] for x in unanswered]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = 2"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 2"), [date])
         drills = cursor.fetchall()
         drills = [x[0] for x in drills]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = 3"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 3"), [date])
         playing = cursor.fetchall()
         playing = [x[0] for x in playing]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = date AND attendance_code = 0"))
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 0"), [date])
         missing = cursor.fetchall()
         missing = [x[0] for x in missing]
 
