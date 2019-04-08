@@ -2,6 +2,7 @@ from database_connection import *
 from utils import *
 from slack_api import *
 import random
+from time import sleep
 from datetime import datetime
 
 from flask import Flask, request, jsonify, make_response
@@ -130,6 +131,7 @@ def webhook():
                     reactions = [x.strip(":") for x in reactions]
                     for reaction in reactions:
                         obj.like_message(reaction=reaction)
+                        sleep(.5)
 
     print(obj)
     print("responding")
