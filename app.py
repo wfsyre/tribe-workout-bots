@@ -46,18 +46,22 @@ def webhook():
             obj.execute_commands()
     elif obj._calendar:
         print("found a calendar reminder")
-        emojis = list(get_emojis()['emoji'].keys())
-        numbers = random.sample(range(0, len(emojis)), 4)
-        if emojis:
-            yes = ":" + emojis[numbers[0]] + ":"
-            drills = ":" + emojis[numbers[1]] + ":"
-            injured = ":" + emojis[numbers[2]] + ":"
-            no = ":" + emojis[numbers[3]] + ":"
-        else:
-            yes = ":yea:"
-            drills = ":alienjeff:"
-            no = ":nay:"
-            injured = ":conni:"
+        # emojis = list(get_emojis()['emoji'].keys())
+        # numbers = random.sample(range(0, len(emojis)), 4)
+        # if emojis:
+        #     yes = ":" + emojis[numbers[0]] + ":"
+        #     drills = ":" + emojis[numbers[1]] + ":"
+        #     injured = ":" + emojis[numbers[2]] + ":"
+        #     no = ":" + emojis[numbers[3]] + ":"
+        # else:
+        #     yes = ":yea:"
+        #     drills = ":alienjeff:"
+        #     no = ":nay:"
+        #     injured = ":conni:"
+        yes = ":logan:"
+        drills = ":youtried:"
+        no = ":nay:"
+        injured = ":nish:"
         print(obj._calendar_title + " found with text "
               + obj._calendar_text + " with date "
               + obj._calendar_date.strftime("%B %d, %Y"))
