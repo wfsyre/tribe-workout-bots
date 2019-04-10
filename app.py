@@ -433,10 +433,10 @@ class SlackResponse:
                 print(params)
                 workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
                 send_str = ""
-                send_str += "%d total workouts found" % (len(workouts))
+                send_str += "%d total workouts found:\n" % (len(workouts))
                 for workout in workouts:
                     print(workout)
-                    send_str += "Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                    send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
                 send_tribe_message(send_str, channel=self._channel)
             if '!groupsince' in self._lower_text:
                 print("found !groupsince")
@@ -445,10 +445,10 @@ class SlackResponse:
                 print(params)
                 workouts = get_group_workouts_after_date(params[1], params[2])
                 send_str = ""
-                send_str += "%d total workouts found" % (len(workouts))
+                send_str += "%d total workouts found: \n" % (len(workouts))
                 for workout in workouts:
                     print(workout)
-                    send_str += "Name: %s, Workout Type: %s, Date: %s" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                    send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
                 send_tribe_message(send_str, channel=self._channel)
             if self._points_to_add > 0:
                 self.like_message(reaction='angry')
