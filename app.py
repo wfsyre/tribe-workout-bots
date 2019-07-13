@@ -418,7 +418,7 @@ class SlackResponse:
                     channel=channel,
                     bot_name="Poll Helper")
                 send_debug_message(" Sent poll info to <@" + self._user_id + ">")
-                send_debug_message("options: " + options)
+                send_debug_message(options)
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)
