@@ -78,7 +78,6 @@ def webhook():
                 + no + " if you are not attending")
         else:
             # send reminders
-            #problem with get_unanswered
             unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))
             unanswered = [x[0] for x in unanswered]
             for user_id in unanswered:
@@ -396,6 +395,29 @@ class SlackResponse:
                 count += 1
             if '!test' in self._lower_text:
                 pass
+            if '!poll' in self._lower_text:
+                #!poll "Title" "option 1" ... "option n"
+                quotes = self._lower_text.count("\"")
+                num_options = quotes - 2
+                start = 0
+                options = []
+                for i in range(0, int(quotes/2)):
+                    first = self._text.find("\"", start)
+                    second = self._text.find("\"", first + 1)
+                    options.append(self._text[first:second + 1])
+                im_data = open_im(self._user_id)
+                channel = im_data['channel']['id']
+                send_message(
+                    "<@" + self._user_id + "> You made a tracked poll in channel " + self._channel
+                    + " with tracking code",
+                    channel=channel,
+                    bot_name="Poll Helper")
+                send_message(
+                    "" + self._ts,
+                    channel=channel,
+                    bot_name="Poll Helper")
+                send_debug_message(" Sent poll info to <@" + self._user_id + ">")
+                send_debug_message("options: ", options)
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)
