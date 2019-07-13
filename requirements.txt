@@ -1,6 +1,6 @@
 Flask==0.12
 gunicorn==19.7.1
 psycopg2==2.7.3.1
-requests==2.18.4
+requests==2.20
 slackclient==1.2.1
 datetime==4.2
