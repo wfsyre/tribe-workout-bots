@@ -401,10 +401,11 @@ class SlackResponse:
                 num_options = quotes - 2
                 start = 0
                 options = []
-                for i in range(0, int(quotes/2)):
+                while start < len(self._text):
                     first = self._text.find("\"", start)
                     second = self._text.find("\"", first + 1)
-                    options.append(self._text[first:second + 1])
+                    options.append(self._text[first + 1:second])
+                    start = second + 1
                 im_data = open_im(self._user_id)
                 channel = im_data['channel']['id']
                 send_message(
@@ -417,7 +418,7 @@ class SlackResponse:
                     channel=channel,
                     bot_name="Poll Helper")
                 send_debug_message(" Sent poll info to <@" + self._user_id + ">")
-                send_debug_message("options: ", options)
+                send_debug_message("options: " + options)
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)
