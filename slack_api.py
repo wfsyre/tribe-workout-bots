@@ -51,7 +51,7 @@ def create_poll(channel_id, title, options, ts):
             "type": "plain_text",
             "text": options[i],
             "emoji": True,
-            "value": str([i, ts])
+            "value": "[" + str(i) + ", " + str(ts) + "]"
         }})
 
     block = [
