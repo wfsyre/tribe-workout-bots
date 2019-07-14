@@ -134,7 +134,6 @@ def webhook():
 
 @app.route('/interactiveComponents', methods=['POST'])
 def interactive_component_webhook():
-    #send_debug_message("Found interactive component")
     form_json = json.loads(request.form["payload"])
     print("This is the data that came with the interactive component")
     print(form_json)
@@ -143,7 +142,9 @@ def interactive_component_webhook():
     response_num = form_json['actions'][0]['value']
     send_debug_message("Found component interaction with id: " + slack_id
                        + ", ts: " + ts
-                       + ", response_num: ", response_num)
+                       + ", response_num: " + response_num)
     add_poll_reaction(ts, response_num, slack_id)
-    send_debug_message(form_json)
+    blocks = form_json['blocks']
+    ret = requests.post(form_json['response_url'], {"replace_original": "true", "text": "thanks!"})
+    send_debug_message(ret)
     return make_response("Ok", 200, )
