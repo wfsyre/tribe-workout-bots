@@ -262,6 +262,8 @@ class SlackResponse:
                 count += 1
             if '!test' in self._lower_text:
                 pass
+            if '!clearpoll' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+                clear_poll_data()
             if '!poll' in self._lower_text:
                 #!poll "Title" "option 1" ... "option n"
                 quotes = self._lower_text.count("\"")
