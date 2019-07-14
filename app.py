@@ -150,12 +150,13 @@ def interactive_component_webhook():
     response_text = form_json['actions'][0]['text']['text']
     slack_data = {
         "text": "You responded " + response_text,
-        "response_type": "ephemeral",
-        "replace_original": "false"
+        "response_type": 'ephemeral',
+        "replace_original": False
     }
 
     ret = requests.post(
-        webhook_url, data=json.dumps(slack_data),
+        webhook_url,
+        json=slack_data,
         headers={'Content-Type': 'application/json'})
 
     send_debug_message(ret)
