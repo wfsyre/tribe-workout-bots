@@ -54,7 +54,7 @@ def create_poll(channel_id, title, options, ts):
                 "text": options[i],
                 "emoji": True,
             },
-            "value": "[" + str(i) + ", " + str(ts) + "]"
+            "value": str(i)
         })
 
     block = [
@@ -67,9 +67,10 @@ def create_poll(channel_id, title, options, ts):
         },
         {
             "type": "actions",
+            "block_id": str(ts),
             "elements": actions
         }]
     print("\n\n\n\n\n")
     print(block)
+    print("\n\n\n\n\n")
     b = sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
-    print(b)
