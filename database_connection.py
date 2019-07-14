@@ -583,15 +583,12 @@ def get_poll_data(ts):
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL("SELECT title, options FROM tribe_poll_data WHERE ts = %s"), [ts])
-        send_debug_message("here")
         poll_data = cursor.fetchall()
-        send_debug_message(poll_data)
         title = poll_data[0][0]
         options = poll_data[0][1]
 
         cursor.execute(sql.SQL("SELECT real_name, response_num FROM tribe_poll_responses WHERE ts = %s"), [ts])
         poll_responses = cursor.fetchall()
-        send_debug_message(poll_responses)
         conn.commit()
         cursor.close()
         conn.close()
@@ -599,9 +596,12 @@ def get_poll_data(ts):
         data = {}
         for option in options:
             data[option] = []
+        data['none'] = []
         for real_name, response_num in poll_responses:
+            if response_num != -1:
                 data[options[response_num]].append(real_name)
-        print(data)
+            else:
+                data['none'].append(real_name)
 
         ret_data = {title: data}
 
