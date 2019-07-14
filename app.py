@@ -140,13 +140,13 @@ def interactive_component_webhook():
     slack_id = form_json['user']['id']
     ts = form_json['actions'][0]['block_id']
     response_num = form_json['actions'][0]['value']
+    response_text = form_json['actions'][0]['text']['text']
     send_debug_message("Found component interaction with id: " + slack_id
                        + ", ts: " + ts
                        + ", response_num: " + response_num)
     add_poll_reaction(ts, response_num, slack_id)
-    blocks = form_json['message']['blocks']
     webhook_url = form_json['response_url']
-    slack_data = {"replace_original": "true", "text": "thanks!"}
+    slack_data = {"response_type": "ephemeral", "text": "You responded " + response_text}
     ret = requests.post(
         webhook_url, data=json.dumps(slack_data),
         headers={'Content-Type': 'application/json'})
