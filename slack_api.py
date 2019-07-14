@@ -66,4 +66,4 @@ def create_poll(channel_id, title, options):
             "elements": actions
         }]
 
-    sc.api_call("chat.postMessage", channel=channel_id, block=block)
+    sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
