@@ -138,5 +138,12 @@ def interactive_component_webhook():
     form_json = json.loads(request.form["payload"])
     print("This is the data that came with the interactive component")
     print(form_json)
+    slack_id = form_json['user']['id']
+    ts = form_json['actions'][0]['block_id']
+    response_num = form_json['actions'][0]['value']
+    send_debug_message("Found component interaction with id: " + slack_id
+                       + ", ts: " + ts
+                       + ", response_num: ", response_num)
+    add_poll_reaction(ts, response_num, slack_id)
     send_debug_message(form_json)
     return make_response("Ok", 200, )
