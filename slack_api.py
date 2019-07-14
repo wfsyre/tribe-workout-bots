@@ -71,4 +71,40 @@ def create_poll(channel_id, title, options, ts):
             "elements": actions
         }]
     print(block)
-    b = sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
+    sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
+
+
+def send_categories(title, channel_id, categories):
+    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+    sc = SlackClient(slack_token)
+    block = [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*" + title + "*"
+            }
+        }
+    ]
+    for category in categories:
+        block.append({"type": "divider"})
+        block.append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*" + category + "*",
+                "emoji": True,
+            }
+        })
+        names = ""
+        for i in range(len(categories[category])):
+            names += str(i + 1) + "). " + categories[category][i] + "\n"
+        block.append({
+            "type": "section",
+            "text": {
+                "type": "plain_text",
+                "text": names
+            }
+        })
+    print(block)
+    sc.api_call("chat.postMessage", channel=channel_id, blocks=block)

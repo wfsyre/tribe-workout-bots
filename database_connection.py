@@ -603,9 +603,7 @@ def get_poll_data(ts):
             else:
                 data['none'].append(real_name)
 
-        ret_data = {title: data}
-
-        return ret_data
+        return title, data
 
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
