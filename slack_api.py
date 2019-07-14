@@ -48,7 +48,7 @@ def create_poll(channel_id, title, options):
     actions = []
     for option in options:
         actions.append({"type": "button", "text": {
-            "type": "button",
+            "type": "plain_text",
             "text": option,
             "emoji": True
         }})
@@ -65,6 +65,7 @@ def create_poll(channel_id, title, options):
             "type": "actions",
             "elements": actions
         }]
-
+    print("\n\n\n\n\n")
+    print(block)
     b = sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
     print(b)
