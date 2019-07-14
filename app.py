@@ -2,6 +2,7 @@ from database_connection import *
 from slack_response import SlackResponse
 from slack_api import *
 from time import sleep
+import json
 
 from flask import Flask, request, jsonify, make_response
 
@@ -134,8 +135,8 @@ def webhook():
 @app.route('/interactiveComponents', methods=['POST'])
 def interactive_component_webhook():
     #send_debug_message("Found interactive component")
-    form_json = request.form["payload"]
+    form_json = json.loads(request.form["payload"])
     print("This is the data that came with the interactive component")
-    print(form_json)
+    print(form_json["actions"][0]["selected_options"][0]["value"])
     send_debug_message(form_json)
     return make_response("Ok", 200, )
