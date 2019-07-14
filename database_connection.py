@@ -583,7 +583,10 @@ def get_poll_data(ts):
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL("SELECT title, options FROM tribe_poll_data WHERE ts = %s"), [ts])
-        title, options = cursor.fetchall()
+        send_debug_message("here")
+        poll_data = cursor.fetchall()
+        title = poll_data[0]
+        options = poll_data[1]
         print(options)
         options = list(options)
 
@@ -600,7 +603,9 @@ def get_poll_data(ts):
                 data[options[response_num]].append(real_name)
         print(data)
 
-        return data
+        ret_data = {title: data}
+
+        return ret_data
 
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
