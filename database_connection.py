@@ -570,6 +570,43 @@ def add_poll_dummy_responses(ts):
         send_debug_message(error)
 
 
+def get_poll_data(ts):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL("SELECT title, options, name FROM tribe_poll_data WHERE ts = %s"), [ts])
+        title, options = cursor.fetchall()
+        print(options)
+        options = list(options)
+
+        cursor.execute(sql.SQL("SELECT real_name, response_num, name FROM tribe_poll_responses WHERE ts = %s"), [ts])
+        poll_responses = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        data = {}
+        for option in options:
+            data[option] = []
+        for real_name, response_num in poll_responses:
+                data[options[response_num]].append(real_name)
+        print(data)
+
+        return data
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
+        return None
+
+
 def clear_poll_data():
     try:
         urllib.parse.uses_netloc.append("postgres")

@@ -289,6 +289,12 @@ class SlackResponse:
                 add_tracked_poll(options[0], self._user_id, self._ts, options[1:])
                 add_poll_dummy_responses(self._ts)
                 create_poll(self._channel, options[0], options[1:], self._ts)
+            if '!checkpoll' in self._lower_text:
+                ts = self._lower_text[11:]
+                data = get_poll_data(ts)
+                send_debug_message(data)
+            if '!remindpoll' in self._lower_text:
+                pass
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)
