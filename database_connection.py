@@ -589,7 +589,7 @@ def get_poll_data(ts):
         title = poll_data[0][0]
         options = poll_data[0][1]
 
-        cursor.execute(sql.SQL("SELECT real_name, response_num, name FROM tribe_poll_responses WHERE ts = %s"), [ts])
+        cursor.execute(sql.SQL("SELECT real_name, response_num FROM tribe_poll_responses WHERE ts = %s"), [ts])
         poll_responses = cursor.fetchall()
         send_debug_message(poll_responses)
         conn.commit()
