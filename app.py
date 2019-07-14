@@ -133,6 +133,7 @@ def webhook():
 
 @app.route('/interactiveComponents', methods=['POST'])
 def interactive_component_webhook():
-    print("\n\n\n\n\n\nFOUND AN INTERACTIVE COMPONENT")
+    send_debug_message("Found interactive component")
     data = request.get_json()
     print(data)
+    return make_response("Ok", 200, )
