@@ -144,7 +144,7 @@ def interactive_component_webhook():
                        + ", ts: " + ts
                        + ", response_num: " + response_num)
     add_poll_reaction(ts, response_num, slack_id)
-    blocks = form_json['blocks']
+    blocks = form_json['message']['blocks']
     ret = requests.post(form_json['response_url'], {"replace_original": "true", "text": "thanks!"})
     send_debug_message(ret)
     return make_response("Ok", 200, )
