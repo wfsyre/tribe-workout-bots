@@ -582,7 +582,7 @@ def get_poll_data(ts):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT title, options, name FROM tribe_poll_data WHERE ts = %s"), [ts])
+        cursor.execute(sql.SQL("SELECT title, options FROM tribe_poll_data WHERE ts = %s"), [ts])
         title, options = cursor.fetchall()
         print(options)
         options = list(options)
