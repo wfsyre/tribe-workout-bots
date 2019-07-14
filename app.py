@@ -145,6 +145,10 @@ def interactive_component_webhook():
                        + ", response_num: " + response_num)
     add_poll_reaction(ts, response_num, slack_id)
     blocks = form_json['message']['blocks']
-    ret = requests.post(form_json['response_url'], {"replace_original": "true", "text": "thanks!"})
+    webhook_url = form_json['response_url']
+    slack_data = {"replace_original": "true", "text": "thanks!"}
+    ret = requests.post(
+        webhook_url, data=json.dumps(slack_data),
+        headers={'Content-Type': 'application/json'})
     send_debug_message(ret)
     return make_response("Ok", 200, )
