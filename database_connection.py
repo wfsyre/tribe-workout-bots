@@ -586,10 +586,8 @@ def get_poll_data(ts):
         send_debug_message("here")
         poll_data = cursor.fetchall()
         send_debug_message(poll_data)
-        title = poll_data[0]
-        options = poll_data[1]
-        print(options)
-        options = list(options)
+        title = poll_data[0][0]
+        options = poll_data[0][1]
 
         cursor.execute(sql.SQL("SELECT real_name, response_num, name FROM tribe_poll_responses WHERE ts = %s"), [ts])
         poll_responses = cursor.fetchall()
