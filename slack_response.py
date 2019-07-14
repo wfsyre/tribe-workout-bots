@@ -284,8 +284,6 @@ class SlackResponse:
                     "" + self._ts,
                     channel=channel,
                     bot_name="Poll Helper")
-                send_debug_message(" Sent poll info to <@" + self._user_id + ">")
-                send_debug_message(options)
                 add_tracked_poll(options[0], self._user_id, self._ts, options[1:])
                 add_poll_dummy_responses(self._ts)
                 create_poll(self._channel, options[0], options[1:])
