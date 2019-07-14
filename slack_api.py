@@ -47,12 +47,15 @@ def create_poll(channel_id, title, options, ts):
     sc = SlackClient(slack_token)
     actions = []
     for i in range(0, len(options)):
-        actions.append({"type": "button", "text": {
-            "type": "plain_text",
-            "text": options[i],
-            "emoji": True,
+        actions.append({
+            "type": "button",
+            "text": {
+                "type": "plain_text",
+                "text": options[i],
+                "emoji": True,
+            },
             "value": "[" + str(i) + ", " + str(ts) + "]"
-        }})
+        })
 
     block = [
         {
