@@ -585,6 +585,7 @@ def get_poll_data(ts):
         cursor.execute(sql.SQL("SELECT title, options FROM tribe_poll_data WHERE ts = %s"), [ts])
         send_debug_message("here")
         poll_data = cursor.fetchall()
+        send_debug_message(poll_data)
         title = poll_data[0]
         options = poll_data[1]
         print(options)
@@ -592,6 +593,7 @@ def get_poll_data(ts):
 
         cursor.execute(sql.SQL("SELECT real_name, response_num, name FROM tribe_poll_responses WHERE ts = %s"), [ts])
         poll_responses = cursor.fetchall()
+        send_debug_message(poll_responses)
         conn.commit()
         cursor.close()
         conn.close()
