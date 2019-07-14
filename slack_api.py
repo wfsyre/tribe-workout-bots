@@ -40,3 +40,30 @@ def open_im(user_id):
     url = "https://slack.com/api/im.open?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN') + "&user=" + user_id
     json = requests.get(url).json()
     return json
+
+
+def create_poll(channel_id, title, options):
+    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+    sc = SlackClient(slack_token)
+    actions = []
+    for option in options:
+        actions.append({"type": "button", "text": {
+            "type": "button",
+            "text": option,
+            "emoji": True
+        }})
+
+    block = [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": title
+            }
+        },
+        {
+            "type": "actions",
+            "elements": actions
+        }]
+
+    sc.api_call("chat.postMessage", channel=channel_id, block=block)
