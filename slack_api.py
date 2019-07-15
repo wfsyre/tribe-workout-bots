@@ -70,8 +70,11 @@ def create_poll(channel_id, title, options, ts):
                     "text": "Vote",
                     "emoji": True
                 },
-                "value": "click_me_123"
+                "value": str(i)
             }
+        })
+        block.append({
+            "type": "divider"
         })
     print(block)
     sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
