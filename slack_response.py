@@ -297,6 +297,7 @@ class SlackResponse:
                 ts = self._lower_text[12:]
                 send_debug_message(ts)
                 unanswered = get_poll_unanswered(ts)
+                unanswered = [x[0] for x in unanswered]
                 send_debug_message(unanswered)
                 title, _ = get_poll_data(ts)
                 for user_id in unanswered:
