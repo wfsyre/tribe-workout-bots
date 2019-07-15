@@ -294,7 +294,8 @@ class SlackResponse:
                 title, data = get_poll_data(ts)
                 send_categories(title, self._channel, data)
             if '!remindpoll' in self._lower_text:
-                ts = self._lower_text[13:]
+                ts = self._lower_text[12:]
+                send_debug_message(ts)
                 unanswered = get_poll_unanswered(ts)
                 send_debug_message(unanswered)
                 title, _ = get_poll_data(ts)
