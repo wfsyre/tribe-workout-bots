@@ -53,6 +53,9 @@ def create_poll(channel_id, title, options, ts):
                 "type": "mrkdwn",
                 "text": title
             }
+        },
+        {
+            "type": "divider"
         }
     ]
     for i in range(0, len(options)):
