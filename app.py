@@ -156,10 +156,8 @@ def interactive_component_webhook():
         "replace_original": False
     }
 
-    ret = requests.post(
+    requests.post(
         webhook_url,
         json=slack_data,
         headers={'Content-Type': 'application/json'})
-
-    send_debug_message(ret)
     return make_response("Ok", 200, )

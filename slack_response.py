@@ -292,7 +292,6 @@ class SlackResponse:
             if '!checkpoll' in self._lower_text:
                 ts = self._lower_text[11:]
                 title, data = get_poll_data(ts)
-                send_debug_message(data)
                 send_categories(title, self._channel, data)
             if '!remindpoll' in self._lower_text:
                 ts = self._lower_text[13:]
