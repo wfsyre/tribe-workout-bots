@@ -296,6 +296,7 @@ class SlackResponse:
             if '!remindpoll' in self._lower_text:
                 ts = self._lower_text[13:]
                 unanswered = get_poll_unanswered(ts)
+                send_debug_message(unanswered)
                 title, _ = get_poll_data(ts)
                 for user_id in unanswered:
                     im_data = open_im(user_id)
