@@ -295,7 +295,18 @@ class SlackResponse:
                 send_debug_message(data)
                 send_categories(title, self._channel, data)
             if '!remindpoll' in self._lower_text:
-                pass
+                ts = self._lower_text[13:]
+                unanswered = get_poll_unanswered(ts)
+                title, _ = get_poll_data(ts)
+                for user_id in unanswered:
+                    im_data = open_im(user_id)
+                    if 'channel' in list(im_data.keys()):
+                        channel = im_data['channel']['id']
+                        send_message(
+                            "<@" + user_id + "> Please react to the poll \"" + title + "\"",
+                            channel=channel,
+                            bot_name="Reminder Bot")
+                        send_debug_message(" Sent reminder to <@" + user_id + ">")
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)

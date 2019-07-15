@@ -46,17 +46,6 @@ def create_poll(channel_id, title, options, ts):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     actions = []
-    for i in range(0, len(options)):
-        actions.append({
-            "type": "button",
-            "text": {
-                "type": "plain_text",
-                "text": options[i],
-                "emoji": True,
-            },
-            "value": str(i)
-        })
-
     block = [
         {
             "type": "section",
@@ -64,12 +53,26 @@ def create_poll(channel_id, title, options, ts):
                 "type": "mrkdwn",
                 "text": title
             }
-        },
-        {
-            "type": "actions",
-            "block_id": str(ts),
-            "elements": actions
-        }]
+        }
+    ]
+    for i in range(0, len(options)):
+        block.append({
+            "type": "section",
+            "text": {
+                "type": "plain_text",
+                "text": options[i],
+                "emoji": True
+            },
+            "accessory": {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Vote",
+                    "emoji": True
+                },
+                "value": "click_me_123"
+            }
+        })
     print(block)
     sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
 
