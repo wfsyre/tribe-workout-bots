@@ -51,7 +51,7 @@ def create_poll(channel_id, title, options, ts):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": title
+                "text": "*" + title + "*"
             }
         },
         {
@@ -61,6 +61,7 @@ def create_poll(channel_id, title, options, ts):
     for i in range(0, len(options)):
         block.append({
             "type": "section",
+            "block_id": ts,
             "text": {
                 "type": "plain_text",
                 "text": options[i],
