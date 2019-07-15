@@ -294,7 +294,7 @@ class SlackResponse:
                 title, data = get_poll_data(ts)
                 send_categories(title, self._channel, data)
             if '!interpoll' in self._lower_text:
-                ts = self._lower_text[12:]
+                ts = self._lower_text[11:]
                 send_debug_message(ts)
                 unanswered = get_poll_unanswered(ts)
                 unanswered = [x[0] for x in unanswered]
