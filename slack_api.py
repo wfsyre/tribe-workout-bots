@@ -107,7 +107,7 @@ def send_categories(title, channel_id, categories):
             })
             names = ""
             for i in range(len(categories[category])):
-                names += str(i + 1) + "). " + categories[category][i] + "\n"
+                names += str(i + 1) + ") " + categories[category][i] + "\n"
             block.append({
                 "type": "section",
                 "text": {

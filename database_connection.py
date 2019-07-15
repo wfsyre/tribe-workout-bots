@@ -644,7 +644,7 @@ def get_poll_unanswered(ts):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("SELECT slack_id FROM tribe_poll_responses WHERE ts = %s"), [ts])
+        cursor.execute(sql.SQL("SELECT slack_id FROM tribe_poll_responses WHERE ts = %s and response_num = -1"), [ts])
         unanswered = cursor.fetchall()
         print(unanswered)
         return unanswered
