@@ -46,7 +46,7 @@ class InteractiveComponentPayload:
             headers={'Content-Type': 'application/json'})
 
     def delete_poll(self):
-        ts = self._actions[0]
+        ts = self._action_id
         ts = ts[ts.find(":"):]
         owner_id = get_poll_owner(ts)
         if owner_id in self._slack_id:
