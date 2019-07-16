@@ -81,8 +81,8 @@ class InteractiveComponentPayload:
                 headers={'Content-Type': 'application/json'})
 
     def remind_poll(self):
-        action = self._actions[0]
-        ts = action[action.find(":") + 1:]
+        ts = self._action_id
+        ts = ts[ts.find(":") + 1:]
         unanswered = get_poll_unanswered(ts)
         unanswered = [x[0] for x in unanswered]
         send_debug_message(unanswered)
@@ -98,8 +98,8 @@ class InteractiveComponentPayload:
                 send_debug_message(" Sent reminder to <@" + user_id + ">")
 
     def dm_poll(self):
-        action = self._actions[0]
-        ts = action[action.find(":") + 1:]
+        ts = self._action_id
+        ts = ts[ts.find(":") + 1:]
         title, data = get_poll_data(ts)
         im_data = open_im(self._slack_id)
         if 'channel' in list(im_data.keys()):
