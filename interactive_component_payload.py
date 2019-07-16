@@ -1,6 +1,6 @@
 from database_connection import send_debug_message, add_poll_reaction, get_poll_owner,\
     get_poll_unanswered, get_poll_data, delete_poll
-from slack_api import open_im, send_message
+from slack_api import open_im, send_message, send_categories
 from requests import post
 
 
@@ -98,7 +98,14 @@ class InteractiveComponentPayload:
                 send_debug_message(" Sent reminder to <@" + user_id + ">")
 
     def dm_poll(self):
-        pass
+        action = self._actions[0]
+        ts = action[action.find(":") + 1:]
+        title, data = get_poll_data(ts)
+        im_data = open_im(self._slack_id)
+        if 'channel' in list(im_data.keys()):
+            channel = im_data['channel']['id']
+            send_categories(title, channel, data)
+            send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
 
     def vote_calendar(self):
         pass
