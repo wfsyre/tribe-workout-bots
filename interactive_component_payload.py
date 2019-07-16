@@ -29,7 +29,7 @@ class InteractiveComponentPayload:
     def vote_poll(self):
         ts = self._json_data['actions'][0]['value']
         colon = self._action_id.find(":")
-        response_num = self._action_id[colon:]
+        response_num = self._action_id[colon + 1:]
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
                            + ", response_num: " + response_num)
@@ -47,7 +47,7 @@ class InteractiveComponentPayload:
 
     def delete_poll(self):
         ts = self._action_id
-        ts = ts[ts.find(":"):]
+        ts = ts[ts.find(":") + 1:]
         owner_id = get_poll_owner(ts)
         if owner_id in self._slack_id:
             slack_data = {
@@ -70,7 +70,7 @@ class InteractiveComponentPayload:
 
     def remind_poll(self):
         action = self._actions[0]
-        ts = action[action.find(":"):]
+        ts = action[action.find(":") + 1:]
         unanswered = get_poll_unanswered(ts)
         unanswered = [x[0] for x in unanswered]
         send_debug_message(unanswered)
