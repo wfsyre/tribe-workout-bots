@@ -83,19 +83,48 @@ class InteractiveComponentPayload:
     def remind_poll(self):
         ts = self._action_id
         ts = ts[ts.find(":") + 1:]
-        unanswered = get_poll_unanswered(ts)
-        unanswered = [x[0] for x in unanswered]
-        send_debug_message(unanswered)
-        title, _ = get_poll_data(ts)
-        for user_id in unanswered:
-            im_data = open_im(user_id)
-            if 'channel' in list(im_data.keys()):
-                channel = im_data['channel']['id']
-                send_message(
-                    "<@" + user_id + "> Please react to the poll \"" + title + "\"",
-                    channel=channel,
-                    bot_name="Reminder Bot")
-                send_debug_message(" Sent reminder to <@" + user_id + ">")
+        owner_id = get_poll_owner(ts)
+        if len(owner_id) != 0 and owner_id in self._slack_id:
+            unanswered = get_poll_unanswered(ts)
+            unanswered = [x[0] for x in unanswered]
+            print(unanswered)
+            title, _ = get_poll_data(ts)
+            for user_id in unanswered:
+                im_data = open_im(user_id)
+                if 'channel' in list(im_data.keys()):
+                    channel = im_data['channel']['id']
+                    send_message(
+                        "<@" + user_id + "> Please react to the poll \"" + title + "\"",
+                        channel=channel,
+                        bot_name="Reminder Bot")
+            slack_data = {
+                "text": "Sent reminders to " + str(len(unanswered)) + " people",
+                "response_type": 'ephemeral',
+                "replace_original": False
+            }
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
+        elif len(owner_id) == 0:
+            slack_data = {
+                "delete_original": True
+            }
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
+        else:
+            slack_data = {
+                "text": "Nice try, but you must be the owner of the poll to spam reminders",
+                "response_type": 'ephemeral',
+                "replace_original": False
+            }
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
+            send_debug_message("Shame on <@" + self._slack_id + "> they tried to send reminders for a poll they didn't own")
 
     def dm_poll(self):
         ts = self._action_id
