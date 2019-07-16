@@ -51,9 +51,10 @@ class InteractiveComponentPayload:
         owner_id = get_poll_owner(ts)
         print(owner_id)
         print(owner_id in self._slack_id)
+        print(self._webhook_url)
         if owner_id in self._slack_id:
             slack_data = {
-                "delete_original": False
+                "delete_original": True
             }
             post(
                 self._webhook_url,
