@@ -11,6 +11,9 @@ class InteractiveComponentPayload:
         self._json_data = json_data
         self._webhook_url = self._json_data['response_url']
 
+    def handle_component(self):
+        self.parse_action_id(self._action_id)
+
     def parse_action_id(self, action_id):
         if "votePoll" in self._action_id:
             self.vote_poll()
