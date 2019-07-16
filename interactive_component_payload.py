@@ -49,6 +49,8 @@ class InteractiveComponentPayload:
         ts = self._action_id
         ts = ts[ts.find(":") + 1:]
         owner_id = get_poll_owner(ts)
+        print(owner_id)
+        print(owner_id in self._slack_id)
         if owner_id in self._slack_id:
             slack_data = {
                 "delete_original": False
