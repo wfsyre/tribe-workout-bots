@@ -57,7 +57,7 @@ def create_poll(channel_id, title, options, ts):
                 "type": "button",
                 "text": {
                     "type": "plain_text",
-                    "text": "Delete",
+                    "text": "Delete Poll",
                     "emoji": True
                 },
                 "value": str(ts),

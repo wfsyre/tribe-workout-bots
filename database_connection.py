@@ -646,6 +646,9 @@ def get_poll_unanswered(ts):
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("SELECT slack_id FROM tribe_poll_responses WHERE ts = %s and response_num = -1"), [ts])
         unanswered = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        conn.close()
         print(unanswered)
         return unanswered
     except (Exception, psycopg2.DatabaseError) as error:
@@ -669,6 +672,9 @@ def get_poll_owner(ts):
         cursor.execute(sql.SQL("SELECT slack_id FROM tribe_poll_data WHERE ts = %s"),
                        [ts])
         owner = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        conn.close()
         print(owner)
         return owner[0][0]
     except (Exception, psycopg2.DatabaseError) as error:
@@ -688,8 +694,10 @@ def delete_poll(timestamp):
             port=url.port
         )
         cursor = conn.cursor()
-        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("DELETE FROM tribe_poll_data WHERE ts = %s"), [timestamp])
         cursor.execute(sql.SQL("DELETE FROM tribe_poll_responses WHERE ts = %s"), [timestamp])
+        conn.commit()
+        cursor.close()
+        conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)

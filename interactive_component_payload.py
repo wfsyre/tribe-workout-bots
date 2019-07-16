@@ -51,6 +51,7 @@ class InteractiveComponentPayload:
         ts = ts[ts.find(":") + 1:]
         owner_id = get_poll_owner(ts)
         print(owner_id)
+        print(ts)
         if len(owner_id) != 0 and owner_id in self._slack_id:
             slack_data = {
                 "delete_original": True
