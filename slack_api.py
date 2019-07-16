@@ -52,6 +52,17 @@ def create_poll(channel_id, title, options, ts):
             "text": {
                 "type": "mrkdwn",
                 "text": "*" + title + "*"
+            },
+            "accessory": {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Delete",
+                    "emoji": True
+                },
+                "value": str(ts),
+                "action_id": "deletePoll:" + str(ts),
+                "style": "danger"
             }
         },
         {
@@ -73,11 +84,38 @@ def create_poll(channel_id, title, options, ts):
                     "text": "Vote",
                     "emoji": True
                 },
-                "value": str(i) + "," + str(ts)
+                "value": str(ts),
+                "action_id": "votePoll:" + str(i)
             }
         })
         block.append({
             "type": "divider"
+        })
+        block.append({
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "DM me the current results",
+                        "emoji": True
+                    },
+                    "action_id": "dmPoll:" + str(ts),
+                    "style": "primary"
+                },
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Remind the slackers",
+                        "emoji": True
+                    },
+                    "action_id": "remindPoll:" + str(ts),
+                    "style": "danger"
+                }
+            ]
+
         })
     print(block)
     sc.api_call("chat.postMessage", channel=channel_id, blocks=block)

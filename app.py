@@ -138,26 +138,27 @@ def interactive_component_webhook():
     print("This is the data that came with the interactive component")
     print(form_json)
     slack_id = form_json['user']['id']
-    response_num_and_ts = form_json['actions'][0]['value']
-    comma = response_num_and_ts.find(",")
-    response_num = response_num_and_ts[0:comma]
-    ts = response_num_and_ts[comma + 1:]
-    send_debug_message("Found component interaction with id: " + slack_id
-                       + ", ts: " + ts
-                       + ", response_num: " + response_num)
-    add_poll_reaction(ts, response_num, slack_id)
+    action_id = form_json['actions'][0]["action_id"]
+    if "pollAdd" in action_id:
+        ts = form_json['actions'][0]['value']
+        colon = action_id.find(":")
+        response_num = action_id[colon:]
+        send_debug_message("Found component interaction with id: " + slack_id
+                           + ", ts: " + ts
+                           + ", response_num: " + response_num)
+        add_poll_reaction(ts, response_num, slack_id)
 
 
-    webhook_url = form_json['response_url']
-    response_text = form_json['actions'][0]['text']['text']
-    slack_data = {
-        "text": "You responded " + response_text,
-        "response_type": 'ephemeral',
-        "replace_original": False
-    }
+        webhook_url = form_json['response_url']
+        response_text = form_json['actions'][0]['text']['text']
+        slack_data = {
+            "text": "You responded " + response_text,
+            "response_type": 'ephemeral',
+            "replace_original": False
+        }
 
-    requests.post(
-        webhook_url,
-        json=slack_data,
-        headers={'Content-Type': 'application/json'})
+        requests.post(
+            webhook_url,
+            json=slack_data,
+            headers={'Content-Type': 'application/json'})
     return make_response("Ok", 200, )
