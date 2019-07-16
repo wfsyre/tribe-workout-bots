@@ -1,4 +1,5 @@
-from database_connection import send_debug_message, add_poll_reaction, get_poll_owner, get_poll_unanswered, get_poll_data
+from database_connection import send_debug_message, add_poll_reaction, get_poll_owner,\
+    get_poll_unanswered, get_poll_data, delete_poll
 from slack_api import open_im, send_message
 from requests import post
 
@@ -50,9 +51,16 @@ class InteractiveComponentPayload:
         ts = ts[ts.find(":") + 1:]
         owner_id = get_poll_owner(ts)
         print(owner_id)
-        print(owner_id in self._slack_id)
-        print(self._webhook_url)
-        if owner_id in self._slack_id:
+        if len(owner_id) != 0 and owner_id in self._slack_id:
+            slack_data = {
+                "delete_original": True
+            }
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
+            delete_poll(ts)
+        elif len(owner_id):
             slack_data = {
                 "delete_original": True
             }

@@ -674,3 +674,22 @@ def get_poll_owner(ts):
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
         return []
+
+
+def delete_poll(timestamp):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL("DELETE FROM tribe_poll_data WHERE ts = %s"), [timestamp])
+        cursor.execute(sql.SQL("DELETE FROM tribe_poll_responses WHERE ts = %s"), [timestamp])
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
