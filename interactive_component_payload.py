@@ -60,7 +60,7 @@ class InteractiveComponentPayload:
                 json=slack_data,
                 headers={'Content-Type': 'application/json'})
             delete_poll(ts)
-        elif len(owner_id):
+        elif len(owner_id) == 0:
             slack_data = {
                 "delete_original": True
             }
