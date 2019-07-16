@@ -79,6 +79,8 @@ class InteractiveComponentPayload:
                 self._webhook_url,
                 json=slack_data,
                 headers={'Content-Type': 'application/json'})
+            send_debug_message(
+                "Shame on <@" + self._slack_id + "> they tried to delete a poll they didn't own")
 
     def remind_poll(self):
         ts = self._action_id
