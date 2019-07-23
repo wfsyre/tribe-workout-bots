@@ -27,6 +27,7 @@ class SlackResponse:
         self.PICKUP_POINTS = 0.5
         self.BIKING_POINTS = 1.0
         self.RUN_POINTS = 1.0
+        self.TOURNAMENT_POINTS = 2.0
         self._additions = []
         self._reaction_added = False
         self._reaction_removed = False
@@ -186,6 +187,9 @@ class SlackResponse:
         if '!run' in self._lower_text:
             self._points_to_add += self.BIKING_POINTS
             self._additions.append('!run')
+        if '!tournament' in self._lower_text:
+            self._points_to_add += self.TOURNAMENT_POINTS
+            self._additions.append('!tournament')
 
     def handle_db(self):
         if not self._repeat:
