@@ -75,7 +75,8 @@ def create_poll(channel_id, title, options, ts, anon):
             "text": {
                 "type": "mrkdwn",
                 "text": options[i],
-                "emoji": True
+                "emoji": True,
+                "link_names": True
             },
             "accessory": {
                 "type": "button",

@@ -28,7 +28,6 @@ class InteractiveComponentPayload:
             self.vote_calendar()
 
     def vote_poll(self):
-        send_debug_message(self._json_data)
         ts = self._json_data['actions'][0]['value']
         colon = self._action_id.find(":")
         second_colon = self._action_id.find(":", colon + 1)
