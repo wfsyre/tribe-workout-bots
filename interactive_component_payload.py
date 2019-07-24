@@ -41,10 +41,10 @@ class InteractiveComponentPayload:
         if anon:
             blocks = self._json_data['message']['blocks']
             current = blocks[2 + int(response_num)]['text']['text']
-            blocks[2 + int(response_num)]['text']['text'] = current + "<@" + self._slack_id + ">"
+            blocks[2 + int(response_num)]['text']['text'] = current + " <@" + self._slack_id + ">"
             slack_data = {
                 "blocks": blocks,
-                "replace_original": False
+                "replace_original": True,
             }
         else:
             slack_data = {
