@@ -73,7 +73,7 @@ def create_poll(channel_id, title, options, ts, anon):
         block.append({
             "type": "section",
             "text": {
-                "type": "plain_text",
+                "type": "mrkdwn",
                 "text": options[i],
                 "emoji": True
             },
