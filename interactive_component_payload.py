@@ -37,25 +37,29 @@ class InteractiveComponentPayload:
                            + ", ts: " + ts
                            + ", response_num: " + response_num)
         add_poll_reaction(ts, response_num, self._slack_id)
-        if anon:
+        if not anon:
             blocks = self._json_data['message']['blocks']
             current = blocks[2 * (int(response_num) + 1)]['text']['text']
-            blocks[2 * (int(response_num) + 1)]['text']['text'] = current + " <@" + self._slack_id + ">"
-            slack_data = {
-                "blocks": blocks,
-                "replace_original": True,
-            }
+            if self._slack_id not in current:
+                blocks[2 * (int(response_num) + 1)]['text']['text'] = current + " <@" + self._slack_id + ">"
+                slack_data = {
+                    "blocks": blocks,
+                    "replace_original": True,
+                }
+                post(
+                    self._webhook_url,
+                    json=slack_data,
+                    headers={'Content-Type': 'application/json'})
         else:
             slack_data = {
                 "text": "Thanks for your response!",
                 "response_type": 'ephemeral',
                 "replace_original": False
             }
-
-        post(
-            self._webhook_url,
-            json=slack_data,
-            headers={'Content-Type': 'application/json'})
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
 
     def delete_poll(self):
         ts = self._action_id
