@@ -38,8 +38,10 @@ class InteractiveComponentPayload:
                            + ", ts: " + ts
                            + ", response_num: " + response_num)
         add_poll_reaction(ts, response_num, self._slack_id)
-        blocks = self._json_data['blocks']
         if anon:
+            blocks = self._json_data['blocks']
+            current = blocks[2 + response_num]['text']['text']
+            blocks[2 + response_num]['text']['text'] = current + "<@" + self._slack_id + ">"
             slack_data = {
                 "blocks": blocks,
                 "replace_original": False

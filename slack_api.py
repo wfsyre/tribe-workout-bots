@@ -85,7 +85,7 @@ def create_poll(channel_id, title, options, ts, anon):
                     "emoji": True
                 },
                 "value": str(ts),
-                "action_id": "votePoll:" + str(i) + ":" + anon
+                "action_id": "votePoll:" + str(i) + ":" + str(anon)
             }
         })
         block.append({
