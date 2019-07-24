@@ -490,7 +490,9 @@ def get_group_workouts_after_date(date, type):
     return workouts
 
 
-def add_tracked_poll(title, slack_id, ts, options):
+def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
+    send_debug_message(anonymous)
+    send_debug_message(channel)
     option_string = '{' + ', '.join(['\"' + x + '\"' for x in options]) + '}'
     send_debug_message(option_string)
     cursor = None
@@ -506,8 +508,8 @@ def add_tracked_poll(title, slack_id, ts, options):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("INSERT INTO tribe_poll_data VALUES (%s, %s, %s, %s)"),
-                       [ts, slack_id, title, option_string])
+        cursor.execute(sql.SQL("INSERT INTO tribe_poll_data VALUES (%s, %s, %s, %s, %s, %s)"),
+                       [ts, slack_id, title, option_string, channel, anonymous])
         conn.commit()
         send_debug_message("Committed " + title + " to the poll list")
     except (Exception, psycopg2.DatabaseError) as error:

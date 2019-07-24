@@ -291,9 +291,10 @@ class SlackResponse:
                     "" + self._ts,
                     channel=channel,
                     bot_name="Poll Helper")
-                add_tracked_poll(options[0], self._user_id, self._ts, options[1:])
+                anon = "anonymous" in self._lower_text[-10:]
+                add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
                 add_poll_dummy_responses(self._ts)
-                create_poll(self._channel, options[0], options[1:], self._ts)
+                create_poll(self._channel, options[0], options[1:], self._ts, anon)
             if '!checkpoll' in self._lower_text:
                 ts = self._lower_text[11:]
                 title, data = get_poll_data(ts)

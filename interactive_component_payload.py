@@ -28,18 +28,28 @@ class InteractiveComponentPayload:
             self.vote_calendar()
 
     def vote_poll(self):
+        send_debug_message(self._json_data)
         ts = self._json_data['actions'][0]['value']
         colon = self._action_id.find(":")
-        response_num = self._action_id[colon + 1:]
+        second_colon = self._action_id.find(":", colon + 1)
+        response_num = self._action_id[colon + 1:second_colon]
+        anon = bool(self._action_id[second_colon + 1:])
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
                            + ", response_num: " + response_num)
         add_poll_reaction(ts, response_num, self._slack_id)
-        slack_data = {
-            "text": "Thanks for your response!",
-            "response_type": 'ephemeral',
-            "replace_original": False
-        }
+        blocks = self._json_data['blocks']
+        if anon:
+            slack_data = {
+                "blocks": blocks,
+                "replace_original": False
+            }
+        else:
+            slack_data = {
+                "text": "Thanks for your response!",
+                "response_type": 'ephemeral',
+                "replace_original": False
+            }
 
         post(
             self._webhook_url,

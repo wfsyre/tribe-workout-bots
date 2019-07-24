@@ -42,7 +42,7 @@ def open_im(user_id):
     return json
 
 
-def create_poll(channel_id, title, options, ts):
+def create_poll(channel_id, title, options, ts, anon):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     actions = []
@@ -85,7 +85,7 @@ def create_poll(channel_id, title, options, ts):
                     "emoji": True
                 },
                 "value": str(ts),
-                "action_id": "votePoll:" + str(i)
+                "action_id": "votePoll:" + str(i) + ":" + anon
             }
         })
         block.append({
