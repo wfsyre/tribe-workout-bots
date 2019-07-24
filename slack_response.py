@@ -277,6 +277,8 @@ class SlackResponse:
                 options = []
                 while start < len(self._text):
                     first = self._text.find("\"", start)
+                    if first == -1:
+                        break
                     second = self._text.find("\"", first + 1)
                     options.append(self._text[first + 1:second])
                     start = second + 1
