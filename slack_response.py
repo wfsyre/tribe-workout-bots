@@ -210,12 +210,13 @@ class SlackResponse:
         if not self._repeat:
             if "!help" in self._lower_text:
                 send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                                   "\n!gym\n!track\n!pickup\n!throw\n!swim\n!bike\n!run\n!since [YYYY-MM-DD] [type] [@name]"
-                                   "\n!groupsince [YYYY-MM-DD] [type]",
+                                   "\n!gym\n!track\n!tournament\n!pickup\n!throw\n!swim\n!bike\n!run\n!since [YYYY-MM-DD] [type] [@name]"
+                                   "\n!groupsince [YYYY-MM-DD] [type]"
+                                   "\n!poll \"Title\" \"option 1\" ... \"option n\"",
                                    channel=self._channel, bot_name="Helper Bot")
             if "!points" in self._lower_text:
-                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f\nrun %.1f"
-                                   % (self.GYM_POINTS, self.TRACK_POINTS, self.PICKUP_POINTS,
+                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\ntournament %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f\nrun %.1f"
+                                   % (self.GYM_POINTS, self.TRACK_POINTS, self.TOURNAMENT_POINTS, self.PICKUP_POINTS,
                                       self.THROW_POINTS, self.SWIM_POINTS, self.BIKING_POINTS, self.RUN_POINTS), channel=self._channel)
             if "!leaderboard" in self._lower_text:
                 count += 1
