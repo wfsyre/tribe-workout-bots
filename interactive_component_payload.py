@@ -43,7 +43,7 @@ class InteractiveComponentPayload:
 
             blocks = self._json_data['message']['blocks']
             response_block = 2 * (int(response_num) + 1)
-            for i in range(2, len(blocks), 2):
+            for i in range(2, len(blocks) - 2, 2):
                 current = blocks[2 * (int(response_num) + 1)]['text']['text']
                 if i == response_block:
                     if self._slack_id not in current:
