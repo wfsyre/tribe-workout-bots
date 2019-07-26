@@ -32,7 +32,7 @@ class InteractiveComponentPayload:
         colon = self._action_id.find(":")
         second_colon = self._action_id.find(":", colon + 1)
         response_num = self._action_id[colon + 1:second_colon]
-        anon = bool(self._action_id[second_colon + 1:])
+        anon = self._action_id[second_colon + 1:] == "True"
         send_debug_message(self._action_id[second_colon + 1:])
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
