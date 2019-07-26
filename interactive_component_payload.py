@@ -33,12 +33,10 @@ class InteractiveComponentPayload:
         second_colon = self._action_id.find(":", colon + 1)
         response_num = self._action_id[colon + 1:second_colon]
         anon = self._action_id[second_colon + 1:] == "True"
-        send_debug_message(self._action_id[second_colon + 1:])
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
                            + ", response_num: " + response_num)
         add_poll_reaction(ts, response_num, self._slack_id)
-        send_debug_message(anon)
         if not anon:
 
             blocks = self._json_data['message']['blocks']
@@ -48,10 +46,8 @@ class InteractiveComponentPayload:
                 if i == response_block:
                     if self._slack_id not in current:
                         blocks[i]['text']['text'] = current + " <@" + self._slack_id + ">"
-                else:
-                    if self._slack_id in current:
+                elif self._slack_id in current:
                         statement = blocks[i]['text']['text']
-                        send_debug_message(statement)
                         start = statement.find(self._slack_id) - 2
                         end = start + 2 + len(self._slack_id) + 1
                         statement = " " + statement[0:start] + statement[end:]
