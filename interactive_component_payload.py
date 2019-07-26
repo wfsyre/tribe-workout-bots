@@ -37,6 +37,7 @@ class InteractiveComponentPayload:
                            + ", ts: " + ts
                            + ", response_num: " + response_num)
         add_poll_reaction(ts, response_num, self._slack_id)
+        send_debug_message(anon)
         if not anon:
             blocks = self._json_data['message']['blocks']
             current = blocks[2 * (int(response_num) + 1)]['text']['text']
