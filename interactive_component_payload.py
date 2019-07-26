@@ -40,18 +40,31 @@ class InteractiveComponentPayload:
         add_poll_reaction(ts, response_num, self._slack_id)
         send_debug_message(anon)
         if not anon:
+
             blocks = self._json_data['message']['blocks']
-            current = blocks[2 * (int(response_num) + 1)]['text']['text']
-            if self._slack_id not in current:
-                blocks[2 * (int(response_num) + 1)]['text']['text'] = current + " <@" + self._slack_id + ">"
-                slack_data = {
-                    "blocks": blocks,
-                    "replace_original": True,
-                }
-                post(
-                    self._webhook_url,
-                    json=slack_data,
-                    headers={'Content-Type': 'application/json'})
+            response_block = 2 * (int(response_num) + 1)
+            for i in range(2, len(blocks), 2):
+                current = blocks[2 * (int(response_num) + 1)]['text']['text']
+                if i == response_block:
+                    if self._slack_id not in current:
+                        blocks[i]['text']['text'] = current + " <@" + self._slack_id + ">"
+                else:
+                    if self._slack_id in current:
+                        statement = blocks[i]['text']['text']
+                        send_debug_message(statement)
+                        start = statement.find(self._slack_id) - 2
+                        end = start + 2 + len(self._slack_id) + 1
+                        statement = " " + statement[0:start] + statement[end:]
+                        blocks[i]['text']['text'] = statement
+                        send_debug_message(statement)
+            slack_data = {
+                "blocks": blocks,
+                "replace_original": True,
+            }
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
         else:
             slack_data = {
                 "text": "Thanks for your response!",
