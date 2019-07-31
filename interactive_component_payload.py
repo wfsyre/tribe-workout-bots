@@ -48,7 +48,7 @@ class InteractiveComponentPayload:
                     if self._slack_id not in current:
                         blocks[i]['text']['text'] = current + " <@" + self._slack_id + ">"
                 elif self._slack_id in current:
-                    send_debug_message("Found " + self._slack_id)
+                    send_debug_message("Found " + self._slack_id + " in " + current)
                     statement = blocks[i]['text']['text']
                     start = statement.find(self._slack_id) - 2
                     end = start + 2 + len(self._slack_id) + 1
