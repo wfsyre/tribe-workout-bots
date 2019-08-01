@@ -282,17 +282,6 @@ class SlackResponse:
                     second = self._text.find("\"", first + 1)
                     options.append(self._text[first + 1:second])
                     start = second + 1
-                im_data = open_im(self._user_id)
-                channel = im_data['channel']['id']
-                send_message(
-                    "<@" + self._user_id + "> You made a tracked poll in channel " + self._channel
-                    + " with tracking code",
-                    channel=channel,
-                    bot_name="Poll Helper")
-                send_message(
-                    "" + self._ts,
-                    channel=channel,
-                    bot_name="Poll Helper")
                 anon = "anonymous" in self._lower_text[-10:]
                 add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
                 add_poll_dummy_responses(self._ts)
