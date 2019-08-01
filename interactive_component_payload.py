@@ -1,6 +1,6 @@
 from database_connection import send_debug_message, add_poll_reaction, get_poll_owner,\
     get_poll_unanswered, get_poll_data, delete_poll
-from slack_api import open_im, send_message, send_categories
+from slack_api import open_im, send_message, send_categories, get_user_info
 from requests import post
 
 
@@ -33,25 +33,18 @@ class InteractiveComponentPayload:
         second_colon = self._action_id.find(":", colon + 1)
         response_num = self._action_id[colon + 1:second_colon]
         anon = self._action_id[second_colon + 1:] == "True"
+        real_name = get_user_info(self._slack_id)['user']['real_name']
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
                            + ", response_num: " + response_num)
-        add_poll_reaction(ts, response_num, self._slack_id)
+        add_poll_reaction(ts, response_num, self._slack_id, real_name)
         if not anon:
-
             blocks = self._json_data['message']['blocks']
             response_block = 2 * (int(response_num) + 1)
-            for i in range(2, len(blocks) - 2, 2):
-                current = blocks[i]['text']['text']
-                if i == response_block:
-                    if self._slack_id not in current:
-                        blocks[i]['text']['text'] = current + " <@" + self._slack_id + ">"
-                elif self._slack_id in current:
-                    statement = blocks[i]['text']['text']
-                    start = statement.find(self._slack_id) - 2
-                    end = start + 2 + len(self._slack_id) + 1
-                    statement = " " + statement[0:start] + statement[end:]
-                    blocks[i]['text']['text'] = statement
+            current = blocks[response_block]['text']['text']
+            if self._slack_id not in current:
+                blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
+
             slack_data = {
                 "blocks": blocks,
                 "replace_original": True,
@@ -115,7 +108,7 @@ class InteractiveComponentPayload:
             unanswered = get_poll_unanswered(ts)
             unanswered = [x[0] for x in unanswered]
             print(unanswered)
-            title, _ = get_poll_data(ts)
+            title, _data, _anon = get_poll_data(ts)
             for user_id in unanswered:
                 im_data = open_im(user_id)
                 if 'channel' in list(im_data.keys()):
@@ -154,14 +147,19 @@ class InteractiveComponentPayload:
             send_debug_message("Shame on <@" + self._slack_id + "> they tried to send reminders for a poll they didn't own")
 
     def dm_poll(self):
-        ts = self._action_id
-        ts = ts[ts.find(":") + 1:]
-        title, data = get_poll_data(ts)
+        dm_data = self._action_id
+        first = dm_data.find(":")
+        ts = dm_data[first + 1:]
+        title, data, anon = get_poll_data(ts)
         im_data = open_im(self._slack_id)
         if 'channel' in list(im_data.keys()):
             channel = im_data['channel']['id']
-            send_categories(title, channel, data)
-            send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
+            if not anon:
+                send_categories(title, channel, data)
+                send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
+            else:
+                send_categories(title, channel, data)
+
 
     def vote_calendar(self):
         pass

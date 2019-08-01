@@ -520,7 +520,7 @@ def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
             conn.close()
 
 
-def add_poll_reaction(ts, options_number, slack_id):
+def add_poll_reaction(ts, options_number, slack_id, real_name):
     cursor = None
     conn = None
     try:
@@ -534,8 +534,35 @@ def add_poll_reaction(ts, options_number, slack_id):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("UPDATE tribe_poll_responses SET response_num=%s where slack_id=%s AND ts=%s"),
-                       [options_number, slack_id, ts])
+        cursor.execute(sql.SQL(
+            "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num != -1"),
+            [slack_id, ts])
+        num_responses = cursor.rowcount
+        if num_responses == 0:  # they have never responded
+            # delete dummy response, record response
+            cursor.execute(sql.SQL(
+                "UPDATE tribe_poll_responses SET response_num=%s WHERE slack_id=%s AND ts=%s AND response_num = -1"),
+                [options_number, slack_id, ts])
+        elif num_responses >= 1:  # they have responded before
+            # check if they are removing a response
+            cursor.execute(sql.SQL(
+                "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                [slack_id, ts, options_number])
+            if cursor.rowcount == 0:  # they have never responded this option
+                cursor.execute(sql.SQL(
+                    "INSERT INTO tribe_poll_responses (ts, slack_id, real_name, response_num) VALUES (%s, %s, %s, %s))"),
+                    [slack_id, ts, real_name, options_number])
+            else:  # they have responded this option so we're removing it
+                if num_responses == 1:  # last response (indicate that they have no more responses)
+                    cursor.execute(sql.SQL(
+                        "UPDATE tribe_poll_responses SET response_num=-1 WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                        [slack_id, ts, options_number])
+                else:  # one of many responses (delete the response)
+                    cursor.execute(sql.SQL(
+                        "DELETE FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                        [slack_id, ts, options_number])
+
+        send_debug_message(cursor.rowcount)
         conn.commit()
         send_debug_message("Committed <@" + slack_id + ">'s response to the poll responses")
     except (Exception, psycopg2.DatabaseError) as error:
@@ -560,8 +587,6 @@ def add_poll_dummy_responses(ts):
         cursor = conn.cursor()
         cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE workout_score != -1"))
         stuff = cursor.fetchall()
-        print("This is the stuff")
-        print(stuff)
         for slack_id, real_name in stuff:
             cursor.execute(sql.SQL("INSERT INTO tribe_poll_responses VALUES(%s, %s, %s, -1)"),
                            [ts, real_name, slack_id])
@@ -584,11 +609,11 @@ def get_poll_data(ts):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT title, options FROM tribe_poll_data WHERE ts = %s"), [ts])
+        cursor.execute(sql.SQL("SELECT title, options, anonymous FROM tribe_poll_data WHERE ts = %s"), [ts])
         poll_data = cursor.fetchall()
         title = poll_data[0][0]
         options = poll_data[0][1]
-
+        anon = poll_data[0][2]
         cursor.execute(sql.SQL("SELECT real_name, response_num FROM tribe_poll_responses WHERE ts = %s"), [ts])
         poll_responses = cursor.fetchall()
         conn.commit()
@@ -596,16 +621,26 @@ def get_poll_data(ts):
         conn.close()
 
         data = {}
-        for option in options:
-            data[option] = []
-        data['No Answer'] = []
-        for real_name, response_num in poll_responses:
-            if response_num != -1:
-                data[options[response_num]].append(real_name)
-            else:
-                data['No Answer'].append(real_name)
+        if anon:
+            for option in options:
+                data[option] = [0]
+            data['No Answer'] = [0]
+            for real_name, response_num in poll_responses:
+                if response_num != -1:
+                    data[options[response_num]][0] += 1
+                else:
+                    data['No Answer'][0] += 1
+        else:
+            for option in options:
+                data[option] = []
+            data['No Answer'] = []
+            for real_name, response_num in poll_responses:
+                if response_num != -1:
+                    data[options[response_num]].append(real_name)
+                else:
+                    data['No Answer'].append(real_name)
 
-        return title, data
+        return title, data, anon
 
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)

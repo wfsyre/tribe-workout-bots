@@ -29,6 +29,11 @@ def get_group_info():
     json = requests.get(url).json()
     return json
 
+def get_user_info(slack_id):
+    url = "https://slack.com/api/users.info?token=" + os.getenv('BOT_OATH_ACCESS_TOKEN') + "&user=" + slack_id
+    json = requests.get(url).json()
+    return json
+
 
 def get_emojis():
     url = 'https://slack.com/api/emoji.list?token=' + os.getenv('OATH_ACCESS_TOKEN')
