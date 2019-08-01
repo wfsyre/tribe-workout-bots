@@ -44,6 +44,11 @@ class InteractiveComponentPayload:
             current = blocks[response_block]['text']['text']
             if self._slack_id not in current:
                 blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
+            else:
+                start = current.find(self._slack_id) - 2
+                end = start + 2 + len(self._slack_id) + 1
+                statement = current[0:start] + current[end + 1:]
+                blocks[response_block]['text']['text'] = statement
 
             slack_data = {
                 "blocks": blocks,
