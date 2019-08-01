@@ -551,7 +551,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
             if cursor.rowcount == 0:  # they have never responded this option
                 cursor.execute(sql.SQL(
                     "INSERT INTO tribe_poll_responses (ts, slack_id, real_name, response_num) VALUES (%s, %s, %s, %s))"),
-                    [slack_id, ts, real_name, options_number])
+                    [ts, slack_id, real_name, options_number])
             else:  # they have responded this option so we're removing it
                 if num_responses == 1:  # last response (indicate that they have no more responses)
                     cursor.execute(sql.SQL(
