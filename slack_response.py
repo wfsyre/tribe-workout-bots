@@ -78,8 +78,9 @@ class SlackResponse:
             self._text = self._event['message']['text']
             self._channel = self._event['channel']
             self._ts = self._event['message']['ts']
-            send_debug_message("Found a edited message in channel %s that used to say:" % self._channel)
-            send_debug_message(self._previous_message_text)
+            if 'blocks' not in self._event['previous_message']:
+                send_debug_message("Found a edited message in channel %s that used to say:" % self._channel)
+                send_debug_message(self._previous_message_text)
         elif self._subtype == 'bot_message':
             self._bot = True
             self._channel_type = self._event['channel_type']
@@ -289,26 +290,6 @@ class SlackResponse:
                 add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
                 add_poll_dummy_responses(self._ts)
                 create_poll(self._channel, options[0], options[1:], self._ts, anon)
-            if '!checkpoll' in self._lower_text:
-                ts = self._lower_text[11:]
-                title, data = get_poll_data(ts)
-                send_categories(title, self._channel, data)
-            if '!interpoll' in self._lower_text:
-                ts = self._lower_text[11:]
-                send_debug_message(ts)
-                unanswered = get_poll_unanswered(ts)
-                unanswered = [x[0] for x in unanswered]
-                send_debug_message(unanswered)
-                title, _ = get_poll_data(ts)
-                for user_id in unanswered:
-                    im_data = open_im(user_id)
-                    if 'channel' in list(im_data.keys()):
-                        channel = im_data['channel']['id']
-                        send_message(
-                            "<@" + user_id + "> Please react to the poll \"" + title + "\"",
-                            channel=channel,
-                            bot_name="Reminder Bot")
-                        send_debug_message(" Sent reminder to <@" + user_id + ">")
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
                 send_debug_message("reminder batch being sent for " + date)

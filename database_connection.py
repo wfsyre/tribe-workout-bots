@@ -491,10 +491,7 @@ def get_group_workouts_after_date(date, type):
 
 
 def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
-    send_debug_message(anonymous)
-    send_debug_message(channel)
     option_string = '{' + ', '.join(['\"' + x + '\"' for x in options]) + '}'
-    send_debug_message(option_string)
     cursor = None
     conn = None
     try:
@@ -561,10 +558,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                     cursor.execute(sql.SQL(
                         "DELETE FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num = %s"),
                         [slack_id, ts, options_number])
-
-        send_debug_message(cursor.rowcount)
         conn.commit()
-        send_debug_message("Committed <@" + slack_id + ">'s response to the poll responses")
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
