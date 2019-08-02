@@ -70,7 +70,10 @@ class SlackResponse:
         elif self._subtype == 'message_changed':
             self._check_for_commands = True
             self._previous_message = self._event['previous_message']
-            self._user_id = self._previous_message['user']
+            if 'user' in self._previous_message:
+                self._user_id = self._previous_message['user']
+            else:
+                self._user_id = "BOT"
             self._previous_message_text = self._previous_message['text']
             self._text = self._event['message']['text']
             self._channel = self._event['channel']
