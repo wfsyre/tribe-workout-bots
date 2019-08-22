@@ -29,7 +29,9 @@ def add_num_posts(mention_id, event_time, name):
             "UPDATE tribe_data SET num_posts=num_posts+1 WHERE slack_id = %s"),
             [mention_id[0]])
         if cursor.rowcount == 0:
-            cursor.execute(sql.SQL("INSERT INTO tribe_data VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s)"),
+            cursor.execute(sql.SQL("INSERT INTO tribe_data (name, num_posts, num_workouts, workout_score, "
+                                   "last_post, id, year, slack_id, last_time, remind) "
+                                   "VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s, T)"),
                            [name, mention_id[0], event_time])
             send_debug_message("%s is new to Tribe" % name)
         conn.commit()
@@ -340,7 +342,9 @@ def add_dummy_responses(date):
         print("This is the stuff")
         print(stuff)
         for slack_id, real_name in stuff:
-            cursor.execute(sql.SQL("INSERT INTO tribe_attendance VALUES(%s, %s, -1, %s, now())"),
+            cursor.execute(sql.SQL("INSERT INTO tribe_attendance "
+                                   "(name, slack_id, attendance_code, practice_date, date_responded) "
+                                   "VALUES(%s, %s, -1, %s, now())"),
                            [real_name, slack_id, date])
         conn.commit()
         cursor.close()
@@ -424,7 +428,8 @@ def add_workout(name, slack_id, workout_type):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("INSERT INTO tribe_workouts VALUES (%s, %s, %s, now())"), [str(name), str(slack_id), str(workout_type)])
+        cursor.execute(sql.SQL("INSERT INTO tribe_workouts (name, slack_id, workout_type, workout_date) "
+                               "VALUES (%s, %s, %s, now())"), [str(name), str(slack_id), str(workout_type)])
         conn.commit()
         send_debug_message("Committed " + name + " to the workout list")
     except (Exception, psycopg2.DatabaseError) as error:
@@ -505,7 +510,7 @@ def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("INSERT INTO tribe_poll_data VALUES (%s, %s, %s, %s, %s, %s)"),
+        cursor.execute(sql.SQL("INSERT INTO tribe_poll_data (ts, slack_id, title, options, channel, anonymous) VALUES (%s, %s, %s, %s, %s, %s)"),
                        [ts, slack_id, title, option_string, channel, anonymous])
         conn.commit()
         send_debug_message("Committed " + title + " to the poll list")
@@ -582,7 +587,7 @@ def add_poll_dummy_responses(ts):
         cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE workout_score != -1"))
         stuff = cursor.fetchall()
         for slack_id, real_name in stuff:
-            cursor.execute(sql.SQL("INSERT INTO tribe_poll_responses VALUES(%s, %s, %s, -1)"),
+            cursor.execute(sql.SQL("INSERT INTO tribe_poll_responses (ts, real_name, slack_id, response_num) VALUES(%s, %s, %s, -1)"),
                            [ts, real_name, slack_id])
         conn.commit()
         cursor.close()
