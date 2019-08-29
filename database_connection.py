@@ -270,6 +270,7 @@ def add_reaction_info_ts(ts):
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
 
+
 def check_reaction_timestamp(ts):
     try:
         urllib.parse.uses_netloc.append("postgres")
@@ -300,7 +301,7 @@ def check_reaction_timestamp(ts):
         return []
 
 
-def count_practice(id, date, number):
+def count_practice(slack_id, date, number):
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -313,12 +314,15 @@ def count_practice(id, date, number):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("UPDATE tribe_attendance SET attendance_code = %s, date_responded=now() where slack_id = %s and practice_date = %s"), [number, id, date])
+        cursor.execute(sql.SQL(
+            "UPDATE tribe_attendance SET attendance_code = %s, date_responded=now() "
+            "where slack_id = %s and practice_date = %s"),
+            [number, slack_id, date])
         if cursor.rowcount == 1:
             conn.commit()
             cursor.close()
             conn.close()
-            send_debug_message("marked  <@" + str(id) + "> as " + str(number) + " for practice on " + date)
+            send_debug_message("marked  <@" + str(slack_id) + "> as " + str(number) + " for practice on " + date)
         else:
             conn.commit()
             cursor.close()
@@ -368,13 +372,16 @@ def get_unanswered(date):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("SELECT slack_id FROM tribe_attendance WHERE practice_date = %s and attendance_code = -1"), [date])
+        cursor.execute(sql.SQL(
+            "SELECT slack_id FROM tribe_attendance WHERE practice_date = %s and attendance_code = -1"),
+            [date])
         unanswered = cursor.fetchall()
         print(unanswered)
         return unanswered
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
         return []
+
 
 def get_practice_attendance(date):
     try:
@@ -389,32 +396,44 @@ def get_practice_attendance(date):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 1"), [date])
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 1"),
+                       [date])
         injured = cursor.fetchall()
         injured = [x[0] for x in injured]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = -1"), [date])
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = -1"),
+                       [date])
         unanswered = cursor.fetchall()
         unanswered = [x[0] for x in unanswered]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 2"), [date])
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 2"),
+                       [date])
         drills = cursor.fetchall()
         drills = [x[0] for x in drills]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 3"), [date])
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 3"),
+                       [date])
         playing = cursor.fetchall()
         playing = [x[0] for x in playing]
 
-        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 0"), [date])
+        cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 0"),
+                       [date])
         missing = cursor.fetchall()
         missing = [x[0] for x in missing]
 
-        toRet = {'playing': playing, 'injured': injured, 'drills': drills, 'unanswered': unanswered, "missing": missing}
-        print(toRet)
-        return toRet
+        to_ret = {
+            'playing': playing,
+            'injured': injured,
+            'drills': drills,
+            'unanswered': unanswered,
+            "missing": missing
+        }
+        print(to_ret)
+        return to_ret
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
         return {'failure': []}
+
 
 def add_workout(name, slack_id, workout_type):
     cursor = None
@@ -470,11 +489,12 @@ def get_workouts_after_date(date, workout_type, slack_id):
             conn.close()
     return workouts
 
-def get_group_workouts_after_date(date, type):
+
+def get_group_workouts_after_date(date, workout_type):
     cursor = None
     conn = None
     workouts = []
-    print(date, type)
+    print(date, workout_type)
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -486,8 +506,9 @@ def get_group_workouts_after_date(date, type):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT * from tribe_workouts WHERE workout_date BETWEEN %s and now() and workout_type=%s"),
-                       [date, "!" + type])
+        cursor.execute(sql.SQL(
+            "SELECT * from tribe_workouts WHERE workout_date BETWEEN %s and now() and workout_type=%s"),
+            [date, "!" + workout_type])
         workouts = cursor.fetchall()
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -514,8 +535,10 @@ def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("INSERT INTO tribe_poll_data (ts, slack_id, title, options, channel, anonymous) VALUES (%s, %s, %s, %s, %s, %s)"),
-                       [ts, slack_id, title, option_string, channel, anonymous])
+        cursor.execute(sql.SQL(
+            "INSERT INTO tribe_poll_data (ts, slack_id, title, options, channel, anonymous)"
+            "VALUES (%s, %s, %s, %s, %s, %s)"),
+            [ts, slack_id, title, option_string, channel, anonymous])
         conn.commit()
         send_debug_message("Committed " + title + " to the poll list")
     except (Exception, psycopg2.DatabaseError) as error:
@@ -547,25 +570,30 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
         if num_responses == 0:  # they have never responded
             # delete dummy response, record response
             cursor.execute(sql.SQL(
-                "UPDATE tribe_poll_responses SET response_num = %s WHERE slack_id=%s AND ts=%s AND response_num = -1"),
+                "UPDATE tribe_poll_responses SET response_num = %s "
+                "WHERE slack_id=%s AND ts=%s AND response_num = -1"),
                 [options_number, slack_id, ts])
         elif num_responses >= 1:  # they have responded before
             # check if they are removing a response
             cursor.execute(sql.SQL(
-                "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                "SELECT * FROM tribe_poll_responses "
+                "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
                 [slack_id, ts, options_number])
             if cursor.rowcount == 0:  # they have never responded this option
                 cursor.execute(sql.SQL(
-                    "INSERT INTO tribe_poll_responses (ts, slack_id, real_name, response_num) VALUES (%s, %s, %s, %s)"),
+                    "INSERT INTO tribe_poll_responses (ts, slack_id, real_name, response_num) "
+                    "VALUES (%s, %s, %s, %s)"),
                     [ts, slack_id, real_name, options_number])
             else:  # they have responded this option so we're removing it
                 if num_responses == 1:  # last response (indicate that they have no more responses)
                     cursor.execute(sql.SQL(
-                        "UPDATE tribe_poll_responses SET response_num=-1 WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                        "UPDATE tribe_poll_responses SET response_num =-1 "
+                        "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
                         [slack_id, ts, options_number])
                 else:  # one of many responses (delete the response)
                     cursor.execute(sql.SQL(
-                        "DELETE FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                        "DELETE FROM tribe_poll_responses "
+                        "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
                         [slack_id, ts, options_number])
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -591,8 +619,10 @@ def add_poll_dummy_responses(ts):
         cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE active ='t'"))
         stuff = cursor.fetchall()
         for slack_id, real_name in stuff:
-            cursor.execute(sql.SQL("INSERT INTO tribe_poll_responses (ts, real_name, slack_id, response_num) VALUES(%s, %s, %s, -1)"),
-                           [ts, real_name, slack_id])
+            cursor.execute(sql.SQL(
+                "INSERT INTO tribe_poll_responses (ts, real_name, slack_id, response_num) "
+                "VALUES(%s, %s, %s, -1)"),
+                [ts, real_name, slack_id])
         conn.commit()
         cursor.close()
         conn.close()
