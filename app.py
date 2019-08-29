@@ -116,7 +116,7 @@ def webhook():
     else:
         if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
             send_debug_message(str(obj))
-            if obj._event['text'][0:8] == 'Practice':
+            if 'practice' in obj._event['text'].lower():
                 # need to record timestamp of message here
                 send_debug_message("Found practice reminder with timestamp %s" % obj._ts)
                 if add_reaction_info_ts(obj._ts):
