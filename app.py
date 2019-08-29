@@ -114,6 +114,7 @@ def webhook():
             print("worthless reaction added by " + obj._user_id + " :" + obj._reaction + ":")
         # need to update scores in tribe_attendance
     else:
+        send_debug_message(str(obj))
         if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
             if obj._event['text'][0:8] == 'Practice':
                 # need to record timestamp of message here

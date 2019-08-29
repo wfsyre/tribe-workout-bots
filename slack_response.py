@@ -270,7 +270,7 @@ class SlackResponse:
                 print(num)
                 count += 1
             if '!test' in self._lower_text:
-                pass
+                send_debug_message("Test message")
             if '!clearpoll' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 clear_poll_data()
             if '!poll' in self._lower_text:

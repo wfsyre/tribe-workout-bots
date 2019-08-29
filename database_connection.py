@@ -30,8 +30,8 @@ def add_num_posts(mention_id, event_time, name):
             [mention_id[0]])
         if cursor.rowcount == 0:
             cursor.execute(sql.SQL("INSERT INTO tribe_data (name, num_posts, num_workouts, workout_score, "
-                                   "last_post, id, year, slack_id, last_time, remind) "
-                                   "VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s, T)"),
+                                   "last_post, id, year, slack_id, last_time, active) "
+                                   "VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s, 't')"),
                            [name, mention_id[0], event_time])
             send_debug_message("%s is new to Tribe" % name)
         conn.commit()
@@ -198,7 +198,7 @@ def reset_talkative():  # reset the num_posts of everyone
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL(
-            "UPDATE tribe_data SET num_posts = 0 WHERE workout_score != -1"))
+            "UPDATE tribe_data SET num_posts = 0"))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
@@ -224,11 +224,13 @@ def add_reaction_info_date(date, yes, drills, injured, no):
         cursor.execute(sql.SQL("SELECT * FROM reaction_info WHERE date = %s"), [date])
         if cursor.rowcount == 0:
             cursor.execute(
-                sql.SQL("INSERT INTO reaction_info (date, yes, no, drills, injured) VALUES (%s, %s, %s, %s, %s)"),
+                sql.SQL("INSERT INTO reaction_info (date, yes, no, drills, injured, timestamp) "
+                        "VALUES (%s, %s, %s, %s, %s, NULL)"),
                 [date.strftime("%Y-%B-%d"), yes, no, drills, injured])
             conn.commit()
             cursor.close()
             conn.close()
+            print("successfully added reaction info")
             return True
         else:
             conn.commit()
@@ -337,7 +339,7 @@ def add_dummy_responses(date):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE workout_score != -1"))
+        cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE active = 't'"))
         stuff = cursor.fetchall()
         print("This is the stuff")
         print(stuff)
@@ -439,7 +441,8 @@ def add_workout(name, slack_id, workout_type):
             cursor.close()
             conn.close()
 
-def get_workouts_after_date(date, type, slack_id):
+
+def get_workouts_after_date(date, workout_type, slack_id):
     cursor = None
     conn = None
     workouts = []
@@ -454,8 +457,9 @@ def get_workouts_after_date(date, type, slack_id):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT * from tribe_workouts WHERE slack_id=%s and workout_date BETWEEN %s and now() and workout_type=%s"),
-                       [slack_id, date, "!" + type])
+        cursor.execute(sql.SQL(
+            "SELECT * from tribe_workouts WHERE slack_id=%s and workout_date BETWEEN %s and now() and workout_type=%s"),
+            [slack_id, date, "!" + workout_type])
         workouts = cursor.fetchall()
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -543,7 +547,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
         if num_responses == 0:  # they have never responded
             # delete dummy response, record response
             cursor.execute(sql.SQL(
-                "UPDATE tribe_poll_responses SET response_num=%s WHERE slack_id=%s AND ts=%s AND response_num = -1"),
+                "UPDATE tribe_poll_responses SET response_num = %s WHERE slack_id=%s AND ts=%s AND response_num = -1"),
                 [options_number, slack_id, ts])
         elif num_responses >= 1:  # they have responded before
             # check if they are removing a response
@@ -584,7 +588,7 @@ def add_poll_dummy_responses(ts):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE workout_score != -1"))
+        cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE active ='t'"))
         stuff = cursor.fetchall()
         for slack_id, real_name in stuff:
             cursor.execute(sql.SQL("INSERT INTO tribe_poll_responses (ts, real_name, slack_id, response_num) VALUES(%s, %s, %s, -1)"),
