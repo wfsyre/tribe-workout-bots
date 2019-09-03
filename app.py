@@ -80,10 +80,10 @@ def webhook():
                 im_data = open_im(user_id)
                 if 'channel' in list(im_data.keys()):
                     channel = im_data['channel']['id']
-                    send_message(
-                        "<@" + user_id + "> please react to the message in announcements about practice attendance",
-                        channel=channel,
-                        bot_name="Reminder Bot")
+                    # send_message(
+                    #     "<@" + user_id + "> please react to the message in announcements about practice attendance",
+                    #     channel=channel,
+                    #     bot_name="Reminder Bot")
                     send_debug_message(" Sent reminder to <@" + user_id + ">")
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
