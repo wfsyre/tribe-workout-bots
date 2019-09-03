@@ -87,6 +87,7 @@ def webhook():
                     send_debug_message(" Sent reminder to <@" + user_id + ">")
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
+        send_debug_message(str(obj))
         if check:
             print(check)
             print(obj._user_id + " added a reaction :" + obj._reaction + ":")
