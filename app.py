@@ -72,6 +72,9 @@ def webhook():
                 + drills + " if you are only doing drills\n"
                 + injured + " if you are attending but not playing\n"
                 + no + " if you are not attending")
+            create_calendar_poll(channel_id='#bot_testing',
+                                 title=obj._calendar_title,
+                                 date=obj._calendar_date.strftime("%Y-%m-%d"))
         else:
             # send reminders
             unanswered = get_unanswered(obj._calendar_date.strftime("%Y-%m-%d"))

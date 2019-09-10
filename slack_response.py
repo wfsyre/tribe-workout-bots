@@ -140,14 +140,15 @@ class SlackResponse:
         mention_ids = []
         i = 0
         while (i < len(text)):
-            temp = text.find('@', i)
+            temp = text.find('<@', i)
             if temp == -1:
                 i = len(text)
             else:
                 indicies.append(temp)
                 i = temp + 1
         for index in indicies:
-            mention_ids.append(text[index + 1:text.find('>', index)])
+            if text.find('>', index) != -1:
+                mention_ids.append(text[index + 1:text.find('>', index)])
         self._mentions = mention_ids
 
     def match_names_to_ids(self):

@@ -1,5 +1,5 @@
 from database_connection import send_debug_message, add_poll_reaction, get_poll_owner,\
-    get_poll_unanswered, get_poll_data, delete_poll
+    get_poll_unanswered, get_poll_data, delete_poll, get_unanswered, count_practice, get_practice_attendance
 from slack_api import open_im, send_message, send_categories, get_user_info
 from requests import post
 
@@ -26,6 +26,12 @@ class InteractiveComponentPayload:
             self.remind_poll()
         elif "voteCalendar" in self._action_id:
             self.vote_calendar()
+        elif "remindCalendar" in self._action_id:
+            pass
+        elif "deleteCalendar" in self._action_id:
+            pass
+        elif "dmCalendar" in self._action_id:
+            pass
 
     def vote_poll(self):
         ts = self._json_data['actions'][0]['value']
@@ -159,13 +165,45 @@ class InteractiveComponentPayload:
         im_data = open_im(self._slack_id)
         if 'channel' in list(im_data.keys()):
             channel = im_data['channel']['id']
-            if not anon:
-                send_categories(title, channel, data)
-                send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
-            else:
-                send_categories(title, channel, data)
-
+            send_categories(title, channel, data)
+            send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
 
     def vote_calendar(self):
-        pass
+        date = self._json_data['actions'][0]['value']
+        vote_data = self._action_id
+        first = vote_data.find(":")
+        number = vote_data[first + 1:]
+        count_practice(self._slack_id, date, number)
+        send_debug_message("Practice counted for <@" + str(self._slack_id) + "> as " + str(number))
+
+    def dm_calendar(self):
+        dm_data = self._action_id
+        first = dm_data.find(":")
+        date = dm_data[first + 1:]
+        categories = get_practice_attendance(date)
+        im_data = open_im(self._slack_id)
+        if 'channel' in list(im_data.keys()):
+            channel = im_data['channel']['id']
+            send_categories("Attendance for " + str(date), channel, categories)
+            send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
+
+    def delete_calendar(self):
+        if self._slack_id == "UAPHZ3SJZ":
+            send_debug_message("Delete calendar pressed")
+
+    def remind_calendar(self):
+        if self._slack_id == "UAPHZ3SJZ":    # That's me :)
+            dm_data = self._action_id
+            first = dm_data.find(":")
+            date = dm_data[first + 1:]
+            unanswered = get_unanswered(date)
+            unanswered = [x[0] for x in unanswered]
+            for slacker in unanswered:
+                im_data = open_im(slacker)
+                if 'channel' in list(im_data.keys()):
+                    channel = im_data['channel']['id']
+                    send_message(bot_name="Reminder Bot", msg="Please respond to the practice poll for " + str(date), channel=channel)
+                    send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
+
+
 

@@ -122,7 +122,6 @@ def create_poll(channel_id, title, options, ts, anon):
         ]
 
     })
-    print(block)
     sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
 
 
@@ -168,4 +167,83 @@ def send_categories(title, channel_id, categories):
                 }
             })
     print(block)
+    sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
+
+
+def create_calendar_poll(channel_id, title, date):
+    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+    options = ['Absent', 'Not playing but present', 'Drills only', 'Playing']
+    sc = SlackClient(slack_token)
+    actions = []
+    block = [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*" + title + "*"
+            },
+            "accessory": {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Delete Practice",
+                    "emoji": True
+                },
+                "value": str(date),
+                "action_id": "deleteCalendar:" + str(date),
+                "style": "danger"
+            }
+        },
+        {
+            "type": "divider"
+        }
+    ]
+    for i in range(0, len(options)):
+        block.append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": options[i]
+            },
+            "accessory": {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Vote",
+                    "emoji": True
+                },
+                "value": str(date),
+                "action_id": "voteCalendar:" + str(i)
+            }
+        })
+        block.append({
+            "type": "divider"
+        })
+
+    block.append({
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "DM me the current attendance",
+                    "emoji": True
+                },
+                "action_id": "dmCalendar:" + str(date),
+                "style": "primary"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Remind the slackers",
+                    "emoji": True
+                },
+                "action_id": "remindCalendar:" + str(date),
+                "style": "danger"
+            }
+        ]
+
+    })
     sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
