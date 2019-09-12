@@ -1,5 +1,5 @@
 from database_connection import *
-from slack_api import open_im, send_message, send_categories, get_user_info
+from slack_api import *
 from requests import post
 
 
@@ -8,6 +8,13 @@ class InteractiveComponentPayload:
         self._json_data = json_data
         if 'callback_id' in self._json_data:  # for actions
             self._callback_id = self._json_data['callback_id']
+            self._message = self._json_data['message']
+            if 'user' in self._message:
+                self._poster_id = self._message['user']
+            else:
+                self._poster_id = None
+            self._actor = self._json_data['user']
+            self._actor_id = self._actor['id']
             self._callback = True
         else:
             self._slack_id = json_data['user']['id']
@@ -41,7 +48,20 @@ class InteractiveComponentPayload:
             self.dm_calendar()
 
     def handle_action(self):
-        send_debug_message(self._callback_id)
+        if self._callback_id == 'banish':
+            if self._poster_id is not None:
+                im_data = open_im(self._poster_id)
+                if 'channel' in list(im_data.keys()):
+                    channel = im_data['channel']['id']
+                    send_message(
+                        "<@" + self._actor_id + "> has banished your message to the shadow realm",
+                        channel=channel,
+                        bot_name="BANISH Bot")
+                    react_message(reaction=':no',
+                                  timestamp=self._json_data['message_ts'],
+                                  channel=self._json_data['channel']['id'])
+
+
 
     def vote_poll(self):
         ts = self._json_data['actions'][0]['value']

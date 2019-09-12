@@ -12,6 +12,12 @@ def send_message(msg, channel="#bot_testing", url='', bot_name='Workout Bot'):
         sc.api_call("chat.postMessage", channel=channel, text=msg, username=bot_name, icon_url=url)
 
 
+def react_message(channel, timestamp, reaction='robot_face'):
+    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+    sc = SlackClient(slack_token)
+    res = sc.api_call("reactions.add", name=reaction, channel=channel, timestamp=timestamp)
+
+
 def send_debug_message(msg, bot_name='Workout Bot'):
     send_message(msg, channel="#bot_testing", bot_name=bot_name)
 
