@@ -59,7 +59,7 @@ class InteractiveComponentPayload:
                         + "\" to the shadow realm!",
                         channel=channel,
                         bot_name="BANISH Bot")
-                    react_message(reaction=':no:',
+                    react_message(reaction='no',
                                   timestamp=self._json_data['message_ts'],
                                   channel=self._json_data['channel']['id'])
 
