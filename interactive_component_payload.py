@@ -10,6 +10,10 @@ class InteractiveComponentPayload:
         self._actions = json_data['actions']
         self._json_data = json_data
         self._webhook_url = self._json_data['response_url']
+        self._callback = False
+        if 'callback_id' in self._json_data:
+            self._callback_id = self._json_data['callback_id']
+            self._callback = True
 
     def handle_component(self):
         self.parse_action_id(self._action_id)
@@ -26,11 +30,13 @@ class InteractiveComponentPayload:
         elif "voteCalendar" in self._action_id:
             self.vote_calendar()
         elif "remindCalendar" in self._action_id:
-            pass
+            self.remind_calendar()
         elif "deleteCalendar" in self._action_id:
-            pass
+            self.delete_calendar()
         elif "dmCalendar" in self._action_id:
-            pass
+            self.dm_calendar()
+        elif self._callback and self._callback_id == 'banish':
+            send_debug_message("found a banish")
 
     def vote_poll(self):
         ts = self._json_data['actions'][0]['value']
