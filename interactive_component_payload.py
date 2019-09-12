@@ -5,6 +5,7 @@ from requests import post
 
 class InteractiveComponentPayload:
     def __init__(self, json_data):
+        self._json_data = json_data
         if 'callback_id' in self._json_data:  # for actions
             self._callback_id = self._json_data['callback_id']
             self._callback = True
@@ -12,7 +13,6 @@ class InteractiveComponentPayload:
             self._slack_id = json_data['user']['id']
             self._action_id = json_data['actions'][0]["action_id"]
             self._actions = json_data['actions']
-            self._json_data = json_data
             self._webhook_url = self._json_data['response_url']
             self._callback = False
 
