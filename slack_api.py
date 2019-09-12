@@ -16,6 +16,7 @@ def react_message(channel, timestamp, reaction='robot_face'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     res = sc.api_call("reactions.add", name=reaction, channel=channel, timestamp=timestamp)
+    send_debug_message(res)
 
 
 def send_debug_message(msg, bot_name='Workout Bot'):
