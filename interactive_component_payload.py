@@ -54,15 +54,12 @@ class InteractiveComponentPayload:
                 if 'channel' in list(im_data.keys()):
                     channel = im_data['channel']['id']
                     send_message(
-                        "<@" + self._actor_id + "> has banished your message "
+                        "<@" + self._actor_id + "> has banished your message \""
                         + str(self._message['text'])
-                        + " to the shadow realm!",
+                        + "\" to the shadow realm!",
                         channel=channel,
                         bot_name="BANISH Bot")
                     react_message(reaction=':no:',
-                                  timestamp=self._json_data['message_ts'],
-                                  channel=self._json_data['channel']['id'])
-                    react_message(reaction='no',
                                   timestamp=self._json_data['message_ts'],
                                   channel=self._json_data['channel']['id'])
 
