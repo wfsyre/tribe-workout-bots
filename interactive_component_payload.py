@@ -5,18 +5,22 @@ from requests import post
 
 class InteractiveComponentPayload:
     def __init__(self, json_data):
-        self._slack_id = json_data['user']['id']
-        self._action_id = json_data['actions'][0]["action_id"]
-        self._actions = json_data['actions']
-        self._json_data = json_data
-        self._webhook_url = self._json_data['response_url']
-        self._callback = False
-        if 'callback_id' in self._json_data:
+        if 'callback_id' in self._json_data:  # for actions
             self._callback_id = self._json_data['callback_id']
             self._callback = True
+        else:
+            self._slack_id = json_data['user']['id']
+            self._action_id = json_data['actions'][0]["action_id"]
+            self._actions = json_data['actions']
+            self._json_data = json_data
+            self._webhook_url = self._json_data['response_url']
+            self._callback = False
 
     def handle_component(self):
-        self.parse_action_id(self._action_id)
+        if self._callback:
+            self.handle_action()
+        else:
+            self.parse_action_id(self._action_id)
 
     def parse_action_id(self, action_id):
         if "votePoll" in self._action_id:
@@ -35,8 +39,9 @@ class InteractiveComponentPayload:
             self.delete_calendar()
         elif "dmCalendar" in self._action_id:
             self.dm_calendar()
-        elif self._callback and self._callback_id == 'banish':
-            send_debug_message("found a banish")
+
+    def handle_action(self):
+        send_debug_message(self._callback_id)
 
     def vote_poll(self):
         ts = self._json_data['actions'][0]['value']
