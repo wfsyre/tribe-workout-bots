@@ -271,7 +271,9 @@ class SlackResponse:
                 print(num)
                 count += 1
             if '!test' in self._lower_text:
-                send_debug_message("Test message", bot_name="Reminder Bot")
+                send_message(channel="#random",
+                             msg="Don't mind me, I'll just be here watching in case you need me.",
+                             bot_name="Reid Bot")
             if '!clearpoll' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 clear_poll_data()
             if '!poll' in self._lower_text:
