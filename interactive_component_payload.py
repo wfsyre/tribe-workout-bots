@@ -1,5 +1,4 @@
-from database_connection import send_debug_message, add_poll_reaction, get_poll_owner,\
-    get_poll_unanswered, get_poll_data, delete_poll, get_unanswered, count_practice, get_practice_attendance
+from database_connection import *
 from slack_api import open_im, send_message, send_categories, get_user_info
 from requests import post
 
@@ -175,6 +174,25 @@ class InteractiveComponentPayload:
         number = vote_data[first + 1:]
         count_practice(self._slack_id, date, number)
         send_debug_message("Practice counted for <@" + str(self._slack_id) + "> as " + str(number))
+        blocks = self._json_data['message']['blocks']
+        response_block = 2 * (int(number) + 1)
+        current = blocks[response_block]['text']['text']
+        if self._slack_id not in current:
+            blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
+        else:
+            start = current.find(self._slack_id) - 2
+            end = start + 2 + len(self._slack_id) + 1
+            statement = current[0:start] + current[end + 1:]
+            blocks[response_block]['text']['text'] = statement
+
+        slack_data = {
+            "blocks": blocks,
+            "replace_original": True,
+        }
+        post(
+            self._webhook_url,
+            json=slack_data,
+            headers={'Content-Type': 'application/json'})
 
     def dm_calendar(self):
         dm_data = self._action_id
@@ -185,11 +203,24 @@ class InteractiveComponentPayload:
         if 'channel' in list(im_data.keys()):
             channel = im_data['channel']['id']
             send_categories("Attendance for " + str(date), channel, categories)
-            send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
+            send_debug_message(" Sent calendar information to <@" + self._slack_id + ">")
 
     def delete_calendar(self):
         if self._slack_id == "UAPHZ3SJZ":
             send_debug_message("Delete calendar pressed")
+            dm_data = self._action_id
+            first = dm_data.find(":")
+            date = dm_data[first + 1:]
+            slack_data = {
+                "delete_original": True
+            }
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
+            delete_calendar(date)
+        else:
+            send_debug_message("<@" + self._slack_id + "> tried to delete a calendar post")
 
     def remind_calendar(self):
         if self._slack_id == "UAPHZ3SJZ":    # That's me :)
@@ -204,6 +235,8 @@ class InteractiveComponentPayload:
                     channel = im_data['channel']['id']
                     send_message(bot_name="Reminder Bot", msg="Please respond to the practice poll for " + str(date), channel=channel)
                     send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
+        else:
+            send_debug_message("<@" + self._slack_id + "> tried to remind a calendar post")
 
 
 

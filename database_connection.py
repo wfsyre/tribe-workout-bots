@@ -771,3 +771,24 @@ def delete_poll(timestamp):
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
+
+
+def delete_calendar(date):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL("DELETE FROM tribe_attendance WHERE practice_date = %s"), [date])
+        cursor.execute(sql.SQL("DELETE FROM reaction_info WHERE date = %s"), [date])
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error)
