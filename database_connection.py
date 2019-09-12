@@ -9,7 +9,7 @@ from slack_api import *
 from flask import Flask, request, jsonify, make_response
 
 app = Flask(__name__)
-
+debugging = False
 
 def add_num_posts(mention_id, event_time, name):
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
@@ -109,8 +109,9 @@ def add_to_db(names, addition, num_workouts, ids):  # add "addition" to each of 
                     "now() WHERE slack_id = %s"),
                     [str(num_workouts), str(addition), ids[x]])
                 conn.commit()
-                send_debug_message("committed %s with %s points" % (names[x], str(addition)))
-                print("committed %s" % names[x])
+                if debugging:
+                    send_debug_message("committed %s with %s points" % (names[x], str(addition)))
+                print("committed %s with %s points" % (names[x], str(addition)))
                 num_committed += 1
             else:
                 send_debug_message("invalid workout poster found " + names[x])
@@ -236,7 +237,8 @@ def add_reaction_info_date(date, yes, drills, injured, no):
             conn.commit()
             cursor.close()
             conn.close()
-            send_debug_message("Found a repeat calendar post")
+            if debugging:
+                send_debug_message("Found a repeat calendar post")
             return False
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error)
@@ -322,7 +324,8 @@ def count_practice(slack_id, date, number):
             conn.commit()
             cursor.close()
             conn.close()
-            send_debug_message("marked  <@" + str(slack_id) + "> as " + str(number) + " for practice on " + date)
+            if debugging:
+                send_debug_message("marked  <@" + str(slack_id) + "> as " + str(number) + " for practice on " + date)
         else:
             conn.commit()
             cursor.close()
@@ -452,7 +455,8 @@ def add_workout(name, slack_id, workout_type):
         cursor.execute(sql.SQL("INSERT INTO tribe_workouts (name, slack_id, workout_type, workout_date) "
                                "VALUES (%s, %s, %s, now())"), [str(name), str(slack_id), str(workout_type)])
         conn.commit()
-        send_debug_message("Committed " + name + " to the workout list")
+        if debugging:
+            send_debug_message("Committed " + name + " to the workout list")
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
@@ -540,7 +544,8 @@ def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
             "VALUES (%s, %s, %s, %s, %s, %s)"),
             [ts, slack_id, title, option_string, channel, anonymous])
         conn.commit()
-        send_debug_message("Committed " + title + " to the poll list")
+        if debugging:
+            send_debug_message("Committed " + title + " to the poll list")
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error))
     finally:
