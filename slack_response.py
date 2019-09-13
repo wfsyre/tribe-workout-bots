@@ -148,7 +148,7 @@ class SlackResponse:
                 i = temp + 1
         for index in indicies:
             if text.find('>', index) != -1:
-                mention_ids.append(text[index + 1:text.find('>', index)])
+                mention_ids.append(text[index + 2:text.find('>', index)])
         self._mentions = mention_ids
 
     def match_names_to_ids(self):
