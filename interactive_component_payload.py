@@ -74,7 +74,7 @@ class InteractiveComponentPayload:
         real_name = get_user_info(self._slack_id)['user']['real_name']
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
-                           + ", response_num: " + response_num)
+                           + ", response_num: " + response_num, level="DEBUG")
         add_poll_reaction(ts, response_num, self._slack_id, real_name)
         if not anon:
             blocks = self._json_data['message']['blocks']
@@ -141,7 +141,7 @@ class InteractiveComponentPayload:
                 json=slack_data,
                 headers={'Content-Type': 'application/json'})
             send_debug_message(
-                "Shame on <@" + self._slack_id + "> they tried to delete a poll they didn't own")
+                "Shame on <@" + self._slack_id + "> they tried to delete a poll they didn't own", level="DEBUG")
 
     def remind_poll(self):
         ts = self._action_id
@@ -187,7 +187,7 @@ class InteractiveComponentPayload:
                 self._webhook_url,
                 json=slack_data,
                 headers={'Content-Type': 'application/json'})
-            send_debug_message("Shame on <@" + self._slack_id + "> they tried to send reminders for a poll they didn't own")
+            send_debug_message("Shame on <@" + self._slack_id + "> they tried to send reminders for a poll they didn't own", level="DEBUG")
 
     def dm_poll(self):
         dm_data = self._action_id
@@ -198,7 +198,7 @@ class InteractiveComponentPayload:
         if 'channel' in list(im_data.keys()):
             channel = im_data['channel']['id']
             send_categories(title, channel, data)
-            send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
+            send_debug_message(" Sent poll information to <@" + self._slack_id + ">", level="DEBUG")
 
     def vote_calendar(self):
         date = self._json_data['actions'][0]['value']
@@ -206,7 +206,7 @@ class InteractiveComponentPayload:
         first = vote_data.find(":")
         number = vote_data[first + 1:]
         count_practice(self._slack_id, date, number)
-        send_debug_message("Practice counted for <@" + str(self._slack_id) + "> as " + str(number))
+        send_debug_message("Practice counted for <@" + str(self._slack_id) + "> as " + str(number), level="DEBUG")
         blocks = self._json_data['message']['blocks']
         response_block = 2 * (int(number) + 1)
         current = blocks[response_block]['text']['text']
@@ -236,11 +236,11 @@ class InteractiveComponentPayload:
         if 'channel' in list(im_data.keys()):
             channel = im_data['channel']['id']
             send_categories("Attendance for " + str(date), channel, categories)
-            send_debug_message(" Sent calendar information to <@" + self._slack_id + ">")
+            send_debug_message(" Sent calendar information to <@" + self._slack_id + ">", level="DEBUG")
 
     def delete_calendar(self):
         if self._slack_id == "UAPHZ3SJZ":
-            send_debug_message("Delete calendar pressed")
+            send_debug_message("Delete calendar pressed", level="DEBUG")
             dm_data = self._action_id
             first = dm_data.find(":")
             date = dm_data[first + 1:]
@@ -253,7 +253,7 @@ class InteractiveComponentPayload:
                 headers={'Content-Type': 'application/json'})
             delete_calendar(date)
         else:
-            send_debug_message("<@" + self._slack_id + "> tried to delete a calendar post")
+            send_debug_message("<@" + self._slack_id + "> tried to delete a calendar post", level="DEBUG")
 
     def remind_calendar(self):
         if self._slack_id == "UAPHZ3SJZ":    # That's me :)
@@ -267,9 +267,9 @@ class InteractiveComponentPayload:
                 if 'channel' in list(im_data.keys()):
                     channel = im_data['channel']['id']
                     send_message(bot_name="Reminder Bot", msg="Please respond to the practice poll for " + str(date), channel=channel)
-                    send_debug_message(" Sent poll information to <@" + self._slack_id + ">")
+                    send_debug_message(" Sent poll information to <@" + self._slack_id + ">", level="DEBUG")
         else:
-            send_debug_message("<@" + self._slack_id + "> tried to remind a calendar post")
+            send_debug_message("<@" + self._slack_id + "> tried to remind a calendar post", level="DEBUG")
 
 
 

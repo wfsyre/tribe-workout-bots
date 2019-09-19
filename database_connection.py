@@ -9,7 +9,6 @@ from slack_api import *
 from flask import Flask, request, jsonify, make_response
 
 app = Flask(__name__)
-debugging = False
 
 def add_num_posts(mention_id, event_time, name):
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
@@ -33,13 +32,13 @@ def add_num_posts(mention_id, event_time, name):
                                    "last_post, id, year, slack_id, last_time, active) "
                                    "VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s, 't')"),
                            [name, mention_id[0], event_time])
-            send_debug_message("%s is new to Tribe" % name)
+            send_debug_message("%s is new to Tribe" % name, level="INFO")
         conn.commit()
         cursor.close()
         conn.close()
         return True
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
         return True
 
 
@@ -67,7 +66,7 @@ def collect_stats(datafield, rev):
         conn.close()
         return string1
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
 
 
 def get_group_info():
@@ -109,14 +108,13 @@ def add_to_db(names, addition, num_workouts, ids):  # add "addition" to each of 
                     "now() WHERE slack_id = %s"),
                     [str(num_workouts), str(addition), ids[x]])
                 conn.commit()
-                if debugging:
-                    send_debug_message("committed %s with %s points" % (names[x], str(addition)))
+                send_debug_message("committed %s with %s points" % (names[x], str(addition)), level="INFO")
                 print("committed %s with %s points" % (names[x], str(addition)))
                 num_committed += 1
             else:
-                send_debug_message("invalid workout poster found " + names[x])
+                send_debug_message("invalid workout poster found " + names[x], level="INFO")
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(str(error), level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -144,10 +142,10 @@ def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from ea
                 "UPDATE tribe_data SET workout_score = workout_score - %s WHERE slack_id = %s"),
                 [subtraction, ids[x]])
             conn.commit()
-            send_debug_message("subtracted %s" % names[x])
+            send_debug_message("subtracted %s" % names[x], level="INFO")
             num_committed += 1
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(error, level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -177,7 +175,7 @@ def reset_scores():  # reset the scores of everyone
         ))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(error, level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -202,7 +200,7 @@ def reset_talkative():  # reset the num_posts of everyone
             "UPDATE tribe_data SET num_posts = 0"))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(error, level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -237,11 +235,10 @@ def add_reaction_info_date(date, yes, drills, injured, no):
             conn.commit()
             cursor.close()
             conn.close()
-            if debugging:
-                send_debug_message("Found a repeat calendar post")
+            send_debug_message("Found a repeat calendar post", level="DEBUG")
             return False
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
 
 
 def add_reaction_info_ts(ts):
@@ -270,7 +267,7 @@ def add_reaction_info_ts(ts):
             conn.close()
             return False
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
 
 
 def check_reaction_timestamp(ts):
@@ -299,7 +296,7 @@ def check_reaction_timestamp(ts):
             conn.close()
             return []
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
         return []
 
 
@@ -324,14 +321,13 @@ def count_practice(slack_id, date, number):
             conn.commit()
             cursor.close()
             conn.close()
-            if debugging:
-                send_debug_message("marked  <@" + str(slack_id) + "> as " + str(number) + " for practice on " + date)
+            send_debug_message("marked  <@" + str(slack_id) + "> as " + str(number) + " for practice on " + date, level="DEBUG")
         else:
             conn.commit()
             cursor.close()
             conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
 
 
 def add_dummy_responses(date):
@@ -359,7 +355,7 @@ def add_dummy_responses(date):
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
 
 
 def get_unanswered(date):
@@ -382,7 +378,7 @@ def get_unanswered(date):
         print(unanswered)
         return unanswered
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
         return []
 
 
@@ -434,7 +430,7 @@ def get_practice_attendance(date):
         print(to_ret)
         return to_ret
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
         return {'failure': []}
 
 
@@ -455,10 +451,9 @@ def add_workout(name, slack_id, workout_type):
         cursor.execute(sql.SQL("INSERT INTO tribe_workouts (name, slack_id, workout_type, workout_date) "
                                "VALUES (%s, %s, %s, now())"), [str(name), str(slack_id), str(workout_type)])
         conn.commit()
-        if debugging:
-            send_debug_message("Committed " + name + " to the workout list")
+        send_debug_message("Committed " + name + " to the workout list", level="INFO")
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(error, level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -486,7 +481,7 @@ def get_workouts_after_date(date, workout_type, slack_id):
         workouts = cursor.fetchall()
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(error, level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -516,7 +511,7 @@ def get_group_workouts_after_date(date, workout_type):
         workouts = cursor.fetchall()
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(error, level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -544,10 +539,9 @@ def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
             "VALUES (%s, %s, %s, %s, %s, %s)"),
             [ts, slack_id, title, option_string, channel, anonymous])
         conn.commit()
-        if debugging:
-            send_debug_message("Committed " + title + " to the poll list")
+        send_debug_message("Committed " + title + " to the poll list", level="DEBUG")
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(str(error), level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -602,7 +596,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                         [slack_id, ts, options_number])
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(str(error))
+        send_debug_message(error, level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
@@ -632,7 +626,7 @@ def add_poll_dummy_responses(ts):
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
 
 
 def get_poll_data(ts):
@@ -681,7 +675,7 @@ def get_poll_data(ts):
         return title, data, anon
 
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
         return None
 
 
@@ -703,7 +697,7 @@ def clear_poll_data():
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
 
 
 def get_poll_unanswered(ts):
@@ -727,7 +721,7 @@ def get_poll_unanswered(ts):
         print(unanswered)
         return unanswered
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
         return []
 
 
@@ -753,7 +747,7 @@ def get_poll_owner(ts):
         print(owner)
         return owner[0][0]
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
         return []
 
 
@@ -775,7 +769,7 @@ def delete_poll(timestamp):
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")
 
 
 def delete_calendar(date):
@@ -796,4 +790,4 @@ def delete_calendar(date):
         cursor.close()
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error)
+        send_debug_message(error, level="ERROR")

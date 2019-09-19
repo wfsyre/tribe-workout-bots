@@ -65,8 +65,8 @@ class SlackResponse:
             self._channel = self._event['channel']
             if self._channel != 'GBR6LQBMJ':
                 send_debug_message("Found a deleted message in channel %s written by %s" % (
-                self._channel, self._previous_message['user']))
-                send_debug_message(self._previous_message['text'])
+                self._channel, self._previous_message['user']), level="INFO")
+                send_debug_message(self._previous_message['text'], level="INFO")
         elif self._subtype == 'message_changed':
             self._check_for_commands = True
             self._previous_message = self._event['previous_message']
@@ -79,8 +79,8 @@ class SlackResponse:
             self._channel = self._event['channel']
             self._ts = self._event['message']['ts']
             if 'blocks' not in self._event['previous_message']:
-                send_debug_message("Found a edited message in channel %s that used to say:" % self._channel)
-                send_debug_message(self._previous_message_text)
+                send_debug_message("Found a edited message in channel %s that used to say:" % self._channel, level="INFO")
+                send_debug_message(self._previous_message_text, level="INFO")
         elif self._subtype == 'bot_message':
             self._bot = True
             self._channel_type = self._event['channel_type']
@@ -249,7 +249,7 @@ class SlackResponse:
                 until = regionals - now
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
             if '!subtract' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
-                send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]))
+                send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]), level="INFO")
                 num = subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
                 print(num)
                 count += 1
@@ -257,16 +257,16 @@ class SlackResponse:
                 to_print = collect_stats(3, True)
                 send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
                 reset_scores()
-                send_debug_message("Resetting leaderboard")
+                send_debug_message("Resetting leaderboard", level="INFO")
                 count += 1
             if '!silence' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
                 to_print = collect_stats(1, True)
                 send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
                 reset_talkative()
-                send_debug_message("Resetting talkative")
+                send_debug_message("Resetting talkative", level="INFO")
                 count += 1
             if '!add' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
-                send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]))
+                send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]), level="INFO")
                 num = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
                 print(num)
                 count += 1
@@ -295,7 +295,7 @@ class SlackResponse:
                 create_poll(self._channel, options[0], options[1:], self._ts, anon)
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
-                send_debug_message("reminder batch being sent for " + date)
+                send_debug_message("reminder batch being sent for " + date, level="DEBUG")
                 unanswered = get_unanswered(date)
                 unanswered = [x[0] for x in unanswered]
                 for user_id in unanswered:
@@ -306,7 +306,7 @@ class SlackResponse:
                             "<@" + user_id + "> please react to the message in announcements about practice attendance",
                             channel=channel,
                             bot_name="Reminder Bot")
-                        send_debug_message(" Sent reminder to <@" + user_id + ">")
+                        send_debug_message(" Sent reminder to <@" + user_id + ">", level="DEBUG")
             if '!attendance' in self._lower_text:
                 date = self._lower_text[-10:]
                 attendance = get_practice_attendance(date)

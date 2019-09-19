@@ -87,7 +87,7 @@ def webhook():
                     #     "<@" + user_id + "> please react to the message in announcements about practice attendance",
                     #     channel=channel,
                     #     bot_name="Reminder Bot")
-                    send_debug_message(" Sent reminder to <@" + user_id + ">")
+                    send_debug_message(" Sent reminder to <@" + user_id + ">", level="DEBUG")
     elif obj._reaction_added:
         check = check_reaction_timestamp(obj._item_ts)
         if check:
@@ -118,10 +118,10 @@ def webhook():
         # need to update scores in tribe_attendance
     else:
         if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
-            send_debug_message(str(obj))
+            send_debug_message(str(obj), level="DEBUG")
             if 'practice' in obj._event['text'].lower():
                 # need to record timestamp of message here
-                send_debug_message("Found practice reminder with timestamp %s" % obj._ts)
+                send_debug_message("Found practice reminder with timestamp %s" % obj._ts, level="DEBUG")
                 if add_reaction_info_ts(obj._ts):
                     reactions = check_reaction_timestamp(obj._ts)
                     reactions = reactions[0]

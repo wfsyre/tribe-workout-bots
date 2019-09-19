@@ -2,6 +2,8 @@ import os
 import requests
 from slackclient import SlackClient
 
+verbosity = 1   # info lvl
+
 
 def send_message(msg, channel="#bot_testing", url='', bot_name='Workout Bot'):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
@@ -18,8 +20,23 @@ def react_message(channel, timestamp, reaction='robot_face'):
     res = sc.api_call("reactions.add", name=reaction, channel=channel, timestamp=timestamp)
 
 
-def send_debug_message(msg, bot_name='Workout Bot'):
-    send_message(msg, channel="#bot_testing", bot_name=bot_name)
+def send_debug_message(msg, bot_name='Workout Bot', level="ERROR"):
+    lvl = 0
+    string = "DEBUG"
+    if level == "ERROR":
+        string = "<@UAPHZ3SJZ> ERROR:"
+        lvl = 2
+    elif level == "INFO":
+        string = "INFO:"
+        lvl = 1
+    else:
+        string = "DEBUG:"
+        lvl = 0
+
+    if lvl >= verbosity:
+        send_message(string + str(msg), channel="#bot_testing", bot_name=bot_name)
+    else:
+        print(string, msg)
 
 
 def send_tribe_message(msg, channel="#random", bot_name="Workout Bot"):
