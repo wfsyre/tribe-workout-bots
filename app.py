@@ -145,3 +145,11 @@ def interactive_component_webhook():
     obj = InteractiveComponentPayload(form_json)
     obj.handle_component()
     return make_response("Ok", 200, )
+
+
+@app.route('/poll', methods=['POST'])
+def interactive_component_webhook():
+    form_json = json.loads(request.form["payload"])
+    print("This is the data that came with the interactive component")
+    send_debug_message(str(form_json), level="INFO")
+    return make_response("Ok", 200, )
