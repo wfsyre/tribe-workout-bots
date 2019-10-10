@@ -239,7 +239,7 @@ class InteractiveComponentPayload:
             send_debug_message(" Sent calendar information to <@" + self._slack_id + ">", level="DEBUG")
 
     def delete_calendar(self):
-        if self._slack_id == "UAPHZ3SJZ":
+        if self._slack_id == os.getenv("ADMIN_ID"):
             send_debug_message("Delete calendar pressed", level="DEBUG")
             dm_data = self._action_id
             first = dm_data.find(":")
@@ -256,7 +256,7 @@ class InteractiveComponentPayload:
             send_debug_message("<@" + self._slack_id + "> tried to delete a calendar post", level="DEBUG")
 
     def remind_calendar(self):
-        if self._slack_id == "UAPHZ3SJZ":    # That's me :)
+        if self._slack_id == os.getenv("ADMIN_ID"):    # That's me :)
             dm_data = self._action_id
             first = dm_data.find(":")
             date = dm_data[first + 1:]

@@ -177,10 +177,16 @@ def reset_scores():  # reset the scores of everyone
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL(
-            "UPDATE tribe_data SET num_workouts = 0, workout_score = 0, last_post = now() WHERE workout_score != -1"
+            "UPDATE tribe_data SET num_workouts = 0, workout_score = 0, num_posts = 0, last_post = now() WHERE workout_score != -1"
         ))
         cursor.execute(sql.SQL(
             "DELETE FROM tribe_workouts"
+        ))
+        cursor.execute(sql.SQL(
+            "DELETE FROM tribe_attendance"
+        ))
+        cursor.execute(sql.SQL(
+            "DELETE FROM reaction_info"
         ))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:

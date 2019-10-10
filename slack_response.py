@@ -3,7 +3,6 @@ from utils import *
 from slack_api import *
 from datetime import datetime
 
-
 class SlackResponse:
     # event
     # event_type
@@ -248,24 +247,24 @@ class SlackResponse:
                 regionals = datetime(2019, 4, 28, 8, 0, 0)
                 until = regionals - now
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
-            if '!subtract' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+            if '!subtract' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
                 send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]), level="INFO")
                 num = subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
                 print(num)
                 count += 1
-            if '!reset' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+            if '!reset' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
                 to_print = collect_stats(3, True)
                 send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
                 reset_scores()
                 send_debug_message("Resetting leaderboard", level="INFO")
                 count += 1
-            if '!silence' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+            if '!silence' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
                 to_print = collect_stats(1, True)
                 send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
                 reset_talkative()
                 send_debug_message("Resetting talkative", level="INFO")
                 count += 1
-            if '!add' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+            if '!add' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
                 send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]), level="INFO")
                 num = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
                 print(num)
@@ -274,7 +273,7 @@ class SlackResponse:
                 send_message(channel="#random",
                              msg="Don't mind me, I'll just be here watching in case you need me.",
                              bot_name="Reid Bot")
-            if '!clearpoll' in self._lower_text and self._user_id == 'UAPHZ3SJZ':
+            if '!clearpoll' in self._lower_text and self._user_id == os.getenv("ADMIN_ID"):
                 clear_poll_data()
             if '!poll' in self._lower_text:
                 #!poll "Title" "option 1" ... "option n"
