@@ -242,7 +242,8 @@ class SlackResponse:
                 count += 1
                 send_tribe_message("Kenta wins", channel=self._channel)
             if '!reteam' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
-                send_debug_message(self._mentions)
+                send_debug_message('re-teaming and excluding the tagged people from the leader board', level="DEBUG")
+                reteam(self._mentions)
             if '!regionals' in self._lower_text:
                 count += 1
                 now = datetime.now()

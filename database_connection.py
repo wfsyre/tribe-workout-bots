@@ -38,9 +38,9 @@ def add_num_posts(mention_id, event_time, name):
                 send_debug_message("%s has a new slack id" % name, level="INFO")
             else:
                 cursor.execute(sql.SQL("INSERT INTO tribe_data (name, num_posts, num_workouts, workout_score, "
-                                       "last_post, id, year, slack_id, last_time, active) "
-                                       "VALUES (%s, 0, 0, 0, now(), -1, 1, %s, %s, 't')"),
-                               [name, mention_id[0], event_time])
+                                       "last_post, slack_id) "
+                                       "VALUES (%s, 0, 0, 0, now(), %s)"),
+                               [name, mention_id[0]])
                 send_debug_message("%s is new to Tribe" % name, level="INFO")
         conn.commit()
         cursor.close()
@@ -160,6 +160,43 @@ def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from ea
             cursor.close()
             conn.close()
         return num_committed
+
+def reteam(excluded_ids):
+    info = get_group_info()
+    print(info)
+    if info:
+        return
+    cursor = None
+    conn = None
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL(
+            "DROP TABLE IF EXISTS tribe_data"
+        ))
+        cursor.execute(sql.SQL(
+            "CREATE TABLE tribe_data (name text, "
+            "num_posts smallint, "
+            "num_workouts smallint, "
+            "workout_score numeric(5,1), "
+            "last_post date, "
+            "slack_id varchar(9))"
+        ))
+        conn.commit()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+    finally:
+        if cursor is not None:
+            cursor.close()
+            conn.close()
 
 
 def reset_scores():  # reset the scores of everyone
