@@ -24,7 +24,7 @@ def send_debug_message(msg, bot_name='Workout Bot', level="ERROR"):
     lvl = 0
     string = "DEBUG"
     if level == "ERROR":
-        string = "<@UAPHZ3SJZ> ERROR:"
+        string = "<@" + os.getenv("ADMIN_ID") + "> ERROR:"
         lvl = 2
     elif level == "INFO":
         string = "INFO:"
@@ -39,7 +39,7 @@ def send_debug_message(msg, bot_name='Workout Bot', level="ERROR"):
         print(string, msg)
 
 
-def send_tribe_message(msg, channel="#random", bot_name="Workout Bot"):
+def send_tribe_message(msg, channel="#general", bot_name="Workout Bot"):
     send_message(msg, channel, bot_name=bot_name)
 
 
