@@ -13,14 +13,6 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def webhook():
     print("event received")
-    GYM_POINTS = 1.0
-    TRACK_POINTS = 1.0
-    THROW_POINTS = 0.5
-    SWIM_POINTS = 1.0
-    PICKUP_POINTS = 0.5
-    BIKING_POINTS = 1.0
-    RUN_POINTS = 1.0
-    BOT_CHANNEL = "CBJAJPZ8B"
     data = request.get_json()
     if data['type'] == "url_verification":
         return jsonify({'challenge': data['challenge']})
@@ -41,7 +33,7 @@ def webhook():
         else:
             print("executing commands")
             obj.execute_commands()
-    elif obj._calendar:
+    elif obj._calendar:  # always false for now because we disabled calender reminders
         print("found a calendar reminder")
         # emojis = list(get_emojis()['emoji'].keys())
         # numbers = random.sample(range(0, len(emojis)), 4)

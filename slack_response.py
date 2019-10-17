@@ -29,6 +29,7 @@ class SlackResponse:
         self.TOURNAMENT_POINTS = 0
         self.ASSIGNED_WORKOUT_POINTS = 2.0
         self.CARDIO_POINTS = 0.5
+        self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
         self._additions = []
         self._reaction_added = False
         self._reaction_removed = False
@@ -41,7 +42,7 @@ class SlackResponse:
         else:
             self._files = []
         if 'attachments' in list(self._event.keys()):
-            self._calendar = True
+            self._calendar = True and self.CALENDAR_ENABLED
             self._calendar_text = self._event['attachments'][0]['text']
             self._calendar_title = self._event['attachments'][0]['title']
             if 'practice' in self._calendar_title.lower():
