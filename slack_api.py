@@ -221,27 +221,25 @@ def create_calendar_poll(channel_id, title, date):
             "type": "divider"
         }
     ]
+    elem = []
     for i in range(0, len(options)):
-        block.append({
-            "type": "section",
+        elem.append({
+            "type": "button",
             "text": {
-                "type": "mrkdwn",
-                "text": options[i]
+                "type": "plain_text",
+                "text": options[i],
+                "emoji": True
             },
-            "accessory": {
-                "type": "button",
-                "text": {
-                    "type": "plain_text",
-                    "text": "Vote",
-                    "emoji": True
-                },
-                "value": str(date),
-                "action_id": "voteCalendar:" + str(i)
-            }
+            "value": str(date),
+            "action_id": "voteCalendar:" + str(i)
         })
-        block.append({
-            "type": "divider"
-        })
+    block.append({
+        "type": "actions",
+        "elements": elem
+    })
+    block.append({
+        "type": "divider"
+    })
 
     block.append({
         "type": "actions",
