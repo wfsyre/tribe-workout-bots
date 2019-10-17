@@ -20,14 +20,16 @@ class SlackResponse:
     def __init__(self, json_data):
         self._event = json_data['event']
         self._repeat = False
-        self.GYM_POINTS = 1.0
-        self.TRACK_POINTS = 1.0
+        self.GYM_POINTS = 0.5
+        self.TRACK_POINTS = 0.5
         self.THROW_POINTS = 0.5
-        self.SWIM_POINTS = 1.0
-        self.PICKUP_POINTS = 0.5
-        self.BIKING_POINTS = 1.0
-        self.RUN_POINTS = 1.0
-        self.TOURNAMENT_POINTS = 2.0
+        self.SWIM_POINTS = 0
+        self.PICKUP_POINTS = 0
+        self.BIKING_POINTS = 0.5
+        self.RUN_POINTS = 0.5
+        self.TOURNAMENT_POINTS = 0
+        self.ASSIGNED_WORKOUT_POINTS = 2.0
+        self.CARDIO_POINTS = 0.5
         self._additions = []
         self._reaction_added = False
         self._reaction_removed = False
@@ -195,6 +197,12 @@ class SlackResponse:
         if '!tournament' in self._lower_text:
             self._points_to_add += self.TOURNAMENT_POINTS
             self._additions.append('!tournament')
+        if '!cardio' in self._lower_text:
+            self._points_to_add += self.CARDIO_POINTS
+            self._additions.append('!cardio')
+        if '!workout' in self._lower_text:
+            self._points_to_add += self.ASSIGNED_WORKOUT_POINTS
+            self._additions.append('!workout')
 
     def handle_db(self):
         if not self._repeat:
@@ -215,14 +223,15 @@ class SlackResponse:
         if not self._repeat:
             if "!help" in self._lower_text:
                 send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                                   "\n!gym\n!track\n!tournament\n!pickup\n!throw\n!swim\n!bike\n!run\n!since [YYYY-MM-DD] [type] [@name]"
+                                   "\n!gym\n!track\n!tournament\n!pickup\n!throw\n!swim\n!bike\n!run\n!cardio\nworkout\n!since [YYYY-MM-DD] [type] [@name]"
                                    "\n!groupsince [YYYY-MM-DD] [type]"
                                    "\n!poll \"Title\" \"option 1\" ... \"option n\"",
                                    channel=self._channel, bot_name="Helper Bot")
             if "!points" in self._lower_text:
-                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\ntournament %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f\nrun %.1f"
+                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\ntournament %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f\nrun %.1f\ncardio %.1f\nworkout %.1f\ntournament %.1f"
                                    % (self.GYM_POINTS, self.TRACK_POINTS, self.TOURNAMENT_POINTS, self.PICKUP_POINTS,
-                                      self.THROW_POINTS, self.SWIM_POINTS, self.BIKING_POINTS, self.RUN_POINTS), channel=self._channel)
+                                      self.THROW_POINTS, self.SWIM_POINTS, self.BIKING_POINTS, self.RUN_POINTS,
+                                      self.CARDIO_POINTS, self.ASSIGNED_WORKOUT_POINTS, self.TOURNAMENT_POINTS), channel=self._channel)
             if "!leaderboard" in self._lower_text:
                 count += 1
                 to_print = collect_stats(3, True)

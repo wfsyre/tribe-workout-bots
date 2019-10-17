@@ -35,7 +35,7 @@ def add_num_posts(mention_id, event_time, name):
                 cursor.execute(sql.SQL(
                     "UPDATE tribe_data SET slack_id = %s WHERE name = %s"),
                     [mention_id[0], name])
-                send_debug_message("%s has a new slack id" % name, level="INFO")
+                send_debug_message(("%s has a new slack id" % name), level="INFO")
             else:
                 cursor.execute(sql.SQL("INSERT INTO tribe_data (name, num_posts, num_workouts, workout_score, "
                                        "last_post, id, year, slack_id, last_time, active) "
