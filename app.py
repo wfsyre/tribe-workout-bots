@@ -25,8 +25,7 @@ def webhook():
     obj = SlackResponse(data)
     if not obj._bot and not obj._reaction_added and not obj._reaction_removed:
         print("not a bot")
-        obj.isRepeat()
-        obj._repeat = False
+        obj.add_num_posts()
         if obj._points_to_add > 0:
             print("points to add")
             obj.handle_db()
