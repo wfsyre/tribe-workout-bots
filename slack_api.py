@@ -103,22 +103,24 @@ def create_poll(channel_id, title, options, ts, anon):
             "text": {
                 "type": "mrkdwn",
                 "text": options[i]
-            },
-            "accessory": {
+            }
+        })
+        actions.append({
+            {
                 "type": "button",
                 "text": {
                     "type": "plain_text",
-                    "text": "Vote",
+                    "text": options[i],
                     "emoji": True
                 },
                 "value": str(ts),
                 "action_id": "votePoll:" + str(i) + ":" + str(anon)
             }
         })
-        block.append({
-            "type": "divider"
-        })
-
+    block.append({
+        "type": "actions",
+        "elements": actions
+    })
     block.append({
         "type": "actions",
         "elements": [
