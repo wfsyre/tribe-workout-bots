@@ -310,6 +310,7 @@ class SlackResponse:
         count = 0
         for command in self._COMMANDS:
             if ("!" + command) in self._lower_text:
+                send_debug_message("Found a command", level="DEBUG")
                 if "command_" + command in self.__dict__:
                     send_debug_message("Found command " + command, level="DEBUG")
                     # calls a method with the name scheme command_nameofcommand()
@@ -320,6 +321,8 @@ class SlackResponse:
                     # calls a method with the name scheme admin_command_nameofcommand()
                     self["admin_command_" + command]()
                     count += 1
+                else:
+                    send_debug_message("Command method not found " + str(self), level="DEBUG")
         # The rest of these are just for fun
         if self._points_to_add > 0:
             self.like_message(reaction='angry')
