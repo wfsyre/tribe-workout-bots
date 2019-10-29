@@ -27,8 +27,15 @@ class SlackResponse:
         self.BIKING_POINTS = 0.5
         self.RUN_POINTS = 0.5
         self.TOURNAMENT_POINTS = 0
-        self.ASSIGNED_WORKOUT_POINTS = 2.0
+        self.WORKOUT_POINTS = 2.0
         self.CARDIO_POINTS = 0.5
+        self._WORKOUT_TYPES = ["gym", "workout", "throw", "pickup", "cardio", "track"]
+        self._WORKOUT_MAP = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
+        send_debug_message(self._WORKOUT_MAP, level="DEBUG")
+        self._COMMANDS = ["help", "since", "groupsince", "points",
+                          "leaderboard", "workouts", "talkative",
+                          "reset", "regionals", "subtract", "add",
+                          "test", "poll"]
         self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
         self._additions = []
         self._reaction_added = False
@@ -173,6 +180,9 @@ class SlackResponse:
     def parse_for_additions(self):
 
         self._points_to_add = 0
+        for item in self._WORKOUT_MAP:
+            if ("!" + item[0]) in self._lower_text:
+                send_debug_message(item, level="DEBUG")
         if '!gym' in self._lower_text:
             self._points_to_add += self.GYM_POINTS
             self._additions.append('!gym')
@@ -201,7 +211,7 @@ class SlackResponse:
             self._points_to_add += self.CARDIO_POINTS
             self._additions.append('!cardio')
         if '!workout' in self._lower_text:
-            self._points_to_add += self.ASSIGNED_WORKOUT_POINTS
+            self._points_to_add += self.WORKOUT_POINTS
             self._additions.append('!workout')
 
     def handle_db(self):
@@ -220,6 +230,9 @@ class SlackResponse:
 
     def execute_commands(self):
         count = 0
+        for command in self._COMMANDS:
+            if ("!" + command) in self._lower_text:
+                send_debug_message(command, level="DEBUG")
         if not self._repeat:
             if "!help" in self._lower_text:
                 send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
@@ -230,7 +243,7 @@ class SlackResponse:
             if "!points" in self._lower_text:
                 send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\ncardio %.1f\nworkout %.1f"
                                    % (self.GYM_POINTS, self.TRACK_POINTS, self.PICKUP_POINTS,
-                                      self.THROW_POINTS, self.CARDIO_POINTS, self.ASSIGNED_WORKOUT_POINTS), channel=self._channel)
+                                      self.THROW_POINTS, self.CARDIO_POINTS, self.WORKOUT_POINTS), channel=self._channel)
             if "!leaderboard" in self._lower_text:
                 count += 1
                 to_print = collect_stats(3, True)
@@ -256,7 +269,7 @@ class SlackResponse:
             if '!regionals' in self._lower_text:
                 count += 1
                 now = datetime.now()
-                regionals = datetime(2019, 4, 28, 8, 0, 0)
+                regionals = datetime(2020, 4, 28, 8, 0, 0)
                 until = regionals - now
                 send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
             if '!subtract' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
@@ -375,3 +388,6 @@ class SlackResponse:
 
     def __repr__(self):
         return str(self.__dict__)
+
+    def __getitem__(self, item):
+        return self[item]
