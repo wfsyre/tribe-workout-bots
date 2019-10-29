@@ -99,7 +99,7 @@ def create_poll(channel_id, title, options, ts, anon):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": options[i]
+                "text": str(i + 1) + ": " + options[i]
             }
         })
         print("votePoll:" + str(i) + ":" + str(anon))
@@ -108,7 +108,7 @@ def create_poll(channel_id, title, options, ts, anon):
                 "type": "button",
                 "text": {
                     "type": "plain_text",
-                    "text": str(i),
+                    "text": str(i + 1),
                     "emoji": True
                 },
                 "value": str(ts),
