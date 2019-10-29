@@ -106,7 +106,7 @@ def create_poll(channel_id, title, options, ts, anon):
             }
         })
         print("votePoll:" + str(i) + ":" + str(anon))
-        actions.append({
+        actions.append(
             {
                 "type": "button",
                 "text": {
@@ -117,7 +117,7 @@ def create_poll(channel_id, title, options, ts, anon):
                 "value": str(ts),
                 "action_id": "votePoll:" + str(i) + ":" + str(anon)
             }
-        })
+        )
     block.append({
         "type": "actions",
         "elements": actions
