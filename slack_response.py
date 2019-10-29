@@ -228,10 +228,9 @@ class SlackResponse:
                                    "\n!poll \"Title\" \"option 1\" ... \"option n\"",
                                    channel=self._channel, bot_name="Helper Bot")
             if "!points" in self._lower_text:
-                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\ntournament %.1f\npickup %.1f\nthrow %.1f\nswim %.1f\nbike %.1f\nrun %.1f\ncardio %.1f\nworkout %.1f\ntournament %.1f"
-                                   % (self.GYM_POINTS, self.TRACK_POINTS, self.TOURNAMENT_POINTS, self.PICKUP_POINTS,
-                                      self.THROW_POINTS, self.SWIM_POINTS, self.BIKING_POINTS, self.RUN_POINTS,
-                                      self.CARDIO_POINTS, self.ASSIGNED_WORKOUT_POINTS, self.TOURNAMENT_POINTS), channel=self._channel)
+                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\ncardio %.1f\nworkout %.1f"
+                                   % (self.GYM_POINTS, self.TRACK_POINTS, self.PICKUP_POINTS,
+                                      self.THROW_POINTS, self.CARDIO_POINTS, self.ASSIGNED_WORKOUT_POINTS), channel=self._channel)
             if "!leaderboard" in self._lower_text:
                 count += 1
                 to_print = collect_stats(3, True)
@@ -304,6 +303,7 @@ class SlackResponse:
                 anon = "anonymous" in self._lower_text[-10:]
                 add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
                 add_poll_dummy_responses(self._ts)
+                send_debug_message(options, level="DEBUG")
                 create_poll(self._channel, options[0], options[1:], self._ts, anon)
             if '!remind' in self._lower_text:
                 date = self._lower_text[-10:]
