@@ -92,9 +92,6 @@ def create_poll(channel_id, title, options, ts, anon):
                 "action_id": "deletePoll:" + str(ts),
                 "style": "danger"
             }
-        },
-        {
-            "type": "divider"
         }
     ]
     for i in range(0, len(options)):
@@ -111,7 +108,7 @@ def create_poll(channel_id, title, options, ts, anon):
                 "type": "button",
                 "text": {
                     "type": "plain_text",
-                    "text": options[i],
+                    "text": str(i),
                     "emoji": True
                 },
                 "value": str(ts),

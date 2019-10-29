@@ -78,7 +78,7 @@ class InteractiveComponentPayload:
         add_poll_reaction(ts, response_num, self._slack_id, real_name)
         if not anon:
             blocks = self._json_data['message']['blocks']
-            response_block = 2 * (int(response_num) + 1)
+            response_block = int(response_num) + 1
             current = blocks[response_block]['text']['text']
             if self._slack_id not in current:
                 blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
