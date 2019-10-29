@@ -178,41 +178,11 @@ class SlackResponse:
             self._name = ""
 
     def parse_for_additions(self):
-
         self._points_to_add = 0
         for item in self._WORKOUT_MAP:
             if ("!" + item[0]) in self._lower_text:
-                send_debug_message(item, level="DEBUG")
-        if '!gym' in self._lower_text:
-            self._points_to_add += self.GYM_POINTS
-            self._additions.append('!gym')
-        if '!track' in self._lower_text:
-            self._points_to_add += self.TRACK_POINTS
-            self._additions.append('!track')
-        if '!throw' in self._lower_text:
-            self._points_to_add += self.THROW_POINTS
-            self._additions.append('!throw')
-        if '!swim' in self._lower_text:
-            self._points_to_add += self.SWIM_POINTS
-            self._additions.append('!swim')
-        if '!pickup' in self._lower_text:
-            self._points_to_add += self.PICKUP_POINTS
-            self._additions.append('!pickup')
-        if '!bike' in self._lower_text:
-            self._points_to_add += self.BIKING_POINTS
-            self._additions.append('!bike')
-        if '!run' in self._lower_text:
-            self._points_to_add += self.BIKING_POINTS
-            self._additions.append('!run')
-        if '!tournament' in self._lower_text:
-            self._points_to_add += self.TOURNAMENT_POINTS
-            self._additions.append('!tournament')
-        if '!cardio' in self._lower_text:
-            self._points_to_add += self.CARDIO_POINTS
-            self._additions.append('!cardio')
-        if '!workout' in self._lower_text:
-            self._points_to_add += self.WORKOUT_POINTS
-            self._additions.append('!workout')
+                self._points_to_add += item[1]
+                self._additions.append('!' + item[0])
 
     def handle_db(self):
         if not self._repeat:
@@ -225,161 +195,139 @@ class SlackResponse:
             else:
                 self.like_message(reaction='skull_and_crossbones')
 
-    def isRepeat(self):
+    def add_num_posts(self):
         self._repeat = add_num_posts([self._user_id], self._event_time, self._name)
+
+    def command_help(self):
+        send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
+                           "\n!gym\n!track\n!pickup\n!throw\n!cardio\nworkout"
+                           "\n!since [YYYY-MM-DD] [type] [@name]"
+                           "\n!groupsince [YYYY-MM-DD] [type]"
+                           "\n!poll \"Title\" \"option 1\" ... \"option n\"",
+                           channel=self._channel, bot_name="Helper Bot")
+
+    def command_points(self):
+        points_string = "Point Values\n"
+        for points in self._WORKOUT_MAP:
+            points_string += ("%s: %.1f\n" % (points[0], points[1]))
+
+        send_tribe_message(points_string, channel=self._channel)
+
+    def command_leaderboard(self):
+        to_print = collect_stats(3, True)
+        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+
+    def command_workouts(self):   # display the leaderboard for who works out the most
+        to_print = collect_stats(2, True)
+        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+
+    def command_talkative(self):  # displays the leaderboard for who posts the most
+        to_print = collect_stats(1, True)
+        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+
+    def command_handsome(self):   # displays the leaderboard for who posts the most
+        to_print = collect_stats(1, True)
+        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+
+    def admin_command_reteam(self):
+        send_debug_message('re-teaming and excluding the tagged people from the leader board', level="DEBUG")
+        reteam(self._mentions)
+
+    def command_regionals(self):
+        now = datetime.now()
+        regionals = datetime(2020, 4, 28, 8, 0, 0)
+        until = regionals - now
+        send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
+
+    def admin_command_subtract(self):
+        send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]),
+                           level="INFO")
+        subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
+
+    def admin_command_reset(self):
+        to_print = collect_stats(3, True)
+        send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
+        reset_scores()
+        send_debug_message("Resetting leaderboard", level="INFO")
+
+    def admin_command_add(self):
+        send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]), level="INFO")
+        num = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
+
+    def admin_command_test(self):
+        pass
+
+    def admin_command_clearpoll(self):
+        clear_poll_data()
+
+    def command_poll(self):
+        # !poll "Title" "option 1" ... "option n"
+        quotes = self._lower_text.count("\"")
+        num_options = quotes - 2
+        start = 0
+        options = []
+        while start < len(self._text):
+            first = self._text.find("\"", start)
+            if first == -1:
+                break
+            second = self._text.find("\"", first + 1)
+            options.append(self._text[first + 1:second])
+            start = second + 1
+        anon = "anonymous" in self._lower_text[-10:]
+        add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
+        add_poll_dummy_responses(self._ts)
+        send_debug_message(options, level="DEBUG")
+        create_poll(self._channel, options[0], options[1:], self._ts, anon)
+
+    def command_since(self):
+        print("found !since")
+        # !since YYYY-MM-DD type @name
+        params = self._text.split(" ")
+        print(params)
+        workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
+        send_str = ""
+        send_str += "%d total workouts found:\n" % (len(workouts))
+        for workout in workouts:
+            print(workout)
+            send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
+            workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+        send_tribe_message(send_str, channel=self._channel)
+
+    def command_groupsince(self):
+        # groupsince YYYY-MM-DD type
+        params = self._text.split(" ")
+        print(params)
+        workouts = get_group_workouts_after_date(params[1], params[2])
+        send_str = ""
+        send_str += "%d total workouts found: \n" % (len(workouts))
+        for workout in workouts:
+            print(workout)
+            send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
+            workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+        send_tribe_message(send_str, channel=self._channel)
 
     def execute_commands(self):
         count = 0
         for command in self._COMMANDS:
             if ("!" + command) in self._lower_text:
-                send_debug_message(command, level="DEBUG")
-        if not self._repeat:
-            if "!help" in self._lower_text:
-                send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                                   "\n!gym\n!track\n!tournament\n!pickup\n!throw\n!swim\n!bike\n!run\n!cardio\nworkout\n!since [YYYY-MM-DD] [type] [@name]"
-                                   "\n!groupsince [YYYY-MM-DD] [type]"
-                                   "\n!poll \"Title\" \"option 1\" ... \"option n\"",
-                                   channel=self._channel, bot_name="Helper Bot")
-            if "!points" in self._lower_text:
-                send_tribe_message("Point Values:\ngym: %.1f\ntrack %.1f\npickup %.1f\nthrow %.1f\ncardio %.1f\nworkout %.1f"
-                                   % (self.GYM_POINTS, self.TRACK_POINTS, self.PICKUP_POINTS,
-                                      self.THROW_POINTS, self.CARDIO_POINTS, self.WORKOUT_POINTS), channel=self._channel)
-            if "!leaderboard" in self._lower_text:
-                count += 1
-                to_print = collect_stats(3, True)
-                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
-            if '!workouts' in self._lower_text:  # display the leaderboard for who works out the most
-                count += 1
-                to_print = collect_stats(2, True)
-                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
-            if '!talkative' in self._lower_text:  # displays the leaderboard for who posts the most
-                count += 1
-                to_print = collect_stats(1, True)
-                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
-            if '!handsome' in self._lower_text:  # displays the leaderboard for who posts the most
-                count += 1
-                to_print = collect_stats(1, True)
-                send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
-            if '!heatcheck' in self._lower_text:
-                count += 1
-                send_tribe_message("Kenta wins", channel=self._channel)
-            if '!reteam' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
-                send_debug_message('re-teaming and excluding the tagged people from the leader board', level="DEBUG")
-                reteam(self._mentions)
-            if '!regionals' in self._lower_text:
-                count += 1
-                now = datetime.now()
-                regionals = datetime(2020, 4, 28, 8, 0, 0)
-                until = regionals - now
-                send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
-            if '!subtract' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
-                send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]), level="INFO")
-                num = subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
-                print(num)
-                count += 1
-            if '!reset' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
-                to_print = collect_stats(3, True)
-                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
-                reset_scores()
-                send_debug_message("Resetting leaderboard", level="INFO")
-                count += 1
-            if '!silence' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
-                to_print = collect_stats(1, True)
-                send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
-                reset_talkative()
-                send_debug_message("Resetting talkative", level="INFO")
-                count += 1
-            if '!add' in self._lower_text and self._user_id in os.getenv("ADMIN_ID"):
-                send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]), level="INFO")
-                num = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
-                print(num)
-                count += 1
-            if '!test' in self._lower_text:
-                send_message(channel="#random",
-                             msg="Don't mind me, I'll just be here watching in case you need me.",
-                             bot_name="Reid Bot")
-            if '!clearpoll' in self._lower_text and self._user_id == os.getenv("ADMIN_ID"):
-                clear_poll_data()
-            if '!poll' in self._lower_text:
-                #!poll "Title" "option 1" ... "option n"
-                quotes = self._lower_text.count("\"")
-                num_options = quotes - 2
-                start = 0
-                options = []
-                while start < len(self._text):
-                    first = self._text.find("\"", start)
-                    if first == -1:
-                        break
-                    second = self._text.find("\"", first + 1)
-                    options.append(self._text[first + 1:second])
-                    start = second + 1
-                anon = "anonymous" in self._lower_text[-10:]
-                add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
-                add_poll_dummy_responses(self._ts)
-                send_debug_message(options, level="DEBUG")
-                create_poll(self._channel, options[0], options[1:], self._ts, anon)
-            if '!remind' in self._lower_text:
-                date = self._lower_text[-10:]
-                send_debug_message("reminder batch being sent for " + date, level="DEBUG")
-                unanswered = get_unanswered(date)
-                unanswered = [x[0] for x in unanswered]
-                for user_id in unanswered:
-                    im_data = open_im(user_id)
-                    if 'channel' in list(im_data.keys()):
-                        channel = im_data['channel']['id']
-                        send_message(
-                            "<@" + user_id + "> please react to the message in announcements about practice attendance",
-                            channel=channel,
-                            bot_name="Reminder Bot")
-                        send_debug_message(" Sent reminder to <@" + user_id + ">", level="DEBUG")
-            if '!attendance' in self._lower_text:
-                date = self._lower_text[-10:]
-                attendance = get_practice_attendance(date)
-                if 'failure' not in list(attendance.keys()):
-                    send_str = "practicing: " + str(attendance['playing']) + "\n"\
-                               + "drills: " + str(attendance['drills']) + "\n"\
-                               + "not playing: " + str(attendance['injured']) + "\n"\
-                               + "not attending: " + str(attendance['missing']) + "\n"\
-                               + "unanswered: " + str(attendance['unanswered']) + "\n"
-                    send_str = send_str.replace("'", '')
-                    send_tribe_message(send_str, channel=self._channel, bot_name='Attendance Bot')
-                else:
-                    send_tribe_message(
-                        "Either the date was improperly formatted or information on this date does not exist",
-                        channel=self._channel,
-                        bot_name="Reminder Bot")
-            if '!since' in self._lower_text:
-                print("found !since")
-                #!since YYYY-MM-DD type @name
-                params = self._text.split(" ")
-                print(params)
-                workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
-                send_str = ""
-                send_str += "%d total workouts found:\n" % (len(workouts))
-                for workout in workouts:
-                    print(workout)
-                    send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
-                send_tribe_message(send_str, channel=self._channel)
-            if '!groupsince' in self._lower_text:
-                print("found !groupsince")
-                #groupsince YYYY-MM-DD type
-                params = self._text.split(" ")
-                print(params)
-                workouts = get_group_workouts_after_date(params[1], params[2])
-                send_str = ""
-                send_str += "%d total workouts found: \n" % (len(workouts))
-                for workout in workouts:
-                    print(workout)
-                    send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
-                send_tribe_message(send_str, channel=self._channel)
-            if self._points_to_add > 0:
-                self.like_message(reaction='angry')
-            if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
-                self.like_message(reaction='thumbsdown')
-            if 'good bot' in self._lower_text:
-                self.like_message(reaction='woman-tipping-hand')
-            if count >= 1:
-                self.like_message(reaction='octopus')
+                if "command_" + command in self.__dict__:
+                    # calls a method with the name scheme command_nameofcommand()
+                    self["command_" + command]()
+                    count += 1
+                elif "admin_command_" + command in self.__dict__ and self._user_id in os.getenv("ADMIN_ID"):
+                    # calls a method with the name scheme admin_command_nameofcommand()
+                    self["admin_command_" + command]()
+                    count += 1
+        # The rest of these are just for fun
+        if self._points_to_add > 0:
+            self.like_message(reaction='angry')
+        if 'groupme' in self._lower_text or 'bamasecs' in self._lower_text:
+            self.like_message(reaction='thumbsdown')
+        if 'good bot' in self._lower_text:
+            self.like_message(reaction='woman-tipping-hand')
+        if count >= 1:
+            # indicates a command was seen
+            self.like_message(reaction='octopus')
 
     def like_message(self, reaction='robot_face'):
         slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
