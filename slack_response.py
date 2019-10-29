@@ -390,4 +390,4 @@ class SlackResponse:
         return str(self.__dict__)
 
     def __getitem__(self, item):
-        return self[item]
+        return self.__dict__[item]
