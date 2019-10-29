@@ -31,7 +31,7 @@ class SlackResponse:
         self.CARDIO_POINTS = 0.5
         self._WORKOUT_TYPES = ["gym", "workout", "throw", "cardio", "track"]
         self._WORKOUT_MAP = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
-        self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(x)]
+        self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(getattr(self, x))]
         send_debug_message(self._COMMANDS, level="DEBUG")
         self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
         self._additions = []
