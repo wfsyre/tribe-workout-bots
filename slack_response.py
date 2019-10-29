@@ -31,7 +31,6 @@ class SlackResponse:
         self.CARDIO_POINTS = 0.5
         self._WORKOUT_TYPES = ["gym", "workout", "throw", "pickup", "cardio", "track"]
         self._WORKOUT_MAP = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
-        send_debug_message(self._WORKOUT_MAP, level="DEBUG")
         self._COMMANDS = ["help", "since", "groupsince", "points",
                           "leaderboard", "workouts", "talkative",
                           "reset", "regionals", "subtract", "add",
@@ -311,18 +310,18 @@ class SlackResponse:
         for command in self._COMMANDS:
             if ("!" + command) in self._lower_text:
                 send_debug_message("Found a command", level="DEBUG")
-                if "command_" + command in self.__dict__:
+                if "command_" + command in dir(self):
                     send_debug_message("Found command " + command, level="DEBUG")
                     # calls a method with the name scheme command_nameofcommand()
-                    self["command_" + command]()
+                    getattr(self, "command_" + command)()
                     count += 1
-                elif "admin_command_" + command in self.__dict__ and self._user_id in os.getenv("ADMIN_ID"):
+                elif "admin_command_" + command in dir(self) and self._user_id in os.getenv("ADMIN_ID"):
                     send_debug_message("Found admin command " + command, level="DEBUG")
                     # calls a method with the name scheme admin_command_nameofcommand()
-                    self["admin_command_" + command]()
+                    getattr(self, "admin_command_" + command)()
                     count += 1
                 else:
-                    send_debug_message("Command method not found " + str(self), level="DEBUG")
+                    send_debug_message("Command method not found " + str(dir(self)), level="DEBUG")
         # The rest of these are just for fun
         if self._points_to_add > 0:
             self.like_message(reaction='angry')
