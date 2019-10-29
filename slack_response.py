@@ -29,12 +29,10 @@ class SlackResponse:
         self.TOURNAMENT_POINTS = 0
         self.WORKOUT_POINTS = 2.0
         self.CARDIO_POINTS = 0.5
-        self._WORKOUT_TYPES = ["gym", "workout", "throw", "pickup", "cardio", "track"]
+        self._WORKOUT_TYPES = ["gym", "workout", "throw", "cardio", "track"]
         self._WORKOUT_MAP = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
-        self._COMMANDS = ["help", "since", "groupsince", "points",
-                          "leaderboard", "workouts", "talkative",
-                          "reset", "regionals", "subtract", "add",
-                          "test", "poll"]
+        self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(x)]
+        send_debug_message(self._COMMANDS)
         self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
         self._additions = []
         self._reaction_added = False
