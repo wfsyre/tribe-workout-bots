@@ -311,10 +311,12 @@ class SlackResponse:
         for command in self._COMMANDS:
             if ("!" + command) in self._lower_text:
                 if "command_" + command in self.__dict__:
+                    send_debug_message("Found command " + command, level="DEBUG")
                     # calls a method with the name scheme command_nameofcommand()
                     self["command_" + command]()
                     count += 1
                 elif "admin_command_" + command in self.__dict__ and self._user_id in os.getenv("ADMIN_ID"):
+                    send_debug_message("Found admin command " + command, level="DEBUG")
                     # calls a method with the name scheme admin_command_nameofcommand()
                     self["admin_command_" + command]()
                     count += 1
