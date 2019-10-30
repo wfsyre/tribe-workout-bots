@@ -308,16 +308,16 @@ class SlackResponse:
         for command in self._COMMANDS:
             if ("!" + command[8:]) in self._lower_text:
                 send_debug_message("Found a command", level="DEBUG")
-                if "command_" + command in dir(self):
+                if command in dir(self):
                     send_debug_message("Found command " + command, level="DEBUG")
                     # calls a method with the name scheme command_nameofcommand()
-                    getattr(self, "command_" + command)()
+                    getattr(self, command)()
                     count += 1
             elif ("!" + command[13:]) in self._lower_text:
-                if "admin_command_" + command in dir(self) and self._user_id in os.getenv("ADMIN_ID"):
+                if command in dir(self) and self._user_id in os.getenv("ADMIN_ID"):
                     send_debug_message("Found admin command " + command, level="DEBUG")
                     # calls a method with the name scheme admin_command_nameofcommand()
-                    getattr(self, "admin_command_" + command)()
+                    getattr(self, command)()
                     count += 1
             else:
                 send_debug_message("Command method not found " + command[8:] + " or " + command[13:], level="DEBUG")
