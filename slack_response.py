@@ -178,8 +178,7 @@ class SlackResponse:
         self._points_to_add = 0
         send_debug_message("parsing for additions", level="DEBUG")
         for item in self._WORKOUT_MAP:
-            print(item)
-            if ("!" + item[0]) in self._lower_text:
+            if item[0] in self._lower_text:
                 send_debug_message("Adding " + item[0], level="DEBUG")
                 self._points_to_add += item[1]
                 self._additions.append('!' + item[0])
