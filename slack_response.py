@@ -176,28 +176,24 @@ class SlackResponse:
 
     def parse_for_additions(self):
         self._points_to_add = 0
-        send_debug_message("parsing for additions", level="DEBUG")
         for item in self._WORKOUT_MAP:
             if item[0] in self._lower_text:
-                send_debug_message("Adding " + item[0], level="DEBUG")
                 self._points_to_add += item[1]
                 self._additions.append('!' + item[0])
-            else:
-                send_debug_message("Not adding " + item[0], level="DEBUG")
 
     def handle_db(self):
-        if not self._repeat:
-            num = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids)
-            for i in range(len(self._all_names)):
-                for workout in self._additions:
-                    add_workout(self._all_names[i], self._all_ids[i], workout)
-            if num == len(self._all_names):
-                self.like_message()
-            else:
-                self.like_message(reaction='skull_and_crossbones')
+        print("handling db")
+        num = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids)
+        for i in range(len(self._all_names)):
+            for workout in self._additions:
+                add_workout(self._all_names[i], self._all_ids[i], workout)
+        if num == len(self._all_names):
+            self.like_message()
+        else:
+            self.like_message(reaction='skull_and_crossbones')
 
     def add_num_posts(self):
-        self._repeat = add_num_posts([self._user_id], self._event_time, self._name)
+        add_num_posts([self._user_id], self._event_time, self._name)
 
     def command_help(self):
         send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
