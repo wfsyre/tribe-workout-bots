@@ -306,21 +306,23 @@ class SlackResponse:
     def execute_commands(self):
         count = 0
         for command in self._COMMANDS:
-            if ("!" + command[8:]) in self._lower_text:
-                send_debug_message("Found a command", level="DEBUG")
+            index = command.find("command_") + 8
+            if ("!" + command[index:]) in self._lower_text and 'admin' not in command:
+                send_debug_message("Found a regular command " + command[index:], level="DEBUG")
                 if command in dir(self):
                     send_debug_message("Found command " + command, level="DEBUG")
                     # calls a method with the name scheme command_nameofcommand()
                     getattr(self, command)()
                     count += 1
-            elif ("!" + command[13:]) in self._lower_text:
+            elif ("!" + command[index:]) in self._lower_text:
+                send_debug_message("Found an admin command " + command[index:], level="DEBUG")
                 if command in dir(self) and self._user_id in os.getenv("ADMIN_ID"):
                     send_debug_message("Found admin command " + command, level="DEBUG")
                     # calls a method with the name scheme admin_command_nameofcommand()
                     getattr(self, command)()
                     count += 1
             else:
-                send_debug_message("Command method not found " + command[8:] + " or " + command[13:], level="DEBUG")
+                send_debug_message("Command method not found " + command[index:], level="DEBUG")
         # The rest of these are just for fun
         if self._points_to_add > 0:
             self.like_message(reaction='angry')
