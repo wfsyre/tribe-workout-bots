@@ -320,7 +320,7 @@ class SlackResponse:
                     getattr(self, "admin_command_" + command)()
                     count += 1
             else:
-                send_debug_message("Command method not found " + str(dir(self)), level="DEBUG")
+                send_debug_message("Command method not found " + command[8:] + " or " + command[13:], level="DEBUG")
         # The rest of these are just for fun
         if self._points_to_add > 0:
             self.like_message(reaction='angry')
