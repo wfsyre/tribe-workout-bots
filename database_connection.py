@@ -179,17 +179,16 @@ def reteam(excluded_ids):
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL(
-            "DROP TABLE IF EXISTS tribe_data_test"
+            "DROP TABLE IF EXISTS tribe_data"
         ))
         cursor.execute(sql.SQL(
-            "CREATE TABLE tribe_data_test (name text, "
+            "CREATE TABLE tribe_data (name text, "
             "num_posts smallint, "
             "num_workouts smallint, "
             "workout_score numeric(5,1), "
             "last_post date, "
             "slack_id varchar(9))"
         ))
-        print("here for real\n\n\n")
         for member in members:
             if member[0] in excluded_ids:
                 cursor.execute(sql.SQL(
