@@ -29,7 +29,7 @@ class SlackResponse:
         self.TOURNAMENT_POINTS = 0
         self.WORKOUT_POINTS = 2.0
         self.CARDIO_POINTS = 0.5
-        self._WORKOUT_TYPES = ["gym", "workout", "throw", "cardio", "track"]
+        self._WORKOUT_TYPES = ["gym", "workout", "throw", "cardio"]
         self._WORKOUT_MAP = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
         self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(getattr(self, x))]
         send_debug_message(self._COMMANDS, level="DEBUG")
@@ -197,7 +197,7 @@ class SlackResponse:
 
     def command_help(self):
         send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                           "\n!gym\n!track\n!pickup\n!throw\n!cardio\nworkout"
+                           "\n!gym\n!throw\n!cardio\nworkout"
                            "\n!since [YYYY-MM-DD] [type] [@name]"
                            "\n!groupsince [YYYY-MM-DD] [type]"
                            "\n!poll \"Title\" \"option 1\" ... \"option n\"",
