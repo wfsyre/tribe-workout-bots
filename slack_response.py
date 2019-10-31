@@ -227,7 +227,7 @@ class SlackResponse:
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
     def admin_command_reteam(self):
-        send_debug_message('re-teaming and excluding the tagged people from the leader board', level="DEBUG")
+        send_debug_message('re-teaming and excluding the tagged people from the leaderboard', level="DEBUG")
         reteam(self._mentions)
 
     def command_regionals(self):

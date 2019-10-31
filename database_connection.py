@@ -180,10 +180,10 @@ def reteam(excluded_ids):
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL(
-            "DROP TABLE IF EXISTS tribe_data"
+            "DROP TABLE IF EXISTS tribe_data_test"
         ))
         cursor.execute(sql.SQL(
-            "CREATE TABLE tribe_data (name text, "
+            "CREATE TABLE tribe_data_test (name text, "
             "num_posts smallint, "
             "num_workouts smallint, "
             "workout_score numeric(5,1), "
