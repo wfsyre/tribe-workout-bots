@@ -164,7 +164,6 @@ def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from ea
 def reteam(excluded_ids):
     info = get_group_info()
     members = [(x['id'], x['real_name']) for x in info['members'] if x['id'] != 'USLACKBOT' and not x['is_bot']]
-    print("Members:", members)
     cursor = None
     conn = None
     try:
@@ -194,15 +193,15 @@ def reteam(excluded_ids):
             if member[0] in excluded_ids:
                 cursor.execute(sql.SQL(
                     "INSERT INTO tribe_data_test (name, num_posts, num_workouts, workout_score, last_post, slack_id)"
-                    "VALUES(%s, 0, 0, -1.0, now(), %s)",
+                    "VALUES(%s, 0, 0, -1.0, now(), %s)"),
                     [member[1], member[0]]
-                ))
+                )
             else:
                 cursor.execute(sql.SQL(
                     "INSERT INTO tribe_data_test (name, num_posts, num_workouts, workout_score, last_post, slack_id)"
-                    "VALUES(%s, 0, 0, 0.0, now(), %s)",
+                    "VALUES(%s, 0, 0, 0.0, now(), %s)"),
                     [member[1], member[0]]
-                ))
+                )
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
