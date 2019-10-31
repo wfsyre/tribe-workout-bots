@@ -189,7 +189,7 @@ def reteam(excluded_ids):
             "last_post date, "
             "slack_id varchar(9))"
         ))
-        print("here")
+        print("here for real\n\n\n")
         for member in members:
             if member[0] in excluded_ids:
                 cursor.execute(sql.SQL(
