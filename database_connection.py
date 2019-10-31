@@ -164,6 +164,8 @@ def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from ea
 def reteam(excluded_ids):
     info = get_group_info()
     print(info)
+    members = [(x['id'], x['real_name']) for x in info['members'] if x['id'] != 'USLACKBOT' and not x['is_bot']]
+    print("Members:", members)
     if info:
         return
     cursor = None
