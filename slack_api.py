@@ -273,4 +273,5 @@ def send_file(path, channel):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     client = SlackClient(token=slack_token)
     res = client.api_call("files.upload", channel=channel, file=path)
+    send_debug_message("https://tribe2019-2020.slack.com/files/UP9TZ5V5M/FPR4KTDAP/file")
     print(res)
