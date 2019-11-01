@@ -17,17 +17,18 @@ def stringFromSeconds(seconds):
         return "%d days, %d hours, %d minutes, %d seconds" % (days, minutes, hours, seconds)
 
 def generate_trending_bargraph(people_counts):
-    labels = [whole_name.split(" ")[0] for whole_name in people_counts.keys()]
+    labels = list(people_counts.keys())
+    first_names = [whole_name.split(" ")[0] for whole_name in people_counts.keys()]
     values = [people_counts[x] for x in labels]
-    values, labels = (list(t) for t in zip(*sorted(zip(values, labels))))
-    x = np.arange(len(labels))
+    values, first_names = (list(t) for t in zip(*sorted(zip(values, first_names))))
+    x = np.arange(len(first_names))
     width = 0.5
     fig, ax = plt.subplots()
     rects1 = ax.bar(x, values, width)
     ax.set_ylabel('Number of Workouts')
     ax.set_title('Workouts In The Last Month')
     ax.set_xticks(x)
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(first_names)
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right', fontsize='x-small')
     plt.plot()
     file_name = "plot.png"
