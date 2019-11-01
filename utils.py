@@ -21,7 +21,7 @@ def generate_trending_bargraph(people_counts):
     values = [people_counts[x] for x in labels]
     values, labels = (list(t) for t in zip(*sorted(zip(values, labels))))
     x = np.arange(len(labels))
-    width = 0.35
+    width = 0.5
     fig, ax = plt.subplots()
     rects1 = ax.bar(x, values, width)
     ax.set_ylabel('Number of Workouts')
