@@ -232,11 +232,9 @@ class SlackResponse:
 
     def command_regionals(self):
         now = datetime.now()
-        if now.month >= 5:
-            print("using current year")
+        if (now.month >= 5 and now.day >= 5) or now.month >= 6:
             regionals = datetime(now.year + 1, 4, 28, 8, 0, 0)
         else:
-            print("using next year")
             regionals = datetime(now.year, 4, 28, 8, 0, 0)
         until = regionals - now
         send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
