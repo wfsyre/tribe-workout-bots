@@ -17,7 +17,7 @@ def stringFromSeconds(seconds):
         return "%d days, %d hours, %d minutes, %d seconds" % (days, minutes, hours, seconds)
 
 def generate_trending_bargraph(people_counts):
-    labels = [whole_name.split(" ")[0] for whole_name in people_counts.keys())]
+    labels = [whole_name.split(" ")[0] for whole_name in people_counts.keys()]
     values = [people_counts[x] for x in labels]
     values, labels = (list(t) for t in zip(*sorted(zip(values, labels))))
     x = np.arange(len(labels))
