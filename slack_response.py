@@ -1,7 +1,7 @@
 from database_connection import *
 from utils import *
 from slack_api import *
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class SlackResponse:
     # event
@@ -305,6 +305,11 @@ class SlackResponse:
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
             workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
+
+    def command_trending(self):
+        fourteen_days_ago = datetime.now() - timedelta(days=14)
+        now = datetime.now()
+        send_debug_message(str(fourteen_days_ago))
 
     def execute_commands(self):
         count = 0
