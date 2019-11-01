@@ -28,7 +28,7 @@ def generate_trending_bargraph(people_counts):
     ax.set_title('Workouts In The Last Month')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    plt.setp(ax.get_xticklabels(), rotation=60, horizontalalignment='right')
+    plt.setp(ax.get_xticklabels(), rotation=60, horizontalalignment='right', fontsize='x-small')
     plt.plot()
     file_name = "plot.png"
     plt.savefig(file_name)
