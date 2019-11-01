@@ -311,7 +311,6 @@ class SlackResponse:
             else:
                 people_counts[workout[0]] = 1
         file_name = generate_trending_bargraph(people_counts)
-        print("Directory:", os.listdir())
         send_file(file_name, self._channel)
 
     def execute_commands(self):

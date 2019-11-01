@@ -272,6 +272,6 @@ def create_calendar_poll(channel_id, title, date):
 def send_file(path, channel):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     client = SlackClient(token=slack_token)
-    res = client.api_call("files.upload", channel=channel, file=path)
+    res = client.api_call("files.upload", channel='#general', file=path)
     send_debug_message(res['file']['permalink_public'])
     print(res)
