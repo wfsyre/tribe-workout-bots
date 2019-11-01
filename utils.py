@@ -19,6 +19,7 @@ def stringFromSeconds(seconds):
 def generate_trending_bargraph(people_counts):
     labels = list(people_counts.keys())
     values = [people_counts[x] for x in labels]
+    labels, values = (list(t) for t in zip(*sorted(zip(labels, values))))
     x = np.arange(len(labels))
     width = 0.35
     fig, ax = plt.subplots()
@@ -27,9 +28,9 @@ def generate_trending_bargraph(people_counts):
     ax.set_title('Workouts In The Last Month')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
+    plt.setp(ax.get_xticklabels(), rotation=60, horizontalalignment='right')
     plt.plot()
     file_name = "plot.png"
     plt.savefig(file_name)
-    print(file_name)
     return file_name
 
