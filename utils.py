@@ -19,7 +19,7 @@ def stringFromSeconds(seconds):
 def generate_trending_bargraph(people_counts):
     labels = list(people_counts.keys())
     values = [people_counts[x] for x in labels]
-    labels, values = (list(t) for t in zip(*sorted(zip(labels, values))))
+    values, labels = (list(t) for t in zip(*sorted(zip(values, labels))))
     x = np.arange(len(labels))
     width = 0.35
     fig, ax = plt.subplots()
