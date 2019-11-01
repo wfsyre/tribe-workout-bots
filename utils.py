@@ -30,5 +30,6 @@ def generate_trending_bargraph(people_counts):
     plt.plot()
     file_name = "plot.png"
     plt.savefig(file_name)
+    print(file_name)
     return file_name
 

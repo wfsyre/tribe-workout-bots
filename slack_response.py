@@ -303,7 +303,6 @@ class SlackResponse:
 
     def command_trending(self):
         thirty_days_ago = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
-        send_debug_message(thirty_days_ago)
         workouts = get_group_workouts_after_date(thirty_days_ago, "all")
         people_counts = {}
         for workout in workouts:
@@ -311,7 +310,6 @@ class SlackResponse:
                 people_counts[workout[0]] += 1
             else:
                 people_counts[workout[0]] = 1
-        send_debug_message(str(people_counts))
         file_name = generate_trending_bargraph(people_counts)
         send_file(file_name, self._channel)
 
