@@ -1,7 +1,6 @@
 import os
 import requests
 from slackclient import SlackClient
-import slack
 
 verbosity = 1   # info lvl
 
@@ -272,5 +271,6 @@ def create_calendar_poll(channel_id, title, date):
 
 def send_file(path, channel):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
-    client = slack.WebClient(token=slack_token)
-    client.files_upload(channels=channel, file=path, title="Test")
+    client = SlackClient(token=slack_token)
+    res = client.api_call("files.upload", channel=channel, file=path)
+    print(res)
