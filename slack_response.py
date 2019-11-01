@@ -280,15 +280,12 @@ class SlackResponse:
         create_poll(self._channel, options[0], options[1:], self._ts, anon)
 
     def command_since(self):
-        print("found !since")
         # !since YYYY-MM-DD type @name
         params = self._text.split(" ")
-        print(params)
         workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
         send_str = ""
         send_str += "%d total workouts found:\n" % (len(workouts))
         for workout in workouts:
-            print(workout)
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
             workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
@@ -296,20 +293,27 @@ class SlackResponse:
     def command_groupsince(self):
         # groupsince YYYY-MM-DD type
         params = self._text.split(" ")
-        print(params)
         workouts = get_group_workouts_after_date(params[1], params[2])
         send_str = ""
         send_str += "%d total workouts found: \n" % (len(workouts))
         for workout in workouts:
-            print(workout)
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
             workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
 
     def command_trending(self):
-        fourteen_days_ago = datetime.now() - timedelta(days=14)
-        now = datetime.now()
-        send_debug_message(str(fourteen_days_ago))
+        thirty_days_ago = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        send_debug_message(thirty_days_ago)
+        workouts = get_group_workouts_after_date(thirty_days_ago, "all")
+        people_counts = {}
+        for workout in workouts:
+            if workout[0] in people_counts:
+                people_counts[workout[0]] += 1
+            else:
+                people_counts[workout[0]] = 1
+        send_debug_message(str(people_counts))
+        file_name = generate_trending_bargraph(people_counts)
+        send_file(file_name, self._channel)
 
     def execute_commands(self):
         count = 0

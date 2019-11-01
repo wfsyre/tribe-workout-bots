@@ -569,10 +569,16 @@ def get_group_workouts_after_date(date, workout_type):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL(
-            "SELECT * from tribe_workouts WHERE workout_date BETWEEN %s and now() and workout_type=%s"),
-            [date, "!" + workout_type])
-        workouts = cursor.fetchall()
+        if workout_type in "all":
+            cursor.execute(sql.SQL(
+                "SELECT * from tribe_workouts WHERE workout_date BETWEEN %s and now()"),
+                [date])
+            workouts = cursor.fetchall()
+        else: 
+            cursor.execute(sql.SQL(
+                "SELECT * from tribe_workouts WHERE workout_date BETWEEN %s and now() and workout_type=%s"),
+                [date, "!" + workout_type])
+            workouts = cursor.fetchall()
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")

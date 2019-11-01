@@ -268,3 +268,8 @@ def create_calendar_poll(channel_id, title, date):
 
     })
     sc.api_call("chat.postMessage", channel=channel_id, blocks=block)
+
+def send_file(path, channel):
+    slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
+    sc = SlackClient(slack_token)
+    sc.api_call("files.upload", channel=channel, file=path)
