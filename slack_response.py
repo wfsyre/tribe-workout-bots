@@ -138,6 +138,11 @@ class SlackResponse:
 
             self.match_names_to_ids()
             self._lower_text = self._text.lower()
+
+            # Get rid of "smart quotes"
+            self._lower_text = self._lower_text.replace("\“", "\"")
+            self._lower_text = self._lower_text.replace("\”", "\"")
+
             self.parse_for_additions()
 
     def parse_text_for_mentions(self):
