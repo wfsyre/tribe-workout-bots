@@ -32,7 +32,6 @@ class SlackResponse:
         self._WORKOUT_TYPES = ["gym", "workout", "throw", "cardio"]
         self._WORKOUT_MAP = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
         self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(getattr(self, x))]
-        send_debug_message(self._COMMANDS, level="DEBUG")
         self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
         self._additions = []
         self._reaction_added = False
@@ -266,8 +265,8 @@ class SlackResponse:
         # Get rid of "smart quotes"
         self._lower_text = self._lower_text.replace("“", "\"")
         self._lower_text = self._lower_text.replace("”", "\"")
-        print(self._lower_text)
         quotes = self._lower_text.count("\"")
+        print(quotes)
         num_options = quotes - 2
         start = 0
         options = []
@@ -279,6 +278,7 @@ class SlackResponse:
             options.append(self._text[first + 1:second])
             start = second + 1
         anon = "anonymous" in self._lower_text[-10:]
+        print(options)
         add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
         add_poll_dummy_responses(self._ts)
         send_debug_message(options, level="DEBUG")
