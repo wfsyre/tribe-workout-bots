@@ -263,11 +263,9 @@ class SlackResponse:
     def command_poll(self):
         # !poll "Title" "option 1" ... "option n"
         # Get rid of "smart quotes"
-        self._lower_text = self._lower_text.replace("“", "\"")
-        self._lower_text = self._lower_text.replace("”", "\"")
-        quotes = self._lower_text.count("\"")
-        print(quotes)
-        num_options = quotes - 2
+        self._text = self._text.replace("“", "\"")
+        self._text = self._text.replace("”", "\"")
+        quotes = self._text.count("\"")
         start = 0
         options = []
         while start < len(self._text):
@@ -278,7 +276,6 @@ class SlackResponse:
             options.append(self._text[first + 1:second])
             start = second + 1
         anon = "anonymous" in self._lower_text[-10:]
-        print(options)
         add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
         add_poll_dummy_responses(self._ts)
         send_debug_message(options, level="DEBUG")
