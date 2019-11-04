@@ -139,11 +139,6 @@ class SlackResponse:
             self.match_names_to_ids()
             self._lower_text = self._text.lower()
 
-            # Get rid of "smart quotes"
-            self._lower_text = self._lower_text.replace("“", "\"")
-            self._lower_text = self._lower_text.replace("”", "\"")
-            print(self._lower_text)
-
             self.parse_for_additions()
 
     def parse_text_for_mentions(self):
@@ -268,6 +263,10 @@ class SlackResponse:
 
     def command_poll(self):
         # !poll "Title" "option 1" ... "option n"
+        # Get rid of "smart quotes"
+        self._lower_text = self._lower_text.replace("“", "\"")
+        self._lower_text = self._lower_text.replace("”", "\"")
+        print(self._lower_text)
         quotes = self._lower_text.count("\"")
         num_options = quotes - 2
         start = 0
