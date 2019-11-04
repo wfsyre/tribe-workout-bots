@@ -140,8 +140,9 @@ class SlackResponse:
             self._lower_text = self._text.lower()
 
             # Get rid of "smart quotes"
-            self._lower_text = self._lower_text.replace("\“", "\"")
-            self._lower_text = self._lower_text.replace("\”", "\"")
+            self._lower_text = self._lower_text.replace("“", "\"")
+            self._lower_text = self._lower_text.replace("”", "\"")
+            print(self._lower_text)
 
             self.parse_for_additions()
 
