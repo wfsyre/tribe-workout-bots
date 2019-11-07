@@ -572,8 +572,7 @@ def get_group_workouts_after_date(date, workout_type):
         if workout_type in "all":
             if date is None:
                 cursor.execute(sql.SQL(
-                    "SELECT * from tribe_workouts"),
-                    [date])
+                    "SELECT * from tribe_workouts"))
                 workouts = cursor.fetchall()
             else:
                 cursor.execute(sql.SQL(
@@ -584,7 +583,7 @@ def get_group_workouts_after_date(date, workout_type):
             if date is None:
                 cursor.execute(sql.SQL(
                     "SELECT * from tribe_workouts WHERE workout_type=%s"),
-                    [date, "!" + workout_type])
+                    ["!" + workout_type])
                 workouts = cursor.fetchall()
             else:
                 cursor.execute(sql.SQL(
