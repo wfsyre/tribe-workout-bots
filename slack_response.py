@@ -319,15 +319,12 @@ class SlackResponse:
     def command_whenis(self):
         action = self._lower_text.split(" ")[1]
         workouts = get_group_workouts_after_date(None, action)
-        day_counts = {}
         days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        day_counts = {x: 0 for x in days}
         for name, slack_id, type, date in workouts:
             day_of_the_week = date.strftime("%a")
-            if day_of_the_week in day_counts:
-                day_counts[day_of_the_week] += 1
-            else:
-                day_counts[day_of_the_week] = 1
-        print(day_counts)
+            day_counts[day_of_the_week] += 1
+
         file_name = generate_bargraph(labels=days,
                                       values=[day_counts[x] for x in days],
                                       title="When does Tribe %s?" % action,
