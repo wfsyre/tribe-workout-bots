@@ -179,7 +179,7 @@ class SlackResponse:
         for item in self._WORKOUT_MAP:
             if item[0] in self._lower_text:
                 self._points_to_add += item[1]
-                self._additions.append('!' + item[0])
+                self._additions.append(item[0])
 
     def handle_db(self):
         print("handling db")
@@ -319,8 +319,13 @@ class SlackResponse:
         params = self._text.split(" ")
         since_date = params[1]
         workouts = get_group_workouts_after_date(since_date, 'all')
-        for workout in workouts:
-            print(workout)
+        leaderboard = {}
+        for name, slack_id, type, time in workouts:
+            if slack_id in leaderboard:
+                leaderboard[slack_id] += self._WORKOUT_MAP[type]
+            else:
+                leaderboard[slack_id] = self._WORKOUT_MAP[type]
+        print(leaderboard)
 
 
     def execute_commands(self):
