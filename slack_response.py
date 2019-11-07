@@ -305,8 +305,8 @@ class SlackResponse:
         send_tribe_message(send_str, channel=self._channel)
 
     def command_trending(self):
-        thirty_days_ago = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
-        workouts = get_group_workouts_after_date(thirty_days_ago, "all")
+        some_days_ago = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
+        workouts = get_group_workouts_after_date(some_days_ago, "all")
         people_counts = {}
         for workout in workouts:
             if workout[0] in people_counts:
