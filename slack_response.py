@@ -315,6 +315,14 @@ class SlackResponse:
         file_name = generate_trending_bargraph(people_counts)
         send_file(file_name, self._channel)
 
+    def admin_command_recount(self):
+        params = self._text.split(" ")
+        since_date = params[1]
+        workouts = get_group_workouts_after_date(since_date, 'all')
+        for workout in workouts:
+            print(workout)
+
+
     def execute_commands(self):
         count = 0
         for command in self._COMMANDS:
