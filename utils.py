@@ -37,13 +37,14 @@ def generate_trending_bargraph(people_counts):
     return file_name
 
 
-def generate_bargraph(labels, values, x_label, y_label):
+def generate_bargraph(labels, values, title, x_label, y_label):
     x = np.arange(len(labels))
     width = 0.5
     fig, ax = plt.subplots()
     rects1 = ax.bar(x, values, width)
     ax.set_ylabel(y_label)
-    ax.set_title(x_label)
+    ax.set_xlabel(x_label)
+    ax.set_title(title)
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right', fontsize='x-small')

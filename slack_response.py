@@ -329,6 +329,7 @@ class SlackResponse:
         print(day_counts)
         file_name = generate_bargraph(labels=days,
                                       values=[day_counts[x] for x in days],
+                                      title="When does Tribe workout?",
                                       x_label="Day of the Week",
                                       y_label="Number of workouts")
         send_file(file_name, self._channel)
