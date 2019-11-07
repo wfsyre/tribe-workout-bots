@@ -30,7 +30,8 @@ class SlackResponse:
         self.WORKOUT_POINTS = 2.0
         self.CARDIO_POINTS = 0.5
         self._WORKOUT_TYPES = ["gym", "workout", "throw", "cardio"]
-        self._WORKOUT_MAP = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
+        self._WORKOUT_TUPLES = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
+        self._WORKOUT_MAP = {"!" + x: self[x.upper() + '_POINTS'] for x in self._WORKOUT_TYPES}
         self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(getattr(self, x))]
         self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
         self._additions = []
@@ -176,7 +177,7 @@ class SlackResponse:
 
     def parse_for_additions(self):
         self._points_to_add = 0
-        for item in self._WORKOUT_MAP:
+        for item in self._WORKOUT_TUPLES:
             if item[0] in self._lower_text:
                 self._points_to_add += item[1]
                 self._additions.append(item[0])
@@ -205,7 +206,7 @@ class SlackResponse:
 
     def command_points(self):
         points_string = "Point Values\n"
-        for points in self._WORKOUT_MAP:
+        for points in self._WORKOUT_TUPLES:
             points_string += ("%s: %.1f\n" % (points[0], points[1]))
 
         send_tribe_message(points_string, channel=self._channel)
