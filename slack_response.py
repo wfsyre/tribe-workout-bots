@@ -290,7 +290,7 @@ class SlackResponse:
         send_str += "%d total workouts found:\n" % (len(workouts))
         for workout in workouts:
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
-            workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                        workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
 
     def command_groupsince(self):
@@ -301,7 +301,7 @@ class SlackResponse:
         send_str += "%d total workouts found: \n" % (len(workouts))
         for workout in workouts:
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
-            workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                        workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
 
     def command_trending(self):
@@ -326,8 +326,8 @@ class SlackResponse:
                 leaderboard[slack_id] += self._WORKOUT_MAP[type]
             else:
                 leaderboard[slack_id] = self._WORKOUT_MAP[type]
-        print(leaderboard)
-
+        set_leaderboard_from_dict(leaderboard)
+        self.command_leaderboard()
 
     def execute_commands(self):
         count = 0
