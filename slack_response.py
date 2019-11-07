@@ -316,6 +316,17 @@ class SlackResponse:
         file_name = generate_trending_bargraph(people_counts)
         send_file(file_name, self._channel)
 
+    def command_whenisall(self):
+        workouts = get_group_workouts_after_date(None, "all")
+        day_counts = {}
+        for name, slack_id, type, date in workouts:
+            if date.day in day_counts:
+                day_counts[date.day] += 1
+            else:
+                day_counts[date.day] = 1
+        file_name = generate_bargraph(day_counts, x_label="Day of the Week", y_label="Number of workouts")
+        send_file(file_name, self._channel)
+
     def admin_command_recount(self):
         params = self._text.split(" ")
         since_date = params[1]

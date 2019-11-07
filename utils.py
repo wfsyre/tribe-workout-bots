@@ -16,6 +16,7 @@ def stringFromSeconds(seconds):
         seconds = fracMinutes * 60
         return "%d days, %d hours, %d minutes, %d seconds" % (days, minutes, hours, seconds)
 
+
 def generate_trending_bargraph(people_counts):
     labels = list(people_counts.keys())
     first_names = [whole_name.split(" ")[0] for whole_name in people_counts.keys()]
@@ -35,3 +36,20 @@ def generate_trending_bargraph(people_counts):
     plt.savefig(file_name)
     return file_name
 
+
+def generate_bargraph(counts, x_label, y_label):
+    labels = list(counts.keys())
+    values = [counts[x] for x in labels]
+    x = np.arange(len(labels))
+    width = 0.5
+    fig, ax = plt.subplots()
+    rects1 = ax.bar(x, values, width)
+    ax.set_ylabel(y_label)
+    ax.set_title(x_label)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right', fontsize='x-small')
+    plt.plot()
+    file_name = "plot.png"
+    plt.savefig(file_name)
+    return file_name
