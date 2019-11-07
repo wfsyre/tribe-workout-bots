@@ -37,9 +37,7 @@ def generate_trending_bargraph(people_counts):
     return file_name
 
 
-def generate_bargraph(counts, x_label, y_label):
-    labels = list(counts.keys())
-    values = [counts[x] for x in labels]
+def generate_bargraph(labels, values, x_label, y_label):
     x = np.arange(len(labels))
     width = 0.5
     fig, ax = plt.subplots()
