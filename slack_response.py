@@ -201,7 +201,8 @@ class SlackResponse:
                            "\n!gym\n!throw\n!cardio\nworkout"
                            "\n!since [YYYY-MM-DD] [type] [@name]"
                            "\n!groupsince [YYYY-MM-DD] [type]"
-                           "\n!poll \"Title\" \"option 1\" ... \"option n\"",
+                           "\n!poll \"Title\" \"option 1\" ... \"option n\""
+                           "\n!whenis [workout_type]",
                            channel=self._channel, bot_name="Helper Bot")
 
     def command_points(self):
