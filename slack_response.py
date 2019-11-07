@@ -334,6 +334,24 @@ class SlackResponse:
                                       y_label="Number of workouts")
         send_file(file_name, self._channel)
 
+    def command_whenisgym(self):
+        workouts = get_group_workouts_after_date(None, "gym")
+        day_counts = {}
+        days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        for name, slack_id, type, date in workouts:
+            day_of_the_week = date.strftime("%a")
+            if day_of_the_week in day_counts:
+                day_counts[day_of_the_week] += 1
+            else:
+                day_counts[day_of_the_week] = 1
+        print(day_counts)
+        file_name = generate_bargraph(labels=days,
+                                      values=[day_counts[x] for x in days],
+                                      title="When does Tribe Gym?",
+                                      x_label="Day of the Week",
+                                      y_label="Number of gyms")
+        send_file(file_name, self._channel)
+
     def admin_command_recount(self):
         params = self._text.split(" ")
         since_date = params[1]
