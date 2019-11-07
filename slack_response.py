@@ -319,11 +319,14 @@ class SlackResponse:
     def command_whenisall(self):
         workouts = get_group_workouts_after_date(None, "all")
         day_counts = {}
+        days=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         for name, slack_id, type, date in workouts:
-            if date.day in day_counts:
-                day_counts[date.day] += 1
+            day_of_the_week = date.strftime("%a")
+            if day_of_the_week in day_counts:
+                day_counts[day_of_the_week] += 1
             else:
-                day_counts[date.day] = 1
+                day_counts[day_of_the_week] = 1
+        print(day_counts)
         file_name = generate_bargraph(day_counts, x_label="Day of the Week", y_label="Number of workouts")
         send_file(file_name, self._channel)
 
