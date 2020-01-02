@@ -228,10 +228,6 @@ class SlackResponse:
         to_print = collect_stats(1, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
-    def admin_command_reteam(self):
-        send_debug_message('re-teaming and excluding the tagged people from the leaderboard', level="DEBUG")
-        reteam(self._mentions)
-
     def command_regionals(self):
         now = datetime.now()
         if (now.month >= 5 and now.day >= 5) or now.month >= 6:
@@ -241,36 +237,10 @@ class SlackResponse:
         until = regionals - now
         send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
 
-    def admin_command_subtract(self):
-        send_debug_message("SUBTRACTING: " + self._lower_text[-3:] + " FROM: " + str(self._all_names[:-1]),
-                           level="INFO")
-        subtract_from_db(self._all_names[:-1], float(self._lower_text[-3:]), self._all_ids[:-1])
-
-    def admin_command_reset(self):
-        to_print = collect_stats(3, True)
-        send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
-        reset_scores()
-        send_debug_message("Resetting leaderboard", level="INFO")
-
-    def admin_command_add(self):
-        send_debug_message("ADDING: " + self._lower_text[-3:] + " TO: " + str(self._all_names[:-1]), level="INFO")
-        num = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
-
-    def admin_command_test(self):
-        pass
-
-    def admin_command_yaml(self):
-        pass
-
-    def admin_command_clearpoll(self):
-        clear_poll_data()
-
     def command_poll(self):
         # !poll "Title" "option 1" ... "option n"
-        # Get rid of "smart quotes"
-        self._text = self._text.replace("“", "\"")
-        self._text = self._text.replace("”", "\"")
-        quotes = self._text.count("\"")
+        self._text = self._text.replace("“", "\"")  # Get rid of "smart quotes"
+        self._text = self._text.replace("”", "\"")  # Get rid of "smart quotes"
         start = 0
         options = []
         while start < len(self._text):
@@ -301,8 +271,10 @@ class SlackResponse:
         # groupsince YYYY-MM-DD type
         params = self._text.split(" ")
         workouts = get_group_workouts_after_date(params[1], params[2])
-        send_str = ""
-        send_str += "%d total workouts found: \n" % (len(workouts))
+        # scrub subtractions and additions
+        workouts = [[name, slack_id, workout_type, date] for (name, slack_id, workout_type, date) in workouts if
+                    "!" in workout_type]
+        send_str = "%d total workouts found: \n" % (len(workouts))
         for workout in workouts:
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
                         workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
@@ -312,15 +284,27 @@ class SlackResponse:
         some_days_ago = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
         workouts = get_group_workouts_after_date(some_days_ago, "all")
         people_counts = {}
-        for workout in workouts:
-            if workout[0] in people_counts:
-                people_counts[workout[0]] += 1
+        for name, slack_id, workout_type, date in workouts:
+            if name in people_counts:
+                if "!" not in workout_type: #found a subtraction or addition
+                    if float(workout_type) > 0:
+                        people_counts[name] += 1
+                    else:
+                        people_counts[name] -= 1
+                else:
+                    people_counts[name] += 1
             else:
-                people_counts[workout[0]] = 1
+                if "!" not in workout_type: #found a subtraction or addition
+                    if float(workout_type) > 0:
+                        people_counts[name] = 1
+                    else:
+                        people_counts[name] = -1
+                else:
+                    people_counts[name] = 1
         file_name = generate_trending_bargraph(people_counts)
         send_file(file_name, self._channel)
 
-    def command_whenis(self):
+    def command_daygraph(self):
         action = self._lower_text.split(" ")[1]
         workouts = get_group_workouts_after_date(None, action)
         days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -336,16 +320,67 @@ class SlackResponse:
                                       y_label="Number of " + action)
         send_file(file_name, self._channel)
 
+    def admin_command_reteam(self):
+        send_debug_message('re-teaming and excluding the tagged people from the leaderboard', level="DEBUG")
+        reteam(self._mentions)
+
+    def admin_command_subtract(self):
+        # !subtract @name1 @name2 ... 2.5
+        people_to_subtract = self._all_names[:-1]
+        subtraction = self._lower_text[-3:]
+        try:
+            subtraction = float(subtraction)
+            send_debug_message("SUBTRACTING: " + str(subtraction) + " FROM: " + str(people_to_subtract), level="INFO")
+            num = subtract_from_db(self._all_names[:-1], self._lower_text[-3:], self._all_ids[:-1])
+            for name, id in zip(self._all_names[:-1], self._all_ids[:-1]):
+                add_workout(name, id, "-" + str(subtraction))
+        except:
+            send_debug_message("Invalid subtraction value. Must be a float of the form X.X", level="ERROR")
+
+    def admin_command_reset(self):
+        to_print = collect_stats(3, True)
+        send_tribe_message(to_print, channel=self._channel, bot_name=self._name)
+        reset_scores()
+        send_debug_message("Resetting leaderboard", level="INFO")
+
+    def admin_command_add(self):
+        # !add @name1 @name2 ... 2.5
+        people_to_add = self._all_names[:-1]
+        addition = self._lower_text[-3:]
+        try:
+            addition = float(addition)
+            send_debug_message("ADDING: " + str(addition) + " TO: " + str(people_to_add), level="INFO")
+            num = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
+            for name, id in zip(self._all_names[:-1], self._all_ids[:-1]):
+                add_workout(name, id, str(addition))
+        except:
+            send_debug_message("Invalid addition value. Must be a float of the form X.X", level="ERROR")
+
+    def admin_command_test(self):
+        pass
+
+    def admin_command_yaml(self):
+        pass
+
+    def admin_command_clearpoll(self):
+        clear_poll_data()
+
     def admin_command_recount(self):
         params = self._text.split(" ")
         since_date = params[1]
         workouts = get_group_workouts_after_date(since_date, 'all')
         leaderboard = {}
         for name, slack_id, type, time in workouts:
-            if slack_id in leaderboard:
-                leaderboard[slack_id] += self._WORKOUT_MAP[type]
+            if type in self._WORKOUT_MAP:   # additions and subtractions are not in the workout map and must be handled differently
+                if slack_id in leaderboard:
+                    leaderboard[slack_id] += float(type)
+                else:
+                    leaderboard[slack_id] = float(type)
             else:
-                leaderboard[slack_id] = self._WORKOUT_MAP[type]
+                if slack_id in leaderboard:
+                    leaderboard[slack_id] += self._WORKOUT_MAP[type]
+                else:
+                    leaderboard[slack_id] = self._WORKOUT_MAP[type]
         set_leaderboard_from_dict(leaderboard)
         self.command_leaderboard()
 
