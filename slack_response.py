@@ -259,6 +259,9 @@ class SlackResponse:
     def admin_command_test(self):
         pass
 
+    def admin_command_yaml(self):
+        pass
+
     def admin_command_clearpoll(self):
         clear_poll_data()
 

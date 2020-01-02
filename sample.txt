@@ -1,0 +1,74 @@
+  - name: logi
+    src: "https://emoji.slack-edge.com/TAPB05NCT/logi/410973fdb925703c.png"
+  - name: max
+    src: "https://emoji.slack-edge.com/TAPB05NCT/max/184d7e84a80fbeb5.png"
+  - name: conni
+    src: "https://emoji.slack-edge.com/TAPB05NCT/conni/c7c008a6027a77e1.png"
+  - name: math
+    src: "https://emoji.slack-edge.com/TAPB05NCT/math/140028351840a212.png"
+  - name: arf
+    src: "https://emoji.slack-edge.com/TAPB05NCT/arf/9e3b7d1e435900c5.png"
+  - name: coffeeparrot
+    src: "https://emoji.slack-edge.com/TAPB05NCT/coffeeparrot/53848199e5b0bd66.gif"
+  - name: frisbee
+    src: "https://emoji.slack-edge.com/TAPB05NCT/frisbee/d67f1a766b31cb97.jpg"
+  - name: jeff
+    src: "https://emoji.slack-edge.com/TAPB05NCT/jeff/c60435032e6eae5e.jpg"
+  - name: cheedconfused
+    src: "https://emoji.slack-edge.com/TAPB05NCT/cheedconfused/fd269eaee6de2ec4.jpg"
+  - name: cheedisgust
+    src: "https://emoji.slack-edge.com/TAPB05NCT/cheedisgust/934994692b858c7a.jpg"
+  - name: scoop
+    src: "https://emoji.slack-edge.com/TAPB05NCT/scoop/40baafdae32054df.png"
+  - name: yea
+    src: "https://emoji.slack-edge.com/TAPB05NCT/yea/3903dc2b185acaa9.png"
+  - name: nay
+    src: "https://emoji.slack-edge.com/TAPB05NCT/nay/0caec258aa9ccff9.png"
+  - name: stop
+    src: "https://emoji.slack-edge.com/TAPB05NCT/stop/74e49ec802ebb85c.png"
+  - name: alienjeff
+    src: "https://emoji.slack-edge.com/TAPB05NCT/alienjeff/bde5014509846354.jpg"
+  - name: logan
+    src: "https://emoji.slack-edge.com/TAPB05NCT/logan/95992a1fb738e9a3.png"
+  - name: sexy_nish
+    src: "https://emoji.slack-edge.com/TAPB05NCT/sexy_nish/b5983c188ef97c31.png"
+  - name: wack
+    src: "https://emoji.slack-edge.com/TAPB05NCT/wack/1fc799c097af9265.png"
+  - name: dadams
+    src: "https://emoji.slack-edge.com/TAPB05NCT/dadams/7f640f2af317ae5f.jpg"
+  - name: max_fist
+    src: "https://emoji.slack-edge.com/TAPB05NCT/max_fist/1c4149b1ee04e110.jpg"
+  - name: arthur-flick
+    src: "https://emoji.slack-edge.com/TAPB05NCT/arthur-flick/1463baa9332ada40.png"
+  - name: deaddog
+    src: "https://emoji.slack-edge.com/TAPB05NCT/deaddog/61ffb2d26b0e8aca.jpg"
+  - name: max_2chin
+    src: "https://emoji.slack-edge.com/TAPB05NCT/max_2chin/c5e5734a6540de9a.jpg"
+  - name: miggy
+    src: "https://emoji.slack-edge.com/TAPB05NCT/miggy/24764e218b143b37.jpg"
+  - name: math_wahwah
+    src: "https://emoji.slack-edge.com/TAPB05NCT/math_wahwah/b5911935ee3393bb.jpg"
+  - name: cheed_wahwah
+    src: "https://emoji.slack-edge.com/TAPB05NCT/cheed_wahwah/a7d92ca48e495358.gif"
+  - name: cheed_cheese
+    src: "https://emoji.slack-edge.com/TAPB05NCT/cheed_cheese/ab84606c7ca8a971.gif"
+  - name: micah_sk8terboi
+    src: "https://emoji.slack-edge.com/TAPB05NCT/micah_sk8terboi/52160a954e58995e.gif"
+  - name: micah_sombrero
+    src: "https://emoji.slack-edge.com/TAPB05NCT/micah_sombrero/e9c2522ea0bb88f9.gif"
+  - name: micah_wahwah
+    src: "https://emoji.slack-edge.com/TAPB05NCT/micah_wahwah/e8b1912afd1dceaf.gif"
+  - name: button
+    src: "https://emoji.slack-edge.com/TAPB05NCT/button/18fb48c523c5c038.png"
+  - name: markhead
+    src: "https://emoji.slack-edge.com/TAPB05NCT/markhead/945dc14420020e50.png"
+  - name: smock
+    src: "https://emoji.slack-edge.com/TAPB05NCT/smock/84f497041a3cf5e3.png"
+  - name: chris
+    src: "https://emoji.slack-edge.com/TAPB05NCT/chris/7b49baaedcf689cf.png"
+  - name: ultiworld
+    src: "https://emoji.slack-edge.com/TAPB05NCT/ultiworld/c352b9983ea66184.jpg"
+  - name: conorcoresqueeze
+    src: "https://emoji.slack-edge.com/TAPB05NCT/conorcoresqueeze/7625cab27cd8a94a.png"
+  - name: marky_mark
+    src: "https://emoji.slack-edge.com/TAPB05NCT/marky_mark/157cc826a6ee4bb1.jpg"
