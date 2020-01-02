@@ -1,7 +1,7 @@
 from database_connection import *
 from utils import *
 from slack_api import *
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class SlackResponse:
     # event
@@ -30,9 +30,9 @@ class SlackResponse:
         self.WORKOUT_POINTS = 2.0
         self.CARDIO_POINTS = 0.5
         self._WORKOUT_TYPES = ["gym", "workout", "throw", "cardio"]
-        self._WORKOUT_MAP = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
+        self._WORKOUT_TUPLES = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
+        self._WORKOUT_MAP = {"!" + x: self[x.upper() + '_POINTS'] for x in self._WORKOUT_TYPES}
         self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(getattr(self, x))]
-        send_debug_message(self._COMMANDS, level="DEBUG")
         self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
         self._additions = []
         self._reaction_added = False
@@ -69,7 +69,7 @@ class SlackResponse:
             self._previous_message = self._event['previous_message']
             self._bot = True
             self._channel = self._event['channel']
-            if self._channel != 'GBR6LQBMJ':
+            if self._channel not in 'GPA9BE3DL':
                 send_debug_message("Found a deleted message in channel %s written by %s" % (
                 self._channel, self._previous_message['user']), level="INFO")
                 send_debug_message(self._previous_message['text'], level="INFO")
@@ -138,6 +138,7 @@ class SlackResponse:
 
             self.match_names_to_ids()
             self._lower_text = self._text.lower()
+
             self.parse_for_additions()
 
     def parse_text_for_mentions(self):
@@ -176,10 +177,10 @@ class SlackResponse:
 
     def parse_for_additions(self):
         self._points_to_add = 0
-        for item in self._WORKOUT_MAP:
+        for item in self._WORKOUT_TUPLES:
             if item[0] in self._lower_text:
                 self._points_to_add += item[1]
-                self._additions.append('!' + item[0])
+                self._additions.append(item[0])
 
     def handle_db(self):
         print("handling db")
@@ -200,12 +201,13 @@ class SlackResponse:
                            "\n!gym\n!throw\n!cardio\nworkout"
                            "\n!since [YYYY-MM-DD] [type] [@name]"
                            "\n!groupsince [YYYY-MM-DD] [type]"
-                           "\n!poll \"Title\" \"option 1\" ... \"option n\"",
+                           "\n!poll \"Title\" \"option 1\" ... \"option n\""
+                           "\n!whenis [workout_type]",
                            channel=self._channel, bot_name="Helper Bot")
 
     def command_points(self):
         points_string = "Point Values\n"
-        for points in self._WORKOUT_MAP:
+        for points in self._WORKOUT_TUPLES:
             points_string += ("%s: %.1f\n" % (points[0], points[1]))
 
         send_tribe_message(points_string, channel=self._channel)
@@ -232,11 +234,9 @@ class SlackResponse:
 
     def command_regionals(self):
         now = datetime.now()
-        if now.month >= 5:
-            print("using current year")
+        if (now.month >= 5 and now.day >= 5) or now.month >= 6:
             regionals = datetime(now.year + 1, 4, 28, 8, 0, 0)
         else:
-            print("using next year")
             regionals = datetime(now.year, 4, 28, 8, 0, 0)
         until = regionals - now
         send_tribe_message("regionals is in " + stringFromSeconds(until.total_seconds()), channel=self._channel)
@@ -267,8 +267,10 @@ class SlackResponse:
 
     def command_poll(self):
         # !poll "Title" "option 1" ... "option n"
-        quotes = self._lower_text.count("\"")
-        num_options = quotes - 2
+        # Get rid of "smart quotes"
+        self._text = self._text.replace("“", "\"")
+        self._text = self._text.replace("”", "\"")
+        quotes = self._text.count("\"")
         start = 0
         options = []
         while start < len(self._text):
@@ -285,31 +287,67 @@ class SlackResponse:
         create_poll(self._channel, options[0], options[1:], self._ts, anon)
 
     def command_since(self):
-        print("found !since")
         # !since YYYY-MM-DD type @name
         params = self._text.split(" ")
-        print(params)
         workouts = get_workouts_after_date(params[1], params[2], params[3][2: -1])
         send_str = ""
         send_str += "%d total workouts found:\n" % (len(workouts))
         for workout in workouts:
-            print(workout)
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
-            workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                        workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
 
     def command_groupsince(self):
         # groupsince YYYY-MM-DD type
         params = self._text.split(" ")
-        print(params)
         workouts = get_group_workouts_after_date(params[1], params[2])
         send_str = ""
         send_str += "%d total workouts found: \n" % (len(workouts))
         for workout in workouts:
-            print(workout)
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
-            workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                        workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
+
+    def command_trending(self):
+        some_days_ago = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
+        workouts = get_group_workouts_after_date(some_days_ago, "all")
+        people_counts = {}
+        for workout in workouts:
+            if workout[0] in people_counts:
+                people_counts[workout[0]] += 1
+            else:
+                people_counts[workout[0]] = 1
+        file_name = generate_trending_bargraph(people_counts)
+        send_file(file_name, self._channel)
+
+    def command_whenis(self):
+        action = self._lower_text.split(" ")[1]
+        workouts = get_group_workouts_after_date(None, action)
+        days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        day_counts = {x: 0 for x in days}
+        for name, slack_id, type, date in workouts:
+            day_of_the_week = date.strftime("%a")
+            day_counts[day_of_the_week] += 1
+
+        file_name = generate_bargraph(labels=days,
+                                      values=[day_counts[x] for x in days],
+                                      title="When does Tribe %s?" % action,
+                                      x_label="Day of the Week",
+                                      y_label="Number of " + action)
+        send_file(file_name, self._channel)
+
+    def admin_command_recount(self):
+        params = self._text.split(" ")
+        since_date = params[1]
+        workouts = get_group_workouts_after_date(since_date, 'all')
+        leaderboard = {}
+        for name, slack_id, type, time in workouts:
+            if slack_id in leaderboard:
+                leaderboard[slack_id] += self._WORKOUT_MAP[type]
+            else:
+                leaderboard[slack_id] = self._WORKOUT_MAP[type]
+        set_leaderboard_from_dict(leaderboard)
+        self.command_leaderboard()
 
     def execute_commands(self):
         count = 0

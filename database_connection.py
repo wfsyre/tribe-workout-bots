@@ -569,10 +569,27 @@ def get_group_workouts_after_date(date, workout_type):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL(
-            "SELECT * from tribe_workouts WHERE workout_date BETWEEN %s and now() and workout_type=%s"),
-            [date, "!" + workout_type])
-        workouts = cursor.fetchall()
+        if workout_type in "all":
+            if date is None:
+                cursor.execute(sql.SQL(
+                    "SELECT * from tribe_workouts"))
+                workouts = cursor.fetchall()
+            else:
+                cursor.execute(sql.SQL(
+                    "SELECT * from tribe_workouts WHERE workout_date BETWEEN %s and now()"),
+                    [date])
+                workouts = cursor.fetchall()
+        else:
+            if date is None:
+                cursor.execute(sql.SQL(
+                    "SELECT * from tribe_workouts WHERE workout_type=%s"),
+                    ["!" + workout_type])
+                workouts = cursor.fetchall()
+            else:
+                cursor.execute(sql.SQL(
+                    "SELECT * from tribe_workouts WHERE workout_date BETWEEN %s and now() and workout_type=%s"),
+                    [date, "!" + workout_type])
+                workouts = cursor.fetchall()
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
@@ -850,6 +867,28 @@ def delete_calendar(date):
         cursor = conn.cursor()
         cursor.execute(sql.SQL("DELETE FROM tribe_attendance WHERE practice_date = %s"), [date])
         cursor.execute(sql.SQL("DELETE FROM reaction_info WHERE date = %s"), [date])
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+
+
+def set_leaderboard_from_dict(dict: {}):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL("UPDATE tribe_data set workout_score = 0 where workout_score != -1"))
+        for key in dict.keys():
+            cursor.execute(sql.SQL("UPDATE tribe_data set workout_score = %s where slack_id = %s"), [dict[key], key])
         conn.commit()
         cursor.close()
         conn.close()
