@@ -161,6 +161,7 @@ def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from ea
             conn.close()
         return num_committed
 
+
 def reteam(excluded_ids):
     info = get_group_info()
     members = [(x['id'], x['real_name']) for x in info['members'] if x['id'] != 'USLACKBOT' and not x['is_bot']]
@@ -202,6 +203,39 @@ def reteam(excluded_ids):
                     "VALUES(%s, 0, 0, 0.0, now(), %s)"),
                     [member[1], member[0]]
                 )
+        conn.commit()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+    finally:
+        if cursor is not None:
+            cursor.close()
+            conn.close()
+
+
+def setup():
+    create_tribe_data = "create table tribe_data (name text not null constraint tribe_data_pkey primary key, num_posts smallint default 0, num_workouts smallint, workout_score numeric(4, 1), last_post date, slack_id varchar(9));"
+    create_tribe_workouts = "create table tribe_workouts (name varchar, slack_id char(9), workout_type varchar, workout_date date);"
+    create_tribe_poll_data = "create table tribe_poll_data (ts numeric(16, 6), slack_id char(9), title text, options text [], channel char(9), anonymous boolean);"
+    create_tribe_poll_responses = "create table tribe_poll_responses (ts numeric(16, 6), real_name text, slack_id char(9), response_num smallint);"
+    create_tribe_reaction_info = "create table reaction_info (date date, yes text, no text, drills text, injured text, timestamp text);"
+    cursor = None
+    conn = None
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL(create_tribe_data))
+        cursor.execute(sql.SQL(create_tribe_workouts))
+        cursor.execute(sql.SQL(create_tribe_poll_data))
+        cursor.execute(sql.SQL(create_tribe_poll_responses))
+        cursor.execute(sql.SQL(create_tribe_reaction_info))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")

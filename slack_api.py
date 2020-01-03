@@ -2,7 +2,7 @@ import os
 import requests
 from slackclient import SlackClient
 
-verbosity = 1   # info lvl
+verbosity = int(os.getenv('VERBOSITY'))   # info lvl
 
 
 def send_message(msg, channel="#bot_testing", url='', bot_name='Workout Bot'):

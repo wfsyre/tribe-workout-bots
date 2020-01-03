@@ -308,6 +308,11 @@ class SlackResponse:
                                       y_label="Number of " + action)
         send_file(file_name, self._channel)
 
+    def admin_command_setup(self):
+        send_debug_message('Setting up new database', level="INFO")
+        setup()
+        send_debug_message('Database setup successful', level="INFO")
+
     def admin_command_reteam(self):
         send_debug_message('re-teaming and excluding the tagged people from the leaderboard', level="DEBUG")
         reteam(self._mentions)
