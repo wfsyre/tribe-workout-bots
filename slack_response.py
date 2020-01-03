@@ -285,11 +285,10 @@ class SlackResponse:
         workouts = get_group_workouts_after_date(some_days_ago, "all")
         people_counts = {}
         for name, slack_id, workout_type, date in workouts:
-            if name in people_counts:
-                if "!" not in workout_type: #found a subtraction or addition
-                    people_counts[name] = people_counts.setdefault(name, 0) + float(workout_type)
-                else:
-                    people_counts[name] = people_counts.setdefault(name, 0) + self._WORKOUT_MAP[workout_type]
+            if "!" not in workout_type: #found a subtraction or addition
+                people_counts[name] = people_counts.setdefault(name, 0) + float(workout_type)
+            else:
+                people_counts[name] = people_counts.setdefault(name, 0) + self._WORKOUT_MAP[workout_type]
         file_name = generate_trending_bargraph(people_counts)
         send_file(file_name, self._channel)
 
