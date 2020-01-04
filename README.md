@@ -40,7 +40,7 @@ Now that your app has a database, you need to create the table for your app to s
 #### Setting up Database
 
 ##### Automatic
-The bot will automatically configure its own tables if you type in the command !setup. This must be done after you have configured all permissions as __detailed below in **slack permissions**__
+The bot will automatically configure its own tables if you type in the command **!setup**. This must be done after you have configured all permissions as __detailed below in **slack permissions**__
 
 ##### Manual
 Alternatively you can setup the tables yourself.
