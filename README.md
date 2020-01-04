@@ -33,14 +33,14 @@ Now is the time to input the config vars the app needs. Head over to the **Setti
     a. This variable controls how often the bot will post to its debugging channel. at level 0 it will post everything, 1 will post only info or error, 2 will post only errors and 3 will post nothing. If a message does not get posted it will be written to the heroku logs instead
 
 ### Provisioning and Setting up Database
-From the Heroku dashboard, click the Resources tab (or alternatively click "Configure Add-ons" from the overview tab) then search for and provision Heroku Postgres. The free Hobby Dev plan suffices for the bot. 
+From the Heroku dashboard, click the Resources tab (or alternatively click **Configure Add-ons** from the overview tab) then search for and provision Heroku Postgres. The free Hobby Dev plan suffices for the bot. 
 
 Now that your app has a database, you need to create the table for your app to store data in.
 
 #### Setting up Database
 
 ##### Automatic
-The bot will automatically configure its own tables if you type in the command !setup. This must be done after you have configured all permissions as detailed below in "slack permissions"
+The bot will automatically configure its own tables if you type in the command !setup. This must be done after you have configured all permissions as __detailed below in **slack permissions**__
 
 ##### Manual
 Alternatively you can setup the tables yourself.
@@ -63,7 +63,7 @@ That's it for command line statements! You can double check that your tables wer
 ## Slack Permissions
 
 ### App Permissions
-In the left sidebar, head to "Event Subscriptions" underneath "Features." Flip the "Enable Events" switch to On, then input the URL you got earlier (_your-app-name_.herokuapp.com). Once it is verified, you will be able to select which events your app subscribes to.
+In the left sidebar, head to **Event Subscriptions** underneath **Features**. Flip the **Enable Events** switch to On, then input the URL you got earlier (_your-app-name_.herokuapp.com). Once it is verified, you will be able to select which events your app subscribes to.
 
 Subscribe to the following Workspace Events:
 * message.channels
