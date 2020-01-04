@@ -21,10 +21,10 @@ In the Deploy tab now, select Github as your deployment method. You will have to
 Once your app has been deployed, clicking **Open app** will now send you to a page with a URL something like _your-app-name_.herokuapp.com. Keep this URL handy, as you will need while setting up your app in Slack.
 
 ### Config Vars
-Now is the time to input the config vars the app needs. Head over to the **Settings** tab and click **Reveal Config Vars**. You should see the DATABASE_URL there already; Heroku will automatically input that for you. For this app, you need the **BOT_OAUTH_ACCESS_TOKEN** and **OAUTH_ACCESS_TOKEN**. You can get these from Slack by:
+Now is the time to input the config vars the app needs. Head over to the **Settings** tab and click **Reveal Config Vars**. You should see the **DATABASE_URL** there already; Heroku will automatically input that for you. For this app, you need the **BOT_OAUTH_ACCESS_TOKEN** and **OAUTH_ACCESS_TOKEN**. You can get these from Slack by:
 
-1. Navigate to api.slack.com, and get to your app's page
-2. On the left sidebar, select "OAuth & Permissions" under "Features"
+1. Navigate to [the slack api docs](https://api.slack.com/), and get to your app's page
+2. On the left sidebar, select **OAuth & Permissions** under **Features**
 3. There, you will find your **BOT_OAUTH_ACCESS_TOKEN** and **OAUTH_ACCESS_TOKEN** labelled as such.
 4. Copy each token, navigate to Heroku, and paste them as values for their respective key: **BOT_OAUTH_ACCESS_TOKEN** or **OAUTH_ACCESS_TOKEN**
 5. Create a config var named **ENABLE_CALENDAR** and set the value to either **True** or **False** (set to false if you are not familiar with this)
@@ -66,18 +66,18 @@ That's it for command line statements! You can double check that your tables wer
 In the left sidebar, head to "Event Subscriptions" underneath "Features." Flip the "Enable Events" switch to On, then input the URL you got earlier (_your-app-name_.herokuapp.com). Once it is verified, you will be able to select which events your app subscribes to.
 
 Subscribe to the following Workspace Events:
-message.channels
-message.groups
-message.im
-reaction_added
-reaction_removed
+* message.channels
+* message.groups
+* message.im
+* reaction_added
+* reaction_removed
 
 Subscribe to the following Bot Events:
-app_mention
-message.channels
-message.im
-reaction_added
-reaction_removed
+* app_mention
+* message.channels
+* message.im
+* reaction_added
+* reaction_removed
 
 Make sure to save these changes. Once you do, you'll be prompted to reinstall your app. Once you have done so, you should have a functional workout bot in your channel!
 
