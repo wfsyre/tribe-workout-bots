@@ -5,9 +5,9 @@ A bot that tracks workouts on Slack.
 You will need the following to implement this bot:
 1. This repo forked/cloned
 2. A Heroku account (or something else to host it; we used Heroku)
-	a. Heroku CLI installed
+	* Heroku CLI installed
 3. A Slack workspace that you have the permissions to add a bot to
-    a. the workspace must have a channel named bot_testing
+    * the workspace must have a channel named bot_testing
 4. Psql installed (you can uninstall once you have set up the database)
 
 ## Create the Slack App
@@ -30,7 +30,7 @@ Now is the time to input the config vars the app needs. Head over to the **Setti
 5. Create a config var named **ENABLE_CALENDAR** and set the value to either **True** or **False** (set to false if you are not familiar with this)
 6. Create a config var named **ADMIN_ID** and set the value to the slack id of the person or people in charge of the bot. They will have access to special admin commands. They will look like *UNSD1MM6G* and multiple can be added if you seperate with a comma
 7. create a config var named **VERBOSITY** and set the value to **1**. 
-    a. This variable controls how often the bot will post to its debugging channel. at level 0 it will post everything, 1 will post only info or error, 2 will post only errors and 3 will post nothing. If a message does not get posted it will be written to the heroku logs instead
+    * This variable controls how often the bot will post to its debugging channel. at level 0 it will post everything, 1 will post only info or error, 2 will post only errors and 3 will post nothing. If a message does not get posted it will be written to the heroku logs instead
 
 ### Provisioning and Setting up Database
 From the Heroku dashboard, click the Resources tab (or alternatively click **Configure Add-ons** from the overview tab) then search for and provision Heroku Postgres. The free Hobby Dev plan suffices for the bot. 
@@ -48,16 +48,21 @@ Open up command prompt/terminal. You will need the Heroku CLI installed, as well
 Each table name should match what is in the code. These names are hard coded and your bot will fail without it. It is easy enough to change if you care to though.
 
 1. heroku login
-	a. you should be prompted to login via browser after this
+	* you should be prompted to login via browser after this
 2. heroku pg:psql -a <bot name as it appears on heroku>
-3. `create table tribe_data (name text not null constraint tribe_data_pkey primary key, num_posts smallint default 0, num_workouts smallint, workout_score numeric(4, 1), last_post date, slack_id varchar(9));`
-4. `create table tribe_workouts (name varchar, slack_id char(9), workout_type varchar, workout_date date);`
-5. `create table tribe_poll_data (ts numeric(16, 6), slack_id char(9), title text, options text [], channel char(9), anonymous boolean);`
-6. `create table tribe_poll_responses (ts numeric(16, 6), real_name text, slack_id char(9), response_num smallint);`
-7. `create table reaction_info (date date, yes text, no text, drills text, injured text, timestamp text);`
+3. Run the following commands to create the required tables
+```
+CREATE TABLE tribe_data (name text not null constraint tribe_data_pkey primary key, num_posts smallint default 0, num_workouts smallint, workout_score numeric(4, 1), last_post date, slack_id varchar(9));
 
+CREATE TABLE tribe_workouts (name varchar, slack_id char(9), workout_type varchar, workout_date date);
+
+CREATE TABLE tribe_poll_data (ts numeric(16, 6), slack_id char(9), title text, options text [], channel char(9), anonymous boolean);
+
+CREATE TABLE tribe_poll_responses (ts numeric(16, 6), real_name text, slack_id char(9), response_num smallint);
+
+CREATE TABLE reaction_info (date date, yes text, no text, drills text, injured text, timestamp text);
+```
 That's it for command line statements! You can double check that your tables were created with the \d command after.
-
 
 
 ## Slack Permissions

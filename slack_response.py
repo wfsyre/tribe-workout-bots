@@ -194,7 +194,7 @@ class SlackResponse:
             self.like_message(reaction='skull_and_crossbones')
 
     def add_num_posts(self):
-        add_num_posts([self._user_id], self._event_time, self._name)
+        add_num_posts([self._user_id], self._name)
 
     def command_help(self):
         send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"

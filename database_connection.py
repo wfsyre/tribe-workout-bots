@@ -6,11 +6,12 @@ import psycopg2
 from psycopg2 import sql
 from slack_api import *
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask
 
 app = Flask(__name__)
 
-def add_num_posts(mention_id, event_time, name):
+
+def add_num_posts(mention_id, name):
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
     try:
         urllib.parse.uses_netloc.append("postgres")
