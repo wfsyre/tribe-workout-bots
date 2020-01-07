@@ -353,7 +353,17 @@ class SlackResponse:
         pass
 
     def admin_command_yaml(self):
-        pass
+        custom_emoji_file = open("custom_emoji_names.yaml", "w")
+        emoji_json = get_emojis()['emoji']
+        custom_emoji_file.write("title: custom\nemojis:\n")
+        for line in custom_emoji_file:
+            b = line.strip()
+            b = b.strip(":")
+            print(b)
+            custom_emoji_file.write("  - name: " + b)
+            custom_emoji_file.write("\n    src: \"" + emoji_json[b] + "\"\n")
+        custom_emoji_file.close()
+        send_file('custom_emoji_names.yaml', self._channel)
 
     def admin_command_clearpoll(self):
         clear_poll_data()

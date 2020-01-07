@@ -1,1 +1,2 @@
 1. A new member who is not yet in the database will cause an error when they are mentioned in a workout post (!gym @new_person)
+    Solved by using !reteam
