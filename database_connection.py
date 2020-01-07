@@ -668,6 +668,7 @@ def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
 def add_poll_reaction(ts, options_number, slack_id, real_name):
     cursor = None
     conn = None
+    res = 0
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -684,7 +685,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
             [slack_id, ts])
         active = cursor.rowcount >= 1
         if not active:
-            return False
+            return -1
         cursor.execute(sql.SQL(
             "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num != -1"),
             [slack_id, ts])
@@ -695,6 +696,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                 "UPDATE tribe_poll_responses SET response_num = %s "
                 "WHERE slack_id=%s AND ts=%s AND response_num = -1"),
                 [options_number, slack_id, ts])
+            res = 1
         elif num_responses >= 1:  # they have responded before
             # check if they are removing a response
             cursor.execute(sql.SQL(
@@ -706,7 +708,9 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                     "INSERT INTO tribe_poll_responses (ts, slack_id, real_name, response_num) "
                     "VALUES (%s, %s, %s, %s)"),
                     [ts, slack_id, real_name, options_number])
+                res = 1
             else:  # they have responded this option so we're removing it
+                res = 0
                 if num_responses == 1:  # last response (indicate that they have no more responses)
                     cursor.execute(sql.SQL(
                         "UPDATE tribe_poll_responses SET response_num =-1 "
@@ -724,6 +728,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
         if cursor is not None:
             cursor.close()
             conn.close()
+        return res
 
 
 def add_poll_dummy_responses(ts):

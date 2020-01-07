@@ -75,11 +75,14 @@ class InteractiveComponentPayload:
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
                            + ", response_num: " + response_num, level="DEBUG")
-        add_poll_reaction(ts, response_num, self._slack_id, real_name)
+        result = add_poll_reaction(ts, response_num, self._slack_id, real_name)
+        if result == -1:
+            send_debug_message("Could not add <@" + self._slack_id + ">'s response to the poll")
+            return
+        blocks = self._json_data['message']['blocks']
+        response_block = int(response_num) + 1
+        current = blocks[response_block]['text']['text']
         if not anon:
-            blocks = self._json_data['message']['blocks']
-            response_block = int(response_num) + 1
-            current = blocks[response_block]['text']['text']
             if self._slack_id not in current:
                 blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
             else:
@@ -87,25 +90,22 @@ class InteractiveComponentPayload:
                 end = start + 2 + len(self._slack_id) + 1
                 statement = current[0:start] + current[end + 1:]
                 blocks[response_block]['text']['text'] = statement
-
-            slack_data = {
-                "blocks": blocks,
-                "replace_original": True,
-            }
-            post(
-                self._webhook_url,
-                json=slack_data,
-                headers={'Content-Type': 'application/json'})
         else:
-            slack_data = {
-                "text": "Thanks for your response!",
-                "response_type": 'ephemeral',
-                "replace_original": False
-            }
-            post(
-                self._webhook_url,
-                json=slack_data,
-                headers={'Content-Type': 'application/json'})
+            if result == 0:
+                blocks[response_block]['text']['text'] = current[10:]
+            elif result == 1:
+                blocks[response_block]['text']['text'] = current + ":thumbsup:"
+
+
+
+        slack_data = {
+            "blocks": blocks,
+            "replace_original": True,
+        }
+        post(
+            self._webhook_url,
+            json=slack_data,
+            headers={'Content-Type': 'application/json'})
 
     def delete_poll(self):
         ts = self._action_id
