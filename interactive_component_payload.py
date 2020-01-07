@@ -92,9 +92,9 @@ class InteractiveComponentPayload:
                 blocks[response_block]['text']['text'] = statement
         else:
             if result == 0:
-                blocks[response_block]['text']['text'] = current[:-10]
+                blocks[response_block]['text']['text'] = current[:-12]
             elif result == 1:
-                blocks[response_block]['text']['text'] = current + ":thumbsup:"
+                blocks[response_block]['text']['text'] = current + " :thumbsup: "
 
 
 
