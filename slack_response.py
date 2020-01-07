@@ -355,10 +355,9 @@ class SlackResponse:
     def admin_command_yaml(self):
         custom_emoji_file = open("custom_emoji_names.yaml", "w")
         emoji_json = get_emojis()['emoji']
+        print(emoji_json)
         custom_emoji_file.write("title: custom\nemojis:\n")
-        for line in custom_emoji_file:
-            b = line.strip()
-            b = b.strip(":")
+        for b in emoji_json.keys():
             print(b)
             custom_emoji_file.write("  - name: " + b)
             custom_emoji_file.write("\n    src: \"" + emoji_json[b] + "\"\n")
