@@ -39,8 +39,8 @@ def add_num_posts(mention_id, name):
                 send_debug_message(("%s has a new slack id" % name), level="INFO")
             else:
                 cursor.execute(sql.SQL("INSERT INTO tribe_data (name, num_posts, num_workouts, workout_score, "
-                                       "last_post, slack_id) "
-                                       "VALUES (%s, 0, 0, 0, now(), %s)"),
+                                       "last_post, slack_id, active) "
+                                       "VALUES (%s, 0, 0, 0, now(), %s, 't')"),
                                [name, mention_id[0]])
                 send_debug_message("%s is new to Tribe" % name, level="INFO")
         conn.commit()
@@ -190,18 +190,19 @@ def reteam(excluded_ids):
             "workout_score numeric(5,1), "
             "last_post date, "
             "slack_id varchar(9))"
+            "active boolean default 't'"
         ))
         for member in members:
             if member[0] in excluded_ids:
                 cursor.execute(sql.SQL(
-                    "INSERT INTO tribe_data_test (name, num_posts, num_workouts, workout_score, last_post, slack_id)"
-                    "VALUES(%s, 0, 0, -1.0, now(), %s)"),
+                    "INSERT INTO tribe_data_test (name, num_posts, num_workouts, workout_score, last_post, slack_id, active)"
+                    "VALUES(%s, 0, 0, -1.0, now(), %s, 't')"),
                     [member[1], member[0]]
                 )
             else:
                 cursor.execute(sql.SQL(
-                    "INSERT INTO tribe_data_test (name, num_posts, num_workouts, workout_score, last_post, slack_id)"
-                    "VALUES(%s, 0, 0, 0.0, now(), %s)"),
+                    "INSERT INTO tribe_data_test (name, num_posts, num_workouts, workout_score, last_post, slack_id, active)"
+                    "VALUES(%s, 0, 0, 0.0, now(), %s, 't')"),
                     [member[1], member[0]]
                 )
         conn.commit()
@@ -678,6 +679,12 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
             port=url.port
         )
         cursor = conn.cursor()
+        cursor.execute(sql.SQL(
+            "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s"),
+            [slack_id, ts])
+        active = cursor.rowcount >= 1
+        if not active:
+            return False
         cursor.execute(sql.SQL(
             "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num != -1"),
             [slack_id, ts])
