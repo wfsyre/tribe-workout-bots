@@ -198,11 +198,11 @@ class SlackResponse:
 
     def command_help(self):
         send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                           "\n!gym\n!throw\n!cardio\nworkout"
+                           "\n!gym\n!throw\n!cardio\n!workout"
                            "\n!since [YYYY-MM-DD] [type] [@name]"
                            "\n!groupsince [YYYY-MM-DD] [type]"
                            "\n!poll \"Title\" \"option 1\" ... \"option n\""
-                           "\n!whenis [workout_type]",
+                           "\n!daygraph [workout_type]",
                            channel=self._channel, bot_name="Helper Bot")
 
     def command_points(self):
@@ -239,8 +239,9 @@ class SlackResponse:
 
     def command_poll(self):
         # !poll "Title" "option 1" ... "option n"
-        self._text = self._text.replace("“", "\"")  # Get rid of "smart quotes"
-        self._text = self._text.replace("”", "\"")  # Get rid of "smart quotes"
+        self._text = self._text.replace("“", "\"")   # Get rid of "smart quotes"
+        self._text = self._text.replace("”", "\"")   # Get rid of "smart quotes"
+        self._text = self._text.replace("\'", "\"")  # Get rid of other quote options
         start = 0
         options = []
         while start < len(self._text):
@@ -250,11 +251,15 @@ class SlackResponse:
             second = self._text.find("\"", first + 1)
             options.append(self._text[first + 1:second])
             start = second + 1
-        anon = "anonymous" in self._lower_text[-10:]
-        add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
-        add_poll_dummy_responses(self._ts)
-        send_debug_message(options, level="DEBUG")
-        create_poll(self._channel, options[0], options[1:], self._ts, anon)
+        if len(options) < 2:
+            send_tribe_message("Incorrect poll command formatting, should be:"
+                               "\n!poll \"Title\" \"Option 1\" ... \"Option n\"")
+        else:
+            anon = "anonymous" in self._lower_text[-10:]
+            add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon)
+            add_poll_dummy_responses(self._ts)
+            send_debug_message(options, level="DEBUG")
+            create_poll(self._channel, options[0], options[1:], self._ts, anon)
 
     def command_since(self):
         # !since YYYY-MM-DD type @name
@@ -314,7 +319,7 @@ class SlackResponse:
         send_debug_message('Database setup successful', level="INFO")
 
     def admin_command_reteam(self):
-        send_debug_message('re-teaming and excluding the tagged people from the leaderboard', level="DEBUG")
+        send_debug_message('re-teaming and excluding the tagged people from the leaderboard', level="INFO")
         reteam(self._mentions)
 
     def admin_command_subtract(self):
@@ -355,10 +360,8 @@ class SlackResponse:
     def admin_command_yaml(self):
         custom_emoji_file = open("custom_emoji_names.yaml", "w")
         emoji_json = get_emojis()['emoji']
-        print(emoji_json)
         custom_emoji_file.write("title: custom\nemojis:\n")
         for b in emoji_json.keys():
-            print(b)
             custom_emoji_file.write("  - name: " + b)
             custom_emoji_file.write("\n    src: \"" + emoji_json[b] + "\"\n")
         custom_emoji_file.close()

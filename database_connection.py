@@ -192,6 +192,7 @@ def reteam(excluded_ids):
             "slack_id varchar(9))"
             "active boolean default 't'"
         ))
+        cursor.execute(sql.SQL("DELETE FROM tribe_workouts"))
         for member in members:
             if member[0] in excluded_ids:
                 cursor.execute(sql.SQL(
