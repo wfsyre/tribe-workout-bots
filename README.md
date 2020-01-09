@@ -1,5 +1,5 @@
 # Slack Workout Bot
-A bot that tracks workouts on Slack. 
+A bot that tracks workouts on Slack. There is also functionality for polls and practice attendance tracking 
 
 ## Setup
 You will need the following to implement this bot:
