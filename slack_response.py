@@ -376,7 +376,7 @@ class SlackResponse:
         workouts = get_group_workouts_after_date(since_date, 'all')
         leaderboard = {}
         for name, slack_id, type, time in workouts:
-            if type in self._WORKOUT_MAP:   # additions and subtractions are not in the workout map and must be handled differently
+            if type not in self._WORKOUT_MAP:   # additions and subtractions are not in the workout map and must be handled differently
                 if slack_id in leaderboard:
                     leaderboard[slack_id] += float(type)
                 else:

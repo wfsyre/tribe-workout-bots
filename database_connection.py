@@ -189,8 +189,8 @@ def reteam(excluded_ids):
             "num_workouts smallint, "
             "workout_score numeric(5,1), "
             "last_post date, "
-            "slack_id varchar(9))"
-            "active boolean default 't'"
+            "slack_id varchar(9), "
+            "active boolean default 't')"
         ))
         cursor.execute(sql.SQL("DELETE FROM tribe_workouts"))
         for member in members:
