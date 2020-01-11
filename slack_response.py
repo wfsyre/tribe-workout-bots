@@ -390,18 +390,15 @@ class SlackResponse:
 
     def execute_commands(self):
         count = 0
-        send_debug_message("Executing commands for " + self._lower_text)
         for command in self._COMMANDS:
             index = command.find("command_") + 8
             if ("!" + command[index:]) in self._lower_text and 'admin' not in command:
                 if command in dir(self):
-                    send_debug_message("Found command " + command)
                     # calls a method with the name scheme command_nameofcommand()
                     send_debug_message(command)
                     getattr(self, command)()
                     count += 1
             elif ("!" + command[index:]) in self._lower_text:
-                send_debug_message("Found admin command " + command)
                 if command in dir(self) and self._user_id in os.getenv("ADMIN_ID"):
                     # calls a method with the name scheme admin_command_nameofcommand()
                     getattr(self, command)()
