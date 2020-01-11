@@ -3,6 +3,7 @@ from utils import *
 from slack_api import *
 from datetime import datetime, timedelta
 
+
 class SlackResponse:
     # event
     # event_type
@@ -29,41 +30,38 @@ class SlackResponse:
         self.TOURNAMENT_POINTS = 0
         self.WORKOUT_POINTS = 2.0
         self.CARDIO_POINTS = 0.5
+
+        # Parse the instance variables for point values
         self._WORKOUT_TYPES = ["gym", "workout", "throw", "cardio"]
         self._WORKOUT_TUPLES = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
         self._WORKOUT_MAP = {"!" + x: self[x.upper() + '_POINTS'] for x in self._WORKOUT_TYPES}
+
+        # Parse the Slack response object for methods that should be turned into runnable commands for the bot
         self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(getattr(self, x))]
+
         self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
+
+        # instantiate some dummy variables
         self._additions = []
         self._reaction_added = False
         self._reaction_removed = False
         self._check_for_commands = False
         self._event_time = json_data['event_time']
-        self._bot = 'bot_id' in list(self._event.keys()) and self._event['bot_id'] != None
+        self._bot = 'bot_id' in self._event and self._event['bot_id'] != None
+
+        # to allow slackbot to run some commands
+        self._slackbot = 'user' in self._event and self._event['user'] == 'USLACKBOT'
+
         self._event_type = self._event['type']
+        self._calendar = False
         if 'files' in list(self._event.keys()):
             self._files = self._event['files']
         else:
             self._files = []
-        if 'attachments' in list(self._event.keys()):
-            self._calendar = True and self.CALENDAR_ENABLED
-            self._calendar_text = self._event['attachments'][0]['text']
-            self._calendar_title = self._event['attachments'][0]['title']
-            if 'practice' in self._calendar_title.lower():
-                date_text = self._calendar_text[self._calendar_text.index('|'):]
-                date_text = date_text[1:date_text.index('from') - 1]
-                # September 30th, 2018
-                comma = date_text.index(",")
-                date_text = date_text[0:comma - 2] + date_text[comma:]
-                # September 30, 2018
-                self._calendar_date = datetime.strptime(date_text, '%B %d, %Y')
-        else:
-            self._calendar = False
         if 'text' in list(self._event.keys()):
             self._text = self._event['text']
         else:
             self._text = ''
-
         self._subtype = self._event['subtype'] if 'subtype' in list(self._event.keys()) else 'message'
         if self._subtype == 'message_deleted':
             self._previous_message = self._event['previous_message']
@@ -71,7 +69,7 @@ class SlackResponse:
             self._channel = self._event['channel']
             if self._channel not in 'GPA9BE3DL':
                 send_debug_message("Found a deleted message in channel %s written by %s" % (
-                self._channel, self._previous_message['user']), level="INFO")
+                    self._channel, self._previous_message['user']), level="INFO")
                 send_debug_message(self._previous_message['text'], level="INFO")
         elif self._subtype == 'message_changed':
             self._check_for_commands = True
@@ -85,7 +83,8 @@ class SlackResponse:
             self._channel = self._event['channel']
             self._ts = self._event['message']['ts']
             if 'blocks' not in self._event['previous_message']:
-                send_debug_message("Found a edited message in channel %s that used to say:" % self._channel, level="INFO")
+                send_debug_message("Found a edited message in channel %s that used to say:" % self._channel,
+                                   level="INFO")
                 send_debug_message(self._previous_message_text, level="INFO")
         elif self._subtype == 'bot_message':
             self._bot = True
@@ -216,7 +215,7 @@ class SlackResponse:
         to_print = collect_stats(3, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
-    def command_workouts(self):   # display the leaderboard for who works out the most
+    def command_workouts(self):  # display the leaderboard for who works out the most
         to_print = collect_stats(2, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
@@ -224,7 +223,7 @@ class SlackResponse:
         to_print = collect_stats(1, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
-    def command_handsome(self):   # displays the leaderboard for who posts the most
+    def command_handsome(self):  # displays the leaderboard for who posts the most
         to_print = collect_stats(1, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
@@ -239,8 +238,8 @@ class SlackResponse:
 
     def command_poll(self):
         # !poll "Title" "option 1" ... "option n"
-        self._text = self._text.replace("“", "\"")   # Get rid of "smart quotes"
-        self._text = self._text.replace("”", "\"")   # Get rid of "smart quotes"
+        self._text = self._text.replace("“", "\"")  # Get rid of "smart quotes"
+        self._text = self._text.replace("”", "\"")  # Get rid of "smart quotes"
         self._text = self._text.replace("\'", "\"")  # Get rid of other quote options
         start = 0
         options = []
@@ -269,7 +268,7 @@ class SlackResponse:
         send_str += "%d total workouts found:\n" % (len(workouts))
         for workout in workouts:
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
-                        workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
 
     def command_groupsince(self):
@@ -282,7 +281,7 @@ class SlackResponse:
         send_str = "%d total workouts found: \n" % (len(workouts))
         for workout in workouts:
             send_str += "Name: %s, Workout Type: %s, Date: %s\n" % (
-                        workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
+                workout[0], workout[2], workout[3].strftime("%-m/%d/%Y"))
         send_tribe_message(send_str, channel=self._channel)
 
     def command_trending(self):
@@ -290,7 +289,7 @@ class SlackResponse:
         workouts = get_group_workouts_after_date(some_days_ago, "all")
         people_counts = {}
         for name, slack_id, workout_type, date in workouts:
-            if "!" not in workout_type: #found a subtraction or addition
+            if "!" not in workout_type:  # found a subtraction or addition
                 people_counts[name] = people_counts.setdefault(name, 0) + float(workout_type)
             else:
                 people_counts[name] = people_counts.setdefault(name, 0) + self._WORKOUT_MAP[workout_type]
@@ -355,7 +354,7 @@ class SlackResponse:
             send_debug_message("Invalid addition value. Must be a float of the form X.X", level="ERROR")
 
     def admin_command_test(self):
-        pass
+        send_debug_message("Found a test message", level='INFO')
 
     def admin_command_yaml(self):
         custom_emoji_file = open("custom_emoji_names.yaml", "w")
@@ -376,7 +375,7 @@ class SlackResponse:
         workouts = get_group_workouts_after_date(since_date, 'all')
         leaderboard = {}
         for name, slack_id, type, time in workouts:
-            if type not in self._WORKOUT_MAP:   # additions and subtractions are not in the workout map and must be handled differently
+            if type not in self._WORKOUT_MAP:  # additions and subtractions are not in the workout map and must be handled differently
                 if slack_id in leaderboard:
                     leaderboard[slack_id] += float(type)
                 else:
