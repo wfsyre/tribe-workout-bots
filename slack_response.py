@@ -122,7 +122,7 @@ class SlackResponse:
             else:
                 self._text = ''
 
-            if not self._bot:
+            if 'user' in self._event:
                 self._user_id = self._event['user']
             else:
                 self.user_id = self._event['bot_id'] if 'bot_id' in list(self._event.keys()) else ''
