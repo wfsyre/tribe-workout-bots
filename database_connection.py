@@ -221,6 +221,7 @@ def setup():
     create_tribe_poll_data = "create table tribe_poll_data (ts numeric(16, 6), slack_id char(9), title text, options text [], channel char(9), anonymous boolean);"
     create_tribe_poll_responses = "create table tribe_poll_responses (ts numeric(16, 6), real_name text, slack_id char(9), response_num smallint);"
     create_tribe_reaction_info = "create table reaction_info (date date, yes text, no text, drills text, injured text, timestamp text);"
+    create_intensity_feedback_polls = "CREATE TABLE intensity_feedback_polls (timestamp numeric(16, 6));"
     cursor = None
     conn = None
     try:
@@ -239,6 +240,7 @@ def setup():
         cursor.execute(sql.SQL(create_tribe_poll_data))
         cursor.execute(sql.SQL(create_tribe_poll_responses))
         cursor.execute(sql.SQL(create_tribe_reaction_info))
+        cursor.execute(sql.SQL(create_intensity_feedback_polls))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
@@ -937,6 +939,25 @@ def set_leaderboard_from_dict(dict: {}):
         cursor.execute(sql.SQL("UPDATE tribe_data set workout_score = 0 where workout_score != -1"))
         for key in dict.keys():
             cursor.execute(sql.SQL("UPDATE tribe_data set workout_score = %s where slack_id = %s"), [dict[key], key])
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+
+def register_feedback_poll(timestamp):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL("INSERT INTO intensity_feedback_polls (timestamp) VALUES (%s)"), [timestamp])
         conn.commit()
         cursor.close()
         conn.close()

@@ -312,6 +312,16 @@ class SlackResponse:
                                       y_label="Number of " + action)
         send_file(file_name, self._channel)
 
+    def command_feedback(self):
+        now = datetime.now()
+        title = "Please rate the practice intensity for " + now.strftime("%-m/%d/%Y")
+        options = ["Very High", "High", "Average", "Low", "Very Low"]
+        anonymous = True
+        add_tracked_poll(title, os.getenv("ADMIN_ID"), self._ts, options, self._channel, anonymous)
+        add_poll_dummy_responses(self._ts)
+        create_poll(self._channel, options[0], options[1:], self._ts, anonymous)
+
+
     def admin_command_setup(self):
         send_debug_message('Setting up new database', level="INFO")
         setup()
@@ -395,7 +405,6 @@ class SlackResponse:
             if ("!" + command[index:]) in self._lower_text and 'admin' not in command:
                 if command in dir(self):
                     # calls a method with the name scheme command_nameofcommand()
-                    send_debug_message(command)
                     getattr(self, command)()
                     count += 1
             elif ("!" + command[index:]) in self._lower_text:
