@@ -320,6 +320,7 @@ class SlackResponse:
         add_tracked_poll(title, os.getenv("ADMIN_ID"), self._ts, options, self._channel, anonymous)
         add_poll_dummy_responses(self._ts)
         create_poll(self._channel, options[0], options[1:], self._ts, anonymous)
+        register_feedback_poll(self._ts)
 
 
     def admin_command_setup(self):
