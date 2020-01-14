@@ -314,7 +314,7 @@ class SlackResponse:
 
     def command_feedback(self):
         now = datetime.now()
-        title = "Rate the team's intensity at practice for " + now.strftime("%-m/%d/%Y")
+        title = "Rate the team's intensity at practice for " + now.strftime("%m/%d/%Y")
         options = ["Very High", "High", "Average", "Low", "Very Low"]
         anonymous = True
         add_tracked_poll(title, os.getenv("ADMIN_ID"), self._ts, options, self._channel, anonymous)

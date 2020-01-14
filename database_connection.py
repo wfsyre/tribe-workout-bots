@@ -963,3 +963,34 @@ def register_feedback_poll(timestamp):
         conn.close()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
+
+def get_feedback_polls_results():
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL("SELECT timestamp FROM intensity_feedback_polls"))
+        timestamps = [x[0] for x in cursor.fetchall()]
+        data = {}
+        for ts in timestamps:
+            cursor.execute(sql.SQL("SELECT title, options FROM tribe_poll_data WHERE ts = %s"), [ts])
+            poll_data = cursor.fetchall()
+            title = poll_data[0][0]
+            cursor.execute(sql.SQL("SELECT response_num FROM tribe_poll_responses WHERE ts = %s"), [ts])
+            poll_responses = cursor.fetchall()
+            data[title[-10:]] = poll_responses
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return data
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+        return None
