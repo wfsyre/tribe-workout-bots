@@ -32,21 +32,6 @@ def webhook():
         else:
             print("executing commands")
             obj.execute_commands()
-    else:
-        if 'username' in list(obj._event.keys()) and obj._event['username'] == 'Reminder Bot':
-            send_debug_message(str(obj), level="DEBUG")
-            if 'practice' in obj._event['text'].lower():
-                # need to record timestamp of message here
-                send_debug_message("Found practice reminder with timestamp %s" % obj._ts, level="DEBUG")
-                if add_reaction_info_ts(obj._ts):
-                    reactions = check_reaction_timestamp(obj._ts)
-                    reactions = reactions[0]
-                    date, yes, no, drills, injured, ts = reactions
-                    reactions = [yes, drills, injured, no]
-                    reactions = [x.strip(":") for x in reactions]
-                    for reaction in reactions:
-                        obj.like_message(reaction=reaction)
-                        sleep(.5)
 
     print(obj)
     print("responding")
