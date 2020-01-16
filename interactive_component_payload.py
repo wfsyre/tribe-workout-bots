@@ -226,8 +226,8 @@ class InteractiveComponentPayload:
                 send_categories(title, channel, data)
                 send_debug_message("Sent poll information to <@" + self._slack_id + ">", level="DEBUG")
             else:
-                send_message("You thought you could just press the button and get the results, huh?", channel, bot_name="SHAME")
-                send_debug_message("Sent shame information to <@" + self._slack_id + ">", level="DEBUG")
+                send_categories(title, channel, data)
+                send_debug_message("Sent invisipoll information to <@" + self._slack_id + ">", level="DEBUG")
 
     def vote_calendar(self):
         date = self._json_data['actions'][0]['value']

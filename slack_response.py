@@ -285,6 +285,30 @@ class SlackResponse:
             send_debug_message(options, level="DEBUG")
             create_poll(self._channel, options[0], options[1:], self._ts, anon)
 
+    def command_invisipoll(self):
+        # !poll "Title" "option 1" ... "option n"
+        self._text = self._text.replace("“", "\"")  # Get rid of "smart quotes"
+        self._text = self._text.replace("”", "\"")  # Get rid of "smart quotes"
+        self._text = self._text.replace("\'", "\"")  # Get rid of other quote options
+        start = 0
+        options = []
+        while start < len(self._text):
+            first = self._text.find("\"", start)
+            if first == -1:
+                break
+            second = self._text.find("\"", first + 1)
+            options.append(self._text[first + 1:second])
+            start = second + 1
+        if len(options) < 2:
+            send_message("Incorrect poll command formatting, should be:"
+                         "\n!poll \"Title\" \"Option 1\" ... \"Option n\"", channel=self._channel)
+        else:
+            anon = "anonymous" in self._lower_text[-10:]
+            add_tracked_poll(options[0], self._user_id, self._ts, options[1:], self._channel, anon, multi=False, invisible=True)
+            add_poll_dummy_responses(self._ts)
+            send_debug_message(options, level="DEBUG")
+            create_poll(self._channel, options[0], options[1:], self._ts, anon)
+
     def command_since(self):
         # !since YYYY-MM-DD type @name
         params = self._text.split(" ")
