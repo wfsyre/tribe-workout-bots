@@ -76,6 +76,7 @@ class InteractiveComponentPayload:
                            + ", ts: " + ts
                            + ", response_num: " + response_num, level="DEBUG")
         poll_responses = get_poll_response(self._slack_id, ts)
+        send_debug_message(str(poll_responses), level="INFO")
         old_response_num = poll_responses[0][1]
         result = add_poll_reaction(ts, response_num, self._slack_id, real_name)
         if result == -1:
