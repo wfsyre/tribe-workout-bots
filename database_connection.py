@@ -734,9 +734,9 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                 "WHERE slack_id=%s AND ts=%s"),
                 [options_number, slack_id, ts])
             if num_responses == 1:
-                res = 1
-            else:
                 res = 0
+            else:
+                res = 1
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
     finally:
