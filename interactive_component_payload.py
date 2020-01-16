@@ -104,7 +104,7 @@ class InteractiveComponentPayload:
                     statement = old[0:start] + old[end + 1:]
                     blocks[old_response_block]['text']['text'] = statement
                     send_debug_message("Edited statement was: " + statement)
-                if old_response_num != response_num:  # This is not a removal
+                if int(old_response_num) != int(response_num):  # This is not a removal
                     send_debug_message("Old: " + str(old_response_num) + " New: " + str(response_num))
                     blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
         else:
