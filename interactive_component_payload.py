@@ -75,6 +75,8 @@ class InteractiveComponentPayload:
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
                            + ", response_num: " + response_num, level="DEBUG")
+        poll_responses = get_poll_response(self._slack_id, ts)
+        old_response_num = poll_responses[0][1]
         result = add_poll_reaction(ts, response_num, self._slack_id, real_name)
         if result == -1:
             send_debug_message("Could not add <@" + self._slack_id + ">'s response to the poll")
@@ -92,8 +94,6 @@ class InteractiveComponentPayload:
                     statement = current[0:start] + current[end + 1:]
                     blocks[response_block]['text']['text'] = statement
             else:
-                poll_responses = get_poll_response(self._slack_id, ts)
-                old_response_num = poll_responses[0][1]
                 if old_response_num != -1:
                     # a response of 0 from the db lets us know this is a removal
                     old_response_block = int(old_response_num) + 1
@@ -104,7 +104,7 @@ class InteractiveComponentPayload:
                     blocks[old_response_block]['text']['text'] = statement
                     send_debug_message("Edited statement was: " + statement)
                 if old_response_num != response_num:  # This is not a removal
-                    send_debug_message("Result was: " + str(result))
+                    send_debug_message("Old: " + str(old_response_num) + " New: " + str(response_num))
                     blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
         else:
             if result == 0:
