@@ -733,7 +733,10 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                 "UPDATE tribe_poll_responses SET response_num = %s "
                 "WHERE slack_id=%s AND ts=%s"),
                 [options_number, slack_id, ts])
-            res = 1
+            if num_responses == 1:
+                res = 1
+            else:
+                res = 0
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
     finally:
