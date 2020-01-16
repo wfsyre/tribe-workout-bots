@@ -742,9 +742,6 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                     "UPDATE tribe_poll_responses SET response_num = %s "
                     "WHERE slack_id=%s AND ts=%s"),
                     [-1, slack_id, ts])
-                cursor.execute(sql.SQL(
-                    ""
-                ))
                 res = 0
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
