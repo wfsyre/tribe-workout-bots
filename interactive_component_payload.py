@@ -76,7 +76,6 @@ class InteractiveComponentPayload:
                            + ", ts: " + ts
                            + ", response_num: " + response_num, level="DEBUG")
         poll_responses = get_poll_response(self._slack_id, ts)
-        send_debug_message(str(poll_responses), level="INFO")
         old_response_num = poll_responses[0][1]
         result = add_poll_reaction(ts, response_num, self._slack_id, real_name)
         if result == -1:
@@ -103,9 +102,7 @@ class InteractiveComponentPayload:
                     end = start + 2 + len(self._slack_id) + 1
                     statement = old[0:start] + old[end + 1:]
                     blocks[old_response_block]['text']['text'] = statement
-                    send_debug_message("Edited statement was: " + statement)
                 if int(old_response_num) != int(response_num):  # This is not a removal
-                    send_debug_message("Old: " + str(old_response_num) + " New: " + str(response_num))
                     blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
         else:
             if result == 0:
