@@ -727,16 +727,17 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                             "DELETE FROM tribe_poll_responses "
                             "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
                             [slack_id, ts, options_number])
-            conn.commit()
         else:
             cursor.execute(sql.SQL(
                 "UPDATE tribe_poll_responses SET response_num = %s "
                 "WHERE slack_id=%s AND ts=%s"),
                 [options_number, slack_id, ts])
+
             if num_responses == 1:
                 res = 0
             else:
                 res = 1
+        conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
     finally:
