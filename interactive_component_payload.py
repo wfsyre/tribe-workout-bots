@@ -95,7 +95,6 @@ class InteractiveComponentPayload:
                     blocks[response_block]['text']['text'] = statement
             else:
                 if old_response_num != -1:
-                    # a response of 0 from the db lets us know this is a removal
                     old_response_block = int(old_response_num) + 1
                     old = blocks[old_response_block]['text']['text']
                     start = old.find(self._slack_id) - 2
