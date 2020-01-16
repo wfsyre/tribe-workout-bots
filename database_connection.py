@@ -926,7 +926,7 @@ def get_poll_settings(ts):
         )
         cursor = conn.cursor()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL("SELECT anon, multi, invisible FROM tribe_poll_data WHERE ts = %s"),
+        cursor.execute(sql.SQL("SELECT anonymous, multi, invisible FROM tribe_poll_data WHERE ts = %s"),
                        [ts])
         settings = cursor.fetchall()
         conn.commit()
