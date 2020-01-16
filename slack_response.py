@@ -2,6 +2,7 @@ from database_connection import *
 from utils import *
 from slack_api import *
 from datetime import datetime, timedelta
+from pytz import timezone
 
 
 class SlackResponse:
@@ -313,11 +314,14 @@ class SlackResponse:
         send_file(file_name, self._channel)
 
     def command_feedback(self):
-        now = datetime.now()
-        title = "Rate the team's intensity at practice for " + now.strftime("%m/%d/%Y")
-        options = ["Very High", "High", "Average", "Low", "Very Low"]
+        now = datetime.now(tz=timezone('US/Eastern'))
+        title = "How would you rate Tribe's EFFORT at tonight's practice" + now.strftime("%m/%d/%Y")
+        options = ["Excellent (Sustained stretches competing at tournament levels",
+                   "Good (Moments competing at tournament levels",
+                   "Average (OK effort, but we did not push ourselves",
+                   "Low"]
         anonymous = True
-        add_tracked_poll(title, os.getenv("ADMIN_ID"), self._ts, options, self._channel, anonymous)
+        add_tracked_poll(title, os.getenv("ADMIN_ID"), self._ts, options, self._channel, anonymous, multi=False, invisible=True)
         add_poll_dummy_responses(self._ts)
         create_poll(self._channel, title, options, self._ts, anonymous)
         register_feedback_poll(self._ts)

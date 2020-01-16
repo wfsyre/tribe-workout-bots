@@ -70,7 +70,7 @@ class InteractiveComponentPayload:
         colon = self._action_id.find(":")
         second_colon = self._action_id.find(":", colon + 1)
         response_num = self._action_id[colon + 1:second_colon]
-        anon = self._action_id[second_colon + 1:] == "True"
+        anon, multi, invisible = get_poll_settings(ts)
         real_name = get_user_info(self._slack_id)['user']['real_name']
         send_debug_message("Found component interaction with id: " + self._slack_id
                            + ", ts: " + ts
@@ -96,16 +96,25 @@ class InteractiveComponentPayload:
             elif result == 1:
                 blocks[response_block]['text']['text'] = current + " :thumbsup: "
 
-
-
-        slack_data = {
-            "blocks": blocks,
-            "replace_original": True,
-        }
-        post(
-            self._webhook_url,
-            json=slack_data,
-            headers={'Content-Type': 'application/json'})
+        if not invisible:
+            slack_data = {
+                "blocks": blocks,
+                "replace_original": True,
+            }
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
+        else:
+            slack_data = {
+                "text": "Your vote has been recorded",
+                "response_type": 'ephemeral',
+                "replace_original": False
+            }
+            post(
+                self._webhook_url,
+                json=slack_data,
+                headers={'Content-Type': 'application/json'})
 
     def delete_poll(self):
         ts = self._action_id
@@ -194,11 +203,17 @@ class InteractiveComponentPayload:
         first = dm_data.find(":")
         ts = dm_data[first + 1:]
         title, data, anon = get_poll_data(ts)
+        anon, multi, invisible = get_poll_settings(ts)
+
         im_data = open_im(self._slack_id)
         if 'channel' in list(im_data.keys()):
             channel = im_data['channel']['id']
-            send_categories(title, channel, data)
-            send_debug_message(" Sent poll information to <@" + self._slack_id + ">", level="DEBUG")
+            if not invisible:
+                send_categories(title, channel, data)
+                send_debug_message("Sent poll information to <@" + self._slack_id + ">", level="DEBUG")
+            else:
+                send_message("You thought you could just press the button and get the results, huh?", channel, bot_name="SHAME")
+                send_debug_message("Sent shame information to <@" + self._slack_id + ">", level="DEBUG")
 
     def vote_calendar(self):
         date = self._json_data['actions'][0]['value']

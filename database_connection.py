@@ -218,7 +218,7 @@ def reteam(excluded_ids):
 def setup():
     create_tribe_data = "create table tribe_data (name text not null constraint tribe_data_pkey primary key, num_posts smallint default 0, num_workouts smallint, workout_score numeric(4, 1), last_post date, slack_id varchar(9));"
     create_tribe_workouts = "create table tribe_workouts (name varchar, slack_id char(9), workout_type varchar, workout_date date);"
-    create_tribe_poll_data = "create table tribe_poll_data (ts numeric(16, 6), slack_id char(9), title text, options text [], channel char(9), anonymous boolean);"
+    create_tribe_poll_data = "create table tribe_poll_data (ts numeric(16, 6), slack_id char(9), title text, options text [], channel char(9), anonymous boolean, multi boolean, invisible boolean);"
     create_tribe_poll_responses = "create table tribe_poll_responses (ts numeric(16, 6), real_name text, slack_id char(9), response_num smallint);"
     create_tribe_reaction_info = "create table reaction_info (date date, yes text, no text, drills text, injured text, timestamp text);"
     create_intensity_feedback_polls = "CREATE TABLE intensity_feedback_polls (timestamp numeric(16, 6));"
@@ -639,7 +639,7 @@ def get_group_workouts_after_date(date, workout_type):
     return workouts
 
 
-def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
+def add_tracked_poll(title, slack_id, ts, options, channel, anonymous, multi=True, invisible=False):
     option_string = '{' + ', '.join(['\"' + x + '\"' for x in options]) + '}'
     cursor = None
     conn = None
@@ -655,9 +655,9 @@ def add_tracked_poll(title, slack_id, ts, options, channel, anonymous):
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL(
-            "INSERT INTO tribe_poll_data (ts, slack_id, title, options, channel, anonymous)"
-            "VALUES (%s, %s, %s, %s, %s, %s)"),
-            [ts, slack_id, title, option_string, channel, anonymous])
+            "INSERT INTO tribe_poll_data (ts, slack_id, title, options, channel, anonymous, multi, invisible)"
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"),
+            [ts, slack_id, title, option_string, channel, anonymous, multi, invisible])
         conn.commit()
         send_debug_message("Committed " + title + " to the poll list", level="DEBUG")
     except (Exception, psycopg2.DatabaseError) as error:
@@ -683,6 +683,8 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
             port=url.port
         )
         cursor = conn.cursor()
+        cursor.execute(sql.SQL("SELECT multi FROM tribe_poll_data where ts=%s"))
+        multi = cursor.fetchall()[0][0]
         cursor.execute(sql.SQL(
             "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s"),
             [slack_id, ts])
@@ -693,38 +695,45 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
             "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num != -1"),
             [slack_id, ts])
         num_responses = cursor.rowcount
-        if num_responses == 0:  # they have never responded
-            # delete dummy response, record response
+        if multi:
+            if num_responses == 0:  # they have never responded
+                # delete dummy response, record response
+                cursor.execute(sql.SQL(
+                    "UPDATE tribe_poll_responses SET response_num = %s "
+                    "WHERE slack_id=%s AND ts=%s AND response_num = -1"),
+                    [options_number, slack_id, ts])
+                res = 1
+            elif num_responses >= 1:  # they have responded before
+                # check if they are removing a response
+                cursor.execute(sql.SQL(
+                    "SELECT * FROM tribe_poll_responses "
+                    "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                    [slack_id, ts, options_number])
+                if cursor.rowcount == 0:  # they have never responded this option
+                    cursor.execute(sql.SQL(
+                        "INSERT INTO tribe_poll_responses (ts, slack_id, real_name, response_num) "
+                        "VALUES (%s, %s, %s, %s)"),
+                        [ts, slack_id, real_name, options_number])
+                    res = 1
+                else:  # they have responded this option so we're removing it
+                    res = 0
+                    if num_responses == 1:  # last response (indicate that they have no more responses)
+                        cursor.execute(sql.SQL(
+                            "UPDATE tribe_poll_responses SET response_num =-1 "
+                            "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                            [slack_id, ts, options_number])
+                    else:  # one of many responses (delete the response)
+                        cursor.execute(sql.SQL(
+                            "DELETE FROM tribe_poll_responses "
+                            "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
+                            [slack_id, ts, options_number])
+            conn.commit()
+        else:
             cursor.execute(sql.SQL(
                 "UPDATE tribe_poll_responses SET response_num = %s "
-                "WHERE slack_id=%s AND ts=%s AND response_num = -1"),
+                "WHERE slack_id=%s AND ts=%s"),
                 [options_number, slack_id, ts])
             res = 1
-        elif num_responses >= 1:  # they have responded before
-            # check if they are removing a response
-            cursor.execute(sql.SQL(
-                "SELECT * FROM tribe_poll_responses "
-                "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
-                [slack_id, ts, options_number])
-            if cursor.rowcount == 0:  # they have never responded this option
-                cursor.execute(sql.SQL(
-                    "INSERT INTO tribe_poll_responses (ts, slack_id, real_name, response_num) "
-                    "VALUES (%s, %s, %s, %s)"),
-                    [ts, slack_id, real_name, options_number])
-                res = 1
-            else:  # they have responded this option so we're removing it
-                res = 0
-                if num_responses == 1:  # last response (indicate that they have no more responses)
-                    cursor.execute(sql.SQL(
-                        "UPDATE tribe_poll_responses SET response_num =-1 "
-                        "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
-                        [slack_id, ts, options_number])
-                else:  # one of many responses (delete the response)
-                    cursor.execute(sql.SQL(
-                        "DELETE FROM tribe_poll_responses "
-                        "WHERE slack_id=%s AND ts=%s AND response_num = %s"),
-                        [slack_id, ts, options_number])
-        conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
     finally:
@@ -877,6 +886,30 @@ def get_poll_owner(ts):
         conn.close()
         print(owner)
         return owner[0][0]
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+        return []
+
+def get_poll_settings(ts):
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL("SELECT anon, multi, invisible FROM tribe_poll_data WHERE ts = %s"),
+                       [ts])
+        settings = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return settings[0]
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
         return []
