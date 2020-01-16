@@ -729,7 +729,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
                             [slack_id, ts, options_number])
         else:
             cursor.execute(sql.SQL(
-                "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num == %s"),
+                "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s AND response_num=%s"),
                 [slack_id, ts, options_number])
             if cursor.rowcount == 0:
                 cursor.execute(sql.SQL(
