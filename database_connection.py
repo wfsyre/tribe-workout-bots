@@ -683,7 +683,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT multi FROM tribe_poll_data where ts=%s"))
+        cursor.execute(sql.SQL("SELECT multi FROM tribe_poll_data where ts=%s"), [ts])
         multi = cursor.fetchall()[0][0]
         cursor.execute(sql.SQL(
             "SELECT * FROM tribe_poll_responses WHERE slack_id=%s AND ts=%s"),
