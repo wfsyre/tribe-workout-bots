@@ -94,13 +94,14 @@ class InteractiveComponentPayload:
             else:
                 poll_responses = get_poll_response(self._slack_id, ts)
                 old_response_num = poll_responses[0][1]
-                # a response of 0 from the db lets us know this is a removal
-                old_response_block = int(old_response_num) + 1
-                old = blocks[old_response_block]['text']['text']
-                start = old.find(self._slack_id) - 2
-                end = start + 2 + len(self._slack_id) + 1
-                statement = old[0:start] + old[end + 1:]
-                blocks[old_response_block]['text']['text'] = statement
+                if old_response_num != -1:
+                    # a response of 0 from the db lets us know this is a removal
+                    old_response_block = int(old_response_num) + 1
+                    old = blocks[old_response_block]['text']['text']
+                    start = old.find(self._slack_id) - 2
+                    end = start + 2 + len(self._slack_id) + 1
+                    statement = old[0:start] + old[end + 1:]
+                    blocks[old_response_block]['text']['text'] = statement
                 if result == 1:
                     blocks[response_block]['text']['text'] = current + " <@" + self._slack_id + ">"
         else:
