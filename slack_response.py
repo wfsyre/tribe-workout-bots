@@ -218,6 +218,7 @@ class SlackResponse:
 
     def command_total(self):
         total = get_leaderboard_total()
+        total = str(total)
         send_message("Total points so far: " + total + "\n " + total + " / 1000", channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
     def command_workouts(self):  # display the leaderboard for who works out the most
