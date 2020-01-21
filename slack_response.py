@@ -216,6 +216,10 @@ class SlackResponse:
         to_print = collect_stats(3, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
+    def command_total(self):
+        total = get_leaderboard_total()
+        send_message("Total points so far: " + total + "\n " + total + " / 1000")
+
     def command_workouts(self):  # display the leaderboard for who works out the most
         to_print = collect_stats(2, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
@@ -371,7 +375,7 @@ class SlackResponse:
         anonymous = True
         add_tracked_poll(title, os.getenv("ADMIN_ID"), self._ts, options, self._channel, anonymous, multi=False, invisible=True)
         add_poll_dummy_responses(self._ts)
-        create_poll(self._channel, title, options, self._ts, anonymous)
+        create_poll(self._channel, title, options, self._ts, anonymous, countdown=True)
         register_feedback_poll(self._ts)
 
 

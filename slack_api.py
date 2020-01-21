@@ -70,7 +70,7 @@ def open_im(user_id):
     return json
 
 
-def create_poll(channel_id, title, options, ts, anon):
+def create_poll(channel_id, title, options, ts, anon, countdown=False):
     slack_token = os.getenv('BOT_OATH_ACCESS_TOKEN')
     sc = SlackClient(slack_token)
     actions = []
@@ -95,26 +95,49 @@ def create_poll(channel_id, title, options, ts, anon):
         }
     ]
     for i in range(0, len(options)):
-        block.append({
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": str(i + 1) + ": " + options[i]
-            }
-        })
-        print("votePoll:" + str(i) + ":" + str(anon))
-        actions.append(
-            {
-                "type": "button",
+        if not countdown:
+            block.append({
+                "type": "section",
                 "text": {
-                    "type": "plain_text",
-                    "text": str(i + 1),
-                    "emoji": True
-                },
-                "value": str(ts),
-                "action_id": "votePoll:" + str(i) + ":" + str(anon)
-            }
-        )
+                    "type": "mrkdwn",
+                    "text": str(i + 1) + ": " + options[i]
+                }
+            })
+        else:
+            block.append({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": str(len(options) - i) + ": " + options[i]
+                }
+            })
+        print("votePoll:" + str(i) + ":" + str(anon))
+        if not countdown:
+            actions.append(
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": str(i + 1),
+                        "emoji": True
+                    },
+                    "value": str(ts),
+                    "action_id": "votePoll:" + str(i) + ":" + str(anon)
+                }
+            )
+        else:
+            actions.append(
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": str(len(options) - i),
+                        "emoji": True
+                    },
+                    "value": str(ts),
+                    "action_id": "votePoll:" + str(i) + ":" + str(anon)
+                }
+            )
     block.append({
         "type": "actions",
         "elements": actions
