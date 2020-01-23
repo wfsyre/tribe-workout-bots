@@ -52,3 +52,32 @@ def generate_bargraph(labels, values, title, x_label, y_label):
     file_name = "plot.png"
     plt.savefig(file_name)
     return file_name
+
+def generate_feedback_bargraph(labels, values, title, x_label, y_label):
+    N = len(labels)
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.35  # the width of the bars: can also be len(x) sequence
+
+    values = np.array(values)
+    excellent = values[:, 0]
+    good = values[:, 1]
+    average = values[:, 2]
+    low = values[:, 3]
+
+    p1 = plt.bar(ind, excellent, width)
+    p2 = plt.bar(ind, good, width,
+                 bottom=excellent)
+    p3 = plt.bar(ind, average, width,
+                 bottom=good)
+    p4 = plt.bar(ind, low, width,
+                 bottom=average)
+
+    plt.ylabel(y_label)
+    plt.xlabel(x_label)
+    plt.title(title)
+    plt.xticks(ind, (labels))
+    plt.legend((p1[0], p2[0], p3[0], p4[0]), ('Excellent', 'Good', 'Average', 'Low'))
+    plt.plot()
+    file_name = "feedback_plot.png"
+    plt.savefig(file_name)
+    return file_name
