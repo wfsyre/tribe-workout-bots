@@ -379,6 +379,9 @@ class SlackResponse:
         create_poll(self._channel, title, options, self._ts, anonymous, countdown=True)
         register_feedback_poll(self._ts)
 
+    def command_results(self):
+        data = get_feedback_poll_data()
+        send_debug_message(data, "DEBUG")
 
     def admin_command_setup(self):
         send_debug_message('Setting up new database', level="INFO")

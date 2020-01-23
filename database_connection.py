@@ -793,6 +793,8 @@ def get_poll_data(ts):
         cursor = conn.cursor()
         cursor.execute(sql.SQL("SELECT title, options, anonymous FROM tribe_poll_data WHERE ts = %s"), [ts])
         poll_data = cursor.fetchall()
+        if len(poll_data) == 0:
+            return None, None, None
         title = poll_data[0][0]
         options = poll_data[0][1]
         anon = poll_data[0][2]
@@ -1030,37 +1032,6 @@ def register_feedback_poll(timestamp):
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
 
-def get_feedback_polls_results():
-    try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
-        cursor.execute(sql.SQL("SELECT timestamp FROM intensity_feedback_polls"))
-        timestamps = [x[0] for x in cursor.fetchall()]
-        data = {}
-        for ts in timestamps:
-            cursor.execute(sql.SQL("SELECT title, options FROM tribe_poll_data WHERE ts = %s"), [ts])
-            poll_data = cursor.fetchall()
-            title = poll_data[0][0]
-            cursor.execute(sql.SQL("SELECT response_num FROM tribe_poll_responses WHERE ts = %s"), [ts])
-            poll_responses = cursor.fetchall()
-            data[title[-10:]] = poll_responses
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return data
-
-    except (Exception, psycopg2.DatabaseError) as error:
-        send_debug_message(error, level="ERROR")
-        return None
-
 def get_leaderboard_total():
     try:
         urllib.parse.uses_netloc.append("postgres")
@@ -1083,6 +1054,34 @@ def get_leaderboard_total():
         cursor.close()
         conn.close()
         return total
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+
+def get_feedback_poll_data():
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL(
+            "SELECT timestamp FROM intensity_feedback_polls"))
+        timestamps = cursor.fetchall()
+        aggregated_poll_data = {}
+        for ts in timestamps:
+            title, data, anon = get_poll_data(ts[0])
+            if title is not None and data is not None:
+                date = title[-10:]
+                aggregated_poll_data[date] = data
+        cursor.close()
+        conn.close()
+        return aggregated_poll_data
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
 
