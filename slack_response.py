@@ -380,6 +380,7 @@ class SlackResponse:
         register_feedback_poll(self._ts)
     def command_results(self):
         data = get_feedback_poll_data()
+        send_debug_message(data, level="DEBUG")
         labels = []
         values = []
         for key in data.keys():
@@ -389,9 +390,10 @@ class SlackResponse:
                 print(poll_option)
                 value.append(data[key][poll_option])
             values.append(value)
+        send_debug_message(labels, level="INFO")
+        send_debug_message(values, level="INFO")
         plot_name = generate_feedback_bargraph(labels, values, "Feedback Results", "Date", "Number of Responses")
         send_file(plot_name, self._channel)
-        send_debug_message(data, level="DEBUG")
 
     def admin_command_setup(self):
         send_debug_message('Setting up new database', level="INFO")
