@@ -387,11 +387,8 @@ class SlackResponse:
             labels.append(key)
             value = []
             for poll_option in data[key].keys():
-                print(poll_option)
                 value.append(data[key][poll_option])
             values.append(value)
-        send_debug_message(labels, level="INFO")
-        send_debug_message(values, level="INFO")
         plot_name = generate_feedback_bargraph(labels, values, "Feedback Results", "Date", "Number of Responses")
         send_file(plot_name, self._channel)
 
