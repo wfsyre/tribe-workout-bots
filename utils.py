@@ -91,12 +91,44 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     return file_name
 
 
-# def main():
-#     values = [[[0], [0], [0], [0], [0], [34]], [[1], [13], [6], [0], [0], [15]], [[5], [8], [2], [1], [18]],
-#          [[4], [11], [8], [0], [11]]]
-#     labels = ['01/14/2020', '01/15/2020', '01/16/2020', '01/21/2020']
-#     generate_feedback_bargraph(labels, values, 'Test', 'X', 'Y')
-#
-#
-# if __name__ == '__main__':
-#     main()
+def get_average_intensity_score(labels, values):
+    true_values = []
+    true_lables = []
+    for i in range(len(values)):
+        if len(values[i]) == 5:
+            true_lables.append(labels[i])
+            true_values.append(values[i])
+    labels = true_lables
+    values = np.squeeze(np.array(true_values))
+    print(values)
+
+    excellent = values[:, 0]
+    good = values[:, 1]
+    average = values[:, 2]
+    low = values[:, 3]
+
+    total = 4 * np.sum(excellent) + 3 * np.sum(good) + 2 * np.sum(average) + np.sum(low)
+    total = total / (np.sum(excellent) + np.sum(good) + np.sum(average) + np.sum(low))
+
+    matrix = np.vstack((excellent, good, average, low))
+    print(matrix)
+    weights = np.array([4, 3, 2, 1])
+    sums = np.sum(matrix, axis=0)
+    print(sums)
+    result = weights.dot(matrix)
+    print(result)
+    return total, result / sums, labels
+
+
+def main():
+    values = [[[0], [0], [0], [0], [0], [34]], [[1], [13], [6], [0], [0], [15]], [[5], [8], [2], [1], [18]],
+         [[4], [11], [8], [0], [11]]]
+    labels = ['01/14/2020', '01/15/2020', '01/16/2020', '01/21/2020']
+    total, per_day, labels = get_average_intensity_score(labels, values)
+    print(per_day)
+    print(total)
+    print(labels)
+
+
+if __name__ == '__main__':
+    main()

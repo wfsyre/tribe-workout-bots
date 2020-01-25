@@ -392,6 +392,23 @@ class SlackResponse:
         plot_name = generate_feedback_bargraph(labels, values, "Feedback Results", "Date", "Number of Responses")
         send_file(plot_name, self._channel)
 
+    def command_resavg(self):
+        data = get_feedback_poll_data()
+        send_debug_message(data, level="DEBUG")
+        labels = []
+        values = []
+        for key in data.keys():
+            labels.append(key)
+            value = []
+            for poll_option in data[key].keys():
+                value.append(data[key][poll_option][0])
+            values.append(value)
+        total, per_day, labels = get_average_intensity_score(values, labels)
+        string = "Overall Average: " + str(total) + "\nPer Day Average:\n"
+        for i in range(len(labels)):
+            string += labels[i] + ": " + str(per_day[i])
+        send_message(string, self._channel, bot_name=self._name, url=self._avatar_url)
+
     def admin_command_setup(self):
         send_debug_message('Setting up new database', level="INFO")
         setup()
