@@ -120,15 +120,15 @@ def get_average_intensity_score(labels, values):
     return total, result / sums, labels
 
 
-def main():
-    values = [[[0], [0], [0], [0], [0], [34]], [[1], [13], [6], [0], [0], [15]], [[5], [8], [2], [1], [18]],
-         [[4], [11], [8], [0], [11]]]
-    labels = ['01/14/2020', '01/15/2020', '01/16/2020', '01/21/2020']
-    total, per_day, labels = get_average_intensity_score(labels, values)
-    print(per_day)
-    print(total)
-    print(labels)
-
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     values = [[[0], [0], [0], [0], [0], [34]], [[1], [13], [6], [0], [0], [15]], [[5], [8], [2], [1], [18]],
+#          [[4], [11], [8], [0], [11]]]
+#     labels = ['01/14/2020', '01/15/2020', '01/16/2020', '01/21/2020']
+#     total, per_day, labels = get_average_intensity_score(labels, values)
+#     print(per_day)
+#     print(total)
+#     print(labels)
+#
+#
+# if __name__ == '__main__':
+#     main()

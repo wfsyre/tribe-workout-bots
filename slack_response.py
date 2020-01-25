@@ -369,9 +369,9 @@ class SlackResponse:
     def command_feedback(self):
         now = datetime.now(tz=timezone('US/Eastern'))
         title = "How would you rate Tribe's EFFORT at tonight's practice" + now.strftime("%m/%d/%Y")
-        options = ["Excellent (Sustained stretches competing at tournament levels",
-                   "Good (Moments competing at tournament levels",
-                   "Average (OK effort, but we did not push ourselves",
+        options = ["Excellent (Sustained stretches competing at tournament levels)",
+                   "Good (Moments competing at tournament levels)",
+                   "Average (OK effort, but we did not push ourselves)",
                    "Low"]
         anonymous = True
         add_tracked_poll(title, os.getenv("ADMIN_ID"), self._ts, options, self._channel, anonymous, multi=False, invisible=True)
