@@ -54,30 +54,49 @@ def generate_bargraph(labels, values, title, x_label, y_label):
     return file_name
 
 def generate_feedback_bargraph(labels, values, title, x_label, y_label):
-    N = len(labels)
-    ind = np.arange(N)  # the x locations for the groups
     width = 0.35  # the width of the bars: can also be len(x) sequence
 
-    values = np.array(values)
+    true_values = []
+    true_lables = []
+    for i in range(len(values)):
+        if len(values[i]) == 5:
+            true_lables.append(labels[i])
+            true_values.append(values[i])
+    labels = true_lables
+    values = np.squeeze(np.array(true_values))
+    N = len(labels)
+    ind = np.arange(N)  # the x locations for the groups
+
     excellent = values[:, 0]
     good = values[:, 1]
     average = values[:, 2]
     low = values[:, 3]
 
-    p1 = plt.bar(ind, excellent, width)
-    p2 = plt.bar(ind, good, width,
-                 bottom=excellent)
-    p3 = plt.bar(ind, average, width,
-                 bottom=good)
-    p4 = plt.bar(ind, low, width,
-                 bottom=average)
+    p1 = plt.bar(ind, low, width, label='low')
+    p2 = plt.bar(ind, average, width,
+                 bottom=low, label='average')
+    p3 = plt.bar(ind, good, width,
+                 bottom=average + low, label='good')
+    p4 = plt.bar(ind, excellent, width,
+                 bottom=good + average + low, label='excellent')
 
     plt.ylabel(y_label)
     plt.xlabel(x_label)
     plt.title(title)
     plt.xticks(ind, (labels))
-    plt.legend((p1[0], p2[0], p3[0], p4[0]), ('Excellent', 'Good', 'Average', 'Low'))
+    plt.legend((p4[0], p3[0], p2[0], p1[0]), ('Excellent', 'Good', 'Average', 'Low'))
     plt.plot()
     file_name = "feedback_plot.png"
     plt.savefig(file_name)
     return file_name
+
+
+# def main():
+#     values = [[[0], [0], [0], [0], [0], [34]], [[1], [13], [6], [0], [0], [15]], [[5], [8], [2], [1], [18]],
+#          [[4], [11], [8], [0], [11]]]
+#     labels = ['01/14/2020', '01/15/2020', '01/16/2020', '01/21/2020']
+#     generate_feedback_bargraph(labels, values, 'Test', 'X', 'Y')
+#
+#
+# if __name__ == '__main__':
+#     main()
