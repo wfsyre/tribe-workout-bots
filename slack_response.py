@@ -401,7 +401,7 @@ class SlackResponse:
             labels.append(key)
             value = []
             for poll_option in data[key].keys():
-                value.append(data[key][poll_option][0])
+                value.append(data[key][poll_option])
             values.append(value)
         total, per_day, labels = get_average_intensity_score(values, labels)
         string = "Overall Average: " + str(total) + "\nPer Day Average:\n"
