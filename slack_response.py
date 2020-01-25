@@ -406,7 +406,7 @@ class SlackResponse:
         total, per_day, labels = get_average_intensity_score(labels, values)
         string = "Overall Average: " + str(total) + "\nPer Day Average:\n"
         for i in range(len(labels)):
-            string += labels[i] + ": " + str(per_day[i])
+            string += labels[i] + ": " + str(per_day[i]) + "\n"
         send_message(string, self._channel, bot_name=self._name, url=self._avatar_url)
 
     def admin_command_setup(self):
