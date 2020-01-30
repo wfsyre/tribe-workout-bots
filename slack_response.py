@@ -456,6 +456,8 @@ class SlackResponse:
         send_debug_message("Found a test message", level='INFO')
         if len(self._files) > 0:
             send_debug_message(self._files[0], level='INFO')
+        else:
+            send_debug_message("No file found", level='INFO')
 
 
     def admin_command_yaml(self):
