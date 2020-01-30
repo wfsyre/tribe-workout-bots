@@ -378,6 +378,7 @@ class SlackResponse:
         add_poll_dummy_responses(self._ts)
         create_poll(self._channel, title, options, self._ts, anonymous, countdown=True)
         register_feedback_poll(self._ts)
+
     def command_results(self):
         data = get_feedback_poll_data()
         send_debug_message(data, level="DEBUG")
@@ -408,6 +409,7 @@ class SlackResponse:
         for i in range(len(labels)):
             string += labels[i] + ": " + str(per_day[i]) + "\n"
         send_message(string, self._channel, bot_name=self._name, url=self._avatar_url)
+
 
     def admin_command_setup(self):
         send_debug_message('Setting up new database', level="INFO")
@@ -452,6 +454,9 @@ class SlackResponse:
 
     def admin_command_test(self):
         send_debug_message("Found a test message", level='INFO')
+        if len(self._files) > 0:
+            send_debug_message(self._files[0], level='INFO')
+
 
     def admin_command_yaml(self):
         custom_emoji_file = open("custom_emoji_names.yaml", "w")
