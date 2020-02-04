@@ -5,7 +5,7 @@ import os
 import time
 
 
-def upload_image(path_to_image, poster_name):
+def upload_image(path_to_image, poster_name, extension):
     ts = time.time()
     encrypt.decrypt('encrypted', os.environ['encryption_key'], 'credentials.json')
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials.json"
@@ -13,7 +13,7 @@ def upload_image(path_to_image, poster_name):
     client = storage.Client()
     bucket = client.get_bucket('tribe-images.appspot.com')
     # posting to firebase storage
-    image_blob = bucket.blob(poster_name + "/" + path_to_image + str(ts))
+    image_blob = bucket.blob(poster_name + "/" + poster_name.lower() + str(ts) + extension)
     image_blob.upload_from_filename(path_to_image)
 
 #

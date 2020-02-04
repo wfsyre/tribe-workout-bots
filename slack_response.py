@@ -462,7 +462,7 @@ class SlackResponse:
             f = open('Test_File' + extension, 'wb')
             f.write(requests.get(download_url).content)
             f.close()
-            image_storage.upload_image('Test_File' + extension, self._name)
+            image_storage.upload_image('Test_File' + extension, self._name, extension)
         else:
             send_debug_message("No file found", level='INFO')
 
