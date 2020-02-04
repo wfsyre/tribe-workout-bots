@@ -60,10 +60,10 @@ def images_to_movie():
     cv2.destroyAllWindows()
     return output
 
-
-def main():
-    upload_image('reid.jpg', "Reid")
-
-
-if __name__ == '__main__':
-    main()
+#
+# def main():
+#     upload_image('reid.jpg', "Reid")
+#
+#
+# if __name__ == '__main__':
+#     main()
