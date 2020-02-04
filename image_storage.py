@@ -4,16 +4,18 @@ import encrypt
 import cv2
 import argparse
 import os
+import time
 
 
 def upload_image(path_to_image, poster_name):
+    ts = time.time()
     encrypt.decrypt('encrypted', os.environ['encryption_key'], 'credentials.json')
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials.json"
     fb.FirebaseApplication('https://tribe-images.appspot.com')
     client = storage.Client()
     bucket = client.get_bucket('tribe-images.appspot.com')
     # posting to firebase storage
-    image_blob = bucket.blob(poster_name + "/" + path_to_image)
+    image_blob = bucket.blob(poster_name + "/" + path_to_image + str(ts))
     image_blob.upload_from_filename(path_to_image)
 
 
@@ -59,11 +61,3 @@ def images_to_movie():
     out.release()
     cv2.destroyAllWindows()
     return output
-
-#
-# def main():
-#     upload_image('reid.jpg', "Reid")
-#
-#
-# if __name__ == '__main__':
-#     main()

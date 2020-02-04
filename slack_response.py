@@ -3,6 +3,7 @@ from utils import *
 from slack_api import *
 from datetime import datetime, timedelta
 from pytz import timezone
+import image_storage
 
 
 class SlackResponse:
@@ -456,9 +457,17 @@ class SlackResponse:
         send_debug_message("Found a test message", level='INFO')
         if len(self._files) > 0:
             send_debug_message(self._files[0], level='INFO')
+            download_url = self._files[0]['url_private_download']
+            extension = download_url[download_url.rfind('.'):]
+            f = open('Test_File' + extension, 'wb')
+            f.write(requests.get(download_url).content)
+            f.close()
+            image_storage.upload_image('Test_File' + extension, self._name)
         else:
             send_debug_message("No file found", level='INFO')
 
+    def command_ping(self):
+        send_message("Pong", self._channel, bot_name=self._name, url=self._avatar_url)
 
     def admin_command_yaml(self):
         custom_emoji_file = open("custom_emoji_names.yaml", "w")
