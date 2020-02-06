@@ -537,7 +537,7 @@ def get_practice_attendance(date):
         return {'failure': []}
 
 
-def add_workout(name, slack_id, workout_type):
+def add_workout(name, slack_id, workout_type, img_url):
     cursor = None
     conn = None
     try:
@@ -551,8 +551,8 @@ def add_workout(name, slack_id, workout_type):
             port=url.port
         )
         cursor = conn.cursor()
-        cursor.execute(sql.SQL("INSERT INTO tribe_workouts (name, slack_id, workout_type, workout_date) "
-                               "VALUES (%s, %s, %s, now())"), [str(name), str(slack_id), str(workout_type)])
+        cursor.execute(sql.SQL("INSERT INTO tribe_workouts (name, slack_id, workout_type, workout_date, img_url) "
+                               "VALUES (%s, %s, %s, now(), %s)"), [str(name), str(slack_id), str(workout_type), img_url])
         conn.commit()
         send_debug_message("Committed " + name + " to the workout list", level="INFO")
     except (Exception, psycopg2.DatabaseError) as error:

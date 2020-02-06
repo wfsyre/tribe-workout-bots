@@ -42,6 +42,7 @@ class SlackResponse:
         self._COMMANDS = [x for x in dir(self) if "command_" in x and callable(getattr(self, x))]
 
         self.CALENDAR_ENABLED = bool(os.getenv('ENABLE_CALENDAR'))
+        self.IMAGE_STORAGE = bool(os.getenv('ENABLE_IMAGE_STORAGE'))
 
         # instantiate some dummy variables
         self._additions = []
@@ -186,26 +187,28 @@ class SlackResponse:
     def handle_db(self):
         print("handling db")
         num = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids)
+        url = ''
+        # Add their image under their name in firebase storage
+        if self.IMAGE_STORAGE:
+            if len(self._files) > 0:
+                download_url = self._files[0]['url_private_download']
+                extension = download_url[download_url.rfind('.'):]
+                f = open('Test_File' + extension, 'wb')
+                f.write(requests.get(download_url).content)
+                f.close()
+                url = image_storage.upload_image('Test_File' + extension, self._name, extension)
+                send_debug_message(url, level='INFO')
+                self.like_message(reaction='camera')
+            else:
+                send_debug_message("No file found", level='INFO')
+
         for i in range(len(self._all_names)):
             for workout in self._additions:
-                add_workout(self._all_names[i], self._all_ids[i], workout)
+                add_workout(self._all_names[i], self._all_ids[i], workout, url)
         if num == len(self._all_names):
             self.like_message()
         else:
             self.like_message(reaction='skull_and_crossbones')
-
-        # Add their image under their name in firebase storage
-        if len(self._files) > 0:
-            download_url = self._files[0]['url_private_download']
-            extension = download_url[download_url.rfind('.'):]
-            f = open('Test_File' + extension, 'wb')
-            f.write(requests.get(download_url).content)
-            f.close()
-            url = image_storage.upload_image('Test_File' + extension, self._name, extension)
-            send_debug_message(url, level='INFO')
-            self.like_message(reaction='camera')
-        else:
-            send_debug_message("No file found", level='INFO')
 
     def add_num_posts(self):
         add_num_posts([self._user_id], self._name)
