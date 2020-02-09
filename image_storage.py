@@ -18,6 +18,7 @@ def upload_image(path_to_image, poster_name, extension):
     # posting to firebase storage
     image_blob = bucket.blob(poster_name + "/" + poster_name.lower() + str(ts) + extension)
     image_blob.upload_from_filename(path_to_image)
+    image_blob.make_public()
     return image_blob.public_url
 
 #
@@ -36,7 +37,6 @@ def images_to_movie(img_urls):
         f.write(requests.get(img_urls[i][0]).content)
         f.close()
         print("File name:", file_name)
-    slack_api.send_file('0.jpg', '#bot_testing')
     (
         ffmpeg
             .input('*.jpg', pattern_type='glob', framerate=5)
