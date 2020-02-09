@@ -3,6 +3,7 @@ from firebase import firebase as fb
 import encrypt
 import os
 import time
+import glob
 
 
 def upload_image(path_to_image, poster_name, extension):
@@ -18,45 +19,27 @@ def upload_image(path_to_image, poster_name, extension):
     return image_blob.public_url
 
 #
-# def images_to_movie():
-#     # Construct the argument parser and parse the arguments
-#     ap = argparse.ArgumentParser()
-#     ap.add_argument("-ext", "--extension", required=False, default='png', help="extension name. default is 'png'.")
-#     ap.add_argument("-o", "--output", required=False, default='output.mp4', help="output video file")
-#     args = vars(ap.parse_args())
-#
-#     # Arguments
-#     dir_path = '.'
-#     ext = args['extension']
-#     output = args['output']
-#
-#     images = []
-#     for f in os.listdir(dir_path):
-#         if f.endswith(ext):
-#             images.append(f)
-#
-#     # Determine the width and height from the first image
-#     image_path = os.path.join(dir_path, images[0])
-#     frame = cv2.imread(image_path)
-#     cv2.imshow('video', frame)
-#     height, width, channels = frame.shape
-#
-#     # Define the codec and create VideoWriter object
-#     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Be sure to use lower case
-#     out = cv2.VideoWriter(output, fourcc, 20.0, (width, height))
-#
-#     for image in images:
-#
-#         image_path = os.path.join(dir_path, image)
-#         frame = cv2.imread(image_path)
-#
-#         out.write(frame)  # Write out frame to video
-#
-#         cv2.imshow('video', frame)
-#         if (cv2.waitKey(1) & 0xFF) == ord('q'): # Hit `q` to exit
-#             break
-#
-#     # Release everything if job is finished
-#     out.release()
-#     cv2.destroyAllWindows()
-#     return output
+def images_to_movie(img_urls):
+    encrypt.decrypt('encrypted', os.environ['encryption_key'], 'credentials.json')
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials.json"
+    fb.FirebaseApplication('https://tribe-images.appspot.com')
+    fb.make_get_request()
+    client = storage.Client()
+    movie_name = 'movie.avi'
+    extensions = []
+    for i in range(len(img_urls)):
+        extensions.append(img_urls[img_urls[i].rfind('.'):])
+        client.download_blob_to_file(img_urls[0], open(str(i) + extensions[i]))
+    img_array = []
+    size = 0
+    for i in range(len(img_urls)):
+        img = cv2.imread(str(i) + extensions[i])
+        height, width, layers = img.shape
+        size = (width, height)
+        img_array.append(img)
+    out = cv2.VideoWriter(movie_name, cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+
+    for i in range(len(img_array)):
+        out.write(img_array[i])
+    out.release()
+    return movie_name

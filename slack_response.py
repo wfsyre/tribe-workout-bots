@@ -187,7 +187,7 @@ class SlackResponse:
     def handle_db(self):
         print("handling db")
         num = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids)
-        url = ''
+        url = 'NULL'
         # Add their image under their name in firebase storage
         if self.IMAGE_STORAGE:
             if len(self._files) > 0:
@@ -471,6 +471,9 @@ class SlackResponse:
 
     def admin_command_test(self):
         send_debug_message("Found a test message", level='INFO')
+        img_urls = get_image_urls()
+        file_name = image_storage.images_to_movie(img_urls)
+        send_file(file_name)
 
     def command_ping(self):
         send_message("Pong", self._channel, bot_name=self._name, url=self._avatar_url)

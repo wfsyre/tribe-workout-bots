@@ -537,7 +537,7 @@ def get_practice_attendance(date):
         return {'failure': []}
 
 
-def add_workout(name, slack_id, workout_type, img_url):
+def add_workout(name, slack_id, workout_type, img_url='NULL'):
     cursor = None
     conn = None
     try:
@@ -1085,3 +1085,28 @@ def get_feedback_poll_data():
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
 
+def get_image_urls():
+    cursor = None
+    conn = None
+    urls = []
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        cursor.execute(sql.SQL(
+            "SELECT * img_url tribe_workouts where img_url != '' and img_url is not NULL"))
+        urls = cursor.fetchall()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+    finally:
+        if cursor is not None:
+            cursor.close()
+            conn.close()
+    return urls
