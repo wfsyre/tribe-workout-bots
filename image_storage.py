@@ -4,6 +4,7 @@ import encrypt
 import os
 import time
 import ffmpeg
+import requests
 
 
 def upload_image(path_to_image, poster_name, extension):
@@ -30,10 +31,10 @@ def images_to_movie(img_urls):
     for i in range(len(img_urls)):
         extensions.append(img_urls[i][0][img_urls[i][0].rfind('.'):])
         file_name = str(i) + extensions[i]
-        print("File name:", file_name)
         f = open(file_name, 'wb')
-        client.download_blob_to_file(img_urls[i][0], f)
+        f.write(requests.get(img_urls[i][0]).content)
         f.close()
+        print("File name:", file_name)
     (
         ffmpeg
             .input('*.jpg', pattern_type='glob', framerate=5)
