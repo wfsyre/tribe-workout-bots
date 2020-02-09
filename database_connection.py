@@ -1101,7 +1101,7 @@ def get_image_urls():
         )
         cursor = conn.cursor()
         cursor.execute(sql.SQL(
-            "SELECT img_url tribe_workouts where img_url != '' and img_url is not NULL"))
+            "SELECT img_url from tribe_workouts where img_url != '' and img_url is not NULL"))
         urls = cursor.fetchall()
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
