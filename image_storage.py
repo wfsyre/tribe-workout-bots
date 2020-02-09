@@ -36,7 +36,6 @@ def images_to_movie(img_urls):
         f = open(file_name, 'wb')
         f.write(requests.get(img_urls[i][0]).content)
         f.close()
-    print(os.listdir("."))
     (
         ffmpeg.input('./*.jpg', pattern_type='glob', framerate=5).output(movie_name).run()
     )
