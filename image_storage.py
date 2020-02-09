@@ -5,6 +5,7 @@ import os
 import time
 import ffmpeg
 import requests
+import slack_api
 
 
 def upload_image(path_to_image, poster_name, extension):
@@ -35,6 +36,7 @@ def images_to_movie(img_urls):
         f.write(requests.get(img_urls[i][0]).content)
         f.close()
         print("File name:", file_name)
+    slack_api.send_file('0.jpg', '#bot_testing')
     (
         ffmpeg
             .input('*.jpg', pattern_type='glob', framerate=5)

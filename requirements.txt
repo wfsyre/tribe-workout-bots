@@ -16,3 +16,4 @@ sseclient
 requests-toolbelt
 cryptography
 ffmpeg-python
+ffmpeg
