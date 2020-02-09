@@ -29,7 +29,9 @@ def images_to_movie(img_urls):
     extensions = []
     for i in range(len(img_urls)):
         extensions.append(img_urls[img_urls[i][0].rfind('.'):])
-        f = open(str(i) + extensions[i], 'wb')
+        file_name = str(i) + extensions[i]
+        print("File name:", file_name)
+        f = open(file_name, 'wb')
         client.download_blob_to_file(img_urls[i][0], f)
         f.close()
     (
