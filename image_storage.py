@@ -3,7 +3,7 @@ from firebase import firebase as fb
 import encrypt
 import os
 import time
-import glob
+import ffmpeg
 
 
 def upload_image(path_to_image, poster_name, extension):
@@ -20,29 +20,22 @@ def upload_image(path_to_image, poster_name, extension):
 
 #
 def images_to_movie(img_urls):
-    import cv2
     print(img_urls)
     encrypt.decrypt('encrypted', os.environ['encryption_key'], 'credentials.json')
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials.json"
     fb.FirebaseApplication('https://tribe-images.appspot.com')
     client = storage.Client()
-    movie_name = 'movie.avi'
+    movie_name = 'movie.mp4'
     extensions = []
     for i in range(len(img_urls)):
         extensions.append(img_urls[img_urls[i][0].rfind('.'):])
         f = open(str(i) + extensions[i], 'wb')
         client.download_blob_to_file(img_urls[i][0], f)
         f.close()
-    img_array = []
-    size = 0
-    for i in range(len(img_urls)):
-        img = cv2.imread(str(i) + extensions[i])
-        height, width, layers = img.shape
-        size = (width, height)
-        img_array.append(img)
-    out = cv2.VideoWriter(movie_name, cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
-
-    for i in range(len(img_array)):
-        out.write(img_array[i])
-    out.release()
+    (
+        ffmpeg
+            .input('*.jpg', pattern_type='glob', framerate=5)
+            .output(movie_name)
+            .run()
+    )
     return movie_name

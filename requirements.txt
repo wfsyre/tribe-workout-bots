@@ -15,4 +15,4 @@ gcloud
 sseclient
 requests-toolbelt
 cryptography
-opencv-python
+ffmpeg
