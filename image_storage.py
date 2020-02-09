@@ -23,7 +23,6 @@ def images_to_movie(img_urls):
     encrypt.decrypt('encrypted', os.environ['encryption_key'], 'credentials.json')
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials.json"
     fb.FirebaseApplication('https://tribe-images.appspot.com')
-    fb.make_get_request()
     client = storage.Client()
     movie_name = 'movie.avi'
     extensions = []
