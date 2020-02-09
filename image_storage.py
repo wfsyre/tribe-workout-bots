@@ -28,7 +28,7 @@ def images_to_movie(img_urls):
     movie_name = 'movie.mp4'
     extensions = []
     for i in range(len(img_urls)):
-        extensions.append(img_urls[img_urls[i][0].rfind('.'):])
+        extensions.append(img_urls[i][0][img_urls[i][0].rfind('.'):])
         file_name = str(i) + extensions[i]
         print("File name:", file_name)
         f = open(file_name, 'wb')
