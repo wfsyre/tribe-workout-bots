@@ -27,8 +27,8 @@ def images_to_movie(img_urls):
     movie_name = 'movie.avi'
     extensions = []
     for i in range(len(img_urls)):
-        extensions.append(img_urls[img_urls[i].rfind('.'):])
-        client.download_blob_to_file(img_urls[0], open(str(i) + extensions[i]))
+        extensions.append(img_urls[img_urls[i][0].rfind('.'):])
+        client.download_blob_to_file(img_urls[i][0], open(str(i) + extensions[i]))
     img_array = []
     size = 0
     for i in range(len(img_urls)):
