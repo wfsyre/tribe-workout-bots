@@ -30,6 +30,7 @@ def images_to_movie(img_urls):
     client = storage.Client()
     movie_name = 'movie.mp4'
     extensions = []
+    print(fb.make_get_request(img_urls[0][0]))
     for i in range(len(img_urls)):
         extensions.append(img_urls[i][0][img_urls[i][0].rfind('.'):])
         file_name = str(i) + extensions[i]
