@@ -20,6 +20,8 @@ def upload_image(path_to_image, poster_name, extension):
 
 #
 def images_to_movie(img_urls):
+    import cv2
+    print(img_urls)
     encrypt.decrypt('encrypted', os.environ['encryption_key'], 'credentials.json')
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials.json"
     fb.FirebaseApplication('https://tribe-images.appspot.com')
@@ -28,7 +30,9 @@ def images_to_movie(img_urls):
     extensions = []
     for i in range(len(img_urls)):
         extensions.append(img_urls[img_urls[i][0].rfind('.'):])
-        client.download_blob_to_file(img_urls[i][0], open(str(i) + extensions[i]))
+        f = open(str(i) + extensions[i], 'wb')
+        client.download_blob_to_file(img_urls[i][0], f)
+        f.close()
     img_array = []
     size = 0
     for i in range(len(img_urls)):
