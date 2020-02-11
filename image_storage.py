@@ -45,7 +45,6 @@ def images_to_movie(img_urls):
 def slack_url_to_movie(img_urls):
     movie_name = 'movie.mp4'
     extensions = []
-    send = True
     for i in range(len(img_urls)):
         extensions.append(img_urls[i][0][img_urls[i][0].rfind('.'):])
         file_name = str(i) + extensions[i]
@@ -53,11 +52,10 @@ def slack_url_to_movie(img_urls):
         f.write(requests.get(img_urls[i],
                              headers={"Authorization": "Bearer " + os.getenv('OATH_ACCESS_TOKEN')}).content)
         f.close()
-        if send:
-            slack_api.send_file(file_name, "#bot_testing")
-            send = False
     slack_api.send_debug_message(os.listdir('.'), level='INFO')
     (
-        ffmpeg.input('*.jpg', pattern_type='glob', framerate=5).output(movie_name).run()
+        ffmpeg.input('*.jpg', pattern_type='glob', framerate=5)
+        .output(movie_name)
+        .run()
     )
     return movie_name
