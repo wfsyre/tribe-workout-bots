@@ -45,7 +45,7 @@ def images_to_movie(img_urls):
 
 
 def slack_url_to_movie(img_urls):
-    resource.setrlimit(resource.RLIMIT_AS, (512, 512))
+    resource.setrlimit(resource.RLIMIT_AS, (512, 1024))
     movie_name = 'movie.mp4'
     extensions = []
     for i in range(len(img_urls)):
