@@ -51,7 +51,7 @@ def slack_url_to_movie(img_urls):
         file_name = str(i) + extensions[i]
         f = open(file_name, 'wb')
         f.write(requests.get(img_urls[i],
-                             {"Authorization": "Bearer " + os.getenv('OATH_ACCESS_TOKEN')}).content)
+                             headers={"Authorization": "Bearer " + os.getenv('OATH_ACCESS_TOKEN')}).content)
         f.close()
         if send:
             slack_api.send_file(file_name, "#bot_testing")
