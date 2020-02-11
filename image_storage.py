@@ -56,8 +56,8 @@ def slack_url_to_movie(img_urls):
         if send:
             slack_api.send_file(file_name, "#bot_testing")
             send = False
-
+    slack_api.send_debug_message(os.listdir('.'), level='INFO')
     (
-        ffmpeg.input('./*.jpg', pattern_type='glob', framerate=5).output(movie_name).run()
+        ffmpeg.input('*.jpg', pattern_type='glob', framerate=5).output(movie_name).run()
     )
     return movie_name
