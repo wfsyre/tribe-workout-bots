@@ -45,7 +45,7 @@ def images_to_movie(img_urls):
 
 
 def slack_url_to_movie(img_urls):
-    resource.setrlimit(resource.RLIMIT_AS, (512, 1024))
+    # resource.setrlimit(resource.RLIMIT_AS, (512, 1024))
     movie_name = 'movie.mp4'
     extensions = []
     send = True
@@ -56,9 +56,9 @@ def slack_url_to_movie(img_urls):
         f.write(requests.get(img_urls[i],
                              headers={"Authorization": "Bearer " + os.getenv('OATH_ACCESS_TOKEN')}).content)
         f.close()
-        if send:
-            slack_api.send_file(file_name, "#bot_testing")
-            send = False
+        # if send:
+        #     slack_api.send_file(file_name, "#bot_testing")
+        #     send = False
     slack_api.send_debug_message("Generating Movie", level="INFO")
     slack_api.send_debug_message(os.listdir('.'), level="INFO")
     (
