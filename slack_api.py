@@ -76,7 +76,6 @@ def get_files_from_channel(channel='CP71B44R5', num_files=200):
                         params={'token': os.getenv('OATH_ACCESS_TOKEN'),
                                 'channel': channel,
                                 'count': str(num_files)}).json()
-    send_debug_message(url + "token=" + os.getenv('OATH_ACCESS_TOKEN') + "&channel=" + channel + "&count=" + str(num_files), level="INFO")
     return json['files']
 
 

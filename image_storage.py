@@ -52,7 +52,6 @@ def slack_url_to_movie(img_urls):
         f.write(requests.get(img_urls[i],
                              headers={"Authorization": "Bearer " + os.getenv('OATH_ACCESS_TOKEN')}).content)
         f.close()
-    slack_api.send_debug_message(os.listdir('.'), level='INFO')
     (
         ffmpeg.input('*.jpg', pattern_type='glob', framerate=5)
         .output(movie_name)

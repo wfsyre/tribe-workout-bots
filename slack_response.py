@@ -475,10 +475,9 @@ class SlackResponse:
         send_debug_message("Found a test message", level='INFO')
         files = get_files_from_channel(num_files=10)
         file_list = [x['url_private_download'] for x in files]
-        send_debug_message(len(files), level='INFO')
         # img_urls = get_image_urls()
         # file_name = image_storage.images_to_movie(img_urls)
-        send_file(image_storage.slack_url_to_movie(file_list), channel="#bot_testing")
+        send_file(image_storage.slack_url_to_movie(file_list), channel=self._channel)
 
     def command_ping(self):
         send_message("Pong", self._channel, bot_name=self._name, url=self._avatar_url)
