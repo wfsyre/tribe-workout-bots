@@ -71,7 +71,7 @@ def open_im(user_id):
 
 
 def get_files_from_channel(channel, num_files=200):
-    url = "https://slack.com/api/im.open"
+    url = "https://slack.com/api/files.list?"
     json = requests.get(url,
                         params={'token': os.getenv('OATH_ACCESS_TOKEN'),
                                 'channel': channel,
