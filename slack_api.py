@@ -75,8 +75,10 @@ def get_files_from_channel(channel, num_files=200):
     json = requests.get(url,
                         params={'token': os.getenv('OATH_ACCESS_TOKEN'),
                                 'channel': channel,
-                                'count': num_files}).json()
-    print(json)
+                                'count': str(num_files)}).json()
+    send_debug_message(url + "token=" + os.getenv('OATH_ACCESS_TOKEN') + "&channel=" + channel + "&count=" + str(num_files), level="INFO")
+    return json
+
 
 
 def create_poll(channel_id, title, options, ts, anon, countdown=False):
