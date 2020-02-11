@@ -17,3 +17,4 @@ requests-toolbelt
 cryptography
 ffmpeg-python
 ffmpeg
+resource

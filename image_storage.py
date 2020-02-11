@@ -6,6 +6,7 @@ import time
 import ffmpeg
 import requests
 import slack_api
+import resource
 
 
 def upload_image(path_to_image, poster_name, extension):
@@ -43,6 +44,7 @@ def images_to_movie(img_urls):
 
 
 def slack_url_to_movie(img_urls):
+    resource.setrlimit(resource.RLIMIT_AS, (512, 512))
     movie_name = 'movie.mp4'
     extensions = []
     for i in range(len(img_urls)):
