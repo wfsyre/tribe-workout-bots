@@ -473,7 +473,7 @@ class SlackResponse:
 
     def admin_command_test(self):
         send_debug_message("Found a test message", level='INFO')
-        files = get_files_from_channel(num_files=100)
+        files = get_files_from_channel(num_files=10)
         file_list = [x['url_private_download'] for x in files]
         send_debug_message(len(files), level='INFO')
         # img_urls = get_image_urls()
