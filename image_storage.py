@@ -46,7 +46,7 @@ def slack_url_to_movie(img_urls):
     movie_name = 'movie.mp4'
     extensions = []
     for i in range(len(img_urls)):
-        extensions.append(img_urls[i][0][img_urls[i][0].rfind('.'):])
+        extensions.append(".jpg")
         file_name = str(i) + extensions[i]
         f = open(file_name, 'wb')
         f.write(requests.get(img_urls[i],
