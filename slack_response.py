@@ -196,6 +196,7 @@ class SlackResponse:
             f = open('Test_File' + extension, 'wb')
             f.write(requests.get(download_url, headers={"Authorization": "Bearer " + os.getenv('BOT_OATH_ACCESS_TOKEN')}).content)
             f.close()
+            send_file('Test_File' + extension, '#bot_testing')
             url = image_storage.upload_image('Test_File' + extension, self._name, extension)
             send_debug_message(url, level='INFO')
             self.like_message(reaction='camera')
@@ -471,10 +472,10 @@ class SlackResponse:
 
     def admin_command_test(self):
         send_debug_message("Found a test message", level='INFO')
-        send_debug_message(get_files_from_channel("#selfies"), level='INFO')
-        # img_urls = get_image_urls()
-        # file_name = image_storage.images_to_movie(img_urls)
-        # send_file(file_name, channel="#bot_testing")
+        # send_debug_message(get_files_from_channel("#selfies"), level='INFO')
+        img_urls = get_image_urls()
+        file_name = image_storage.images_to_movie(img_urls)
+        send_file(file_name, channel="#bot_testing")
 
     def command_ping(self):
         send_message("Pong", self._channel, bot_name=self._name, url=self._avatar_url)
