@@ -195,7 +195,7 @@ class SlackResponse:
                 send_debug_message(download_url, level="INFO")
                 extension = download_url[download_url.rfind('.'):]
                 f = open('Test_File' + extension, 'wb')
-                f.write(requests.get('Test_File' + extension,
+                f.write(requests.get(download_url,
                                      headers={"Authorization": "Bearer " + os.getenv('OATH_ACCESS_TOKEN')}).content)
                 f.close()
                 send_file('Test_File' + extension, '#bot_testing')
