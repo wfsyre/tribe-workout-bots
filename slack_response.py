@@ -472,7 +472,8 @@ class SlackResponse:
 
     def admin_command_test(self):
         send_debug_message("Found a test message", level='INFO')
-        send_debug_message(get_files_from_channel(), level='INFO')
+        files = get_files_from_channel(num_files=500)
+        send_debug_message(len(files), level='INFO')
         # img_urls = get_image_urls()
         # file_name = image_storage.images_to_movie(img_urls)
         # send_file(file_name, channel="#bot_testing")
