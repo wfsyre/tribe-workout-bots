@@ -6,7 +6,6 @@ import time
 import ffmpeg
 import requests
 import slack_api
-import resource
 
 
 def upload_image(path_to_image, poster_name, extension):
@@ -45,7 +44,6 @@ def images_to_movie(img_urls):
 
 
 def slack_url_to_movie(img_urls):
-    # resource.setrlimit(resource.RLIMIT_AS, (512, 1024))
     movie_name = 'movie.mp4'
     extensions = []
     send = True
@@ -62,8 +60,17 @@ def slack_url_to_movie(img_urls):
     slack_api.send_debug_message("Generating Movie", level="INFO")
     slack_api.send_debug_message(os.listdir('.'), level="INFO")
     (
-        ffmpeg.input('*.jpg', pattern_type='glob', framerate=5)
+        ffmpeg
+        .input('*.jpg', pattern_type='glob', framerate=5)
         .output(movie_name)
         .run()
     )
     return movie_name
+
+
+if __name__ == '__main__':
+    img_urls = slack_api.get_files_from_channel(num_files=10)
+    img_urls = [x['url_private_download'] for x in img_urls]
+    print(len(img_urls))
+    print(slack_url_to_movie(img_urls))
+

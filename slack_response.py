@@ -198,9 +198,7 @@ class SlackResponse:
                 f.write(requests.get(download_url,
                                      headers={"Authorization": "Bearer " + os.getenv('OATH_ACCESS_TOKEN')}).content)
                 f.close()
-                send_file('Test_File' + extension, '#bot_testing')
                 url = image_storage.upload_image('Test_File' + extension, self._name, extension)
-                send_debug_message(url, level='INFO')
                 self.like_message(reaction='camera')
             else:
                 send_debug_message("No file found", level='INFO')
