@@ -68,9 +68,9 @@ def slack_url_to_movie(img_urls):
     return movie_name
 
 
-if __name__ == '__main__':
-    img_urls = slack_api.get_files_from_channel(num_files=10)
-    img_urls = [x['url_private_download'] for x in img_urls]
-    print(len(img_urls))
-    print(slack_url_to_movie(img_urls))
+# if __name__ == '__main__':
+#     img_urls = slack_api.get_files_from_channel(num_files=10)
+#     img_urls = [x['url_private_download'] for x in img_urls]
+#     print(len(img_urls))
+#     print(slack_url_to_movie(img_urls))
 
