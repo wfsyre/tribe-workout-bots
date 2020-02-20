@@ -74,7 +74,7 @@ class SlackResponse:
                 send_debug_message("Found a deleted message in channel %s written by <@%s>, deleted by: <@%s> that said: %s" % (
                     self._channel,
                     self._previous_message['user'],
-                    self._previous_message['edited']['user'],
+                    self._previous_message['user'],
                     self._previous_message['text']), level="INFO")
         elif self._subtype == 'message_changed':
             self._check_for_commands = True
