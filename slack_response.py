@@ -71,8 +71,9 @@ class SlackResponse:
             self._bot = True
             self._channel = self._event['channel']
             if self._channel not in 'GPA9BE3DL':
+
                 send_debug_message("Found a deleted message in channel %s written by <@%s>, deleted by: <@%s> that said: %s" % (
-                    self._channel, self._previous_message['user'], self._user_id, self._previous_message['text']), level="INFO")
+                    self._channel, self._previous_message['user'], self._event['user'], self._previous_message['text']), level="INFO")
         elif self._subtype == 'message_changed':
             self._check_for_commands = True
             self._previous_message = self._event['previous_message']
