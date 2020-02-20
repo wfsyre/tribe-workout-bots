@@ -87,9 +87,11 @@ class SlackResponse:
             self._text = self._event['message']['text']
             self._channel = self._event['channel']
             self._ts = self._event['message']['ts']
-            if 'blocks' not in self._event['previous_message'] and self._previous_message_text != self._text:
+            if self._previous_message_text != self._text:
                 send_debug_message("Found an edited message in channel %s that used to say: %s" % (self._channel, self._previous_message),
                                    level="INFO")
+            else:
+                send_debug_message("Edit not counted", level="INFO")
         elif self._subtype == 'bot_message':
             self._bot = True
             self._channel_type = self._event['channel_type']
