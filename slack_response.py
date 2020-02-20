@@ -71,9 +71,8 @@ class SlackResponse:
             self._bot = True
             self._channel = self._event['channel']
             if self._channel not in 'GPA9BE3DL':
-                send_debug_message("Found a deleted message in channel %s written by %s" % (
-                    self._channel, self._previous_message['user']), level="INFO")
-                send_debug_message(self._previous_message['text'], level="INFO")
+                send_debug_message("Found a deleted message in channel %s written by <@%s>, deleted by: <@%s> that said: %s" % (
+                    self._channel, self._previous_message['user'], self._user_id, self._previous_message['text']), level="INFO")
         elif self._subtype == 'message_changed':
             self._check_for_commands = True
             self._previous_message = self._event['previous_message']
@@ -85,10 +84,9 @@ class SlackResponse:
             self._text = self._event['message']['text']
             self._channel = self._event['channel']
             self._ts = self._event['message']['ts']
-            if 'blocks' not in self._event['previous_message'] and not self._bot:
-                send_debug_message("Found a edited message in channel %s that used to say:" % self._channel,
+            if 'blocks' not in self._event['previous_message'] and self._previous_message_text != self._text:
+                send_debug_message("Found an edited message in channel %s that used to say: %s" % (self._channel, self._previous_message),
                                    level="INFO")
-                send_debug_message(self._previous_message_text, level="INFO")
         elif self._subtype == 'bot_message':
             self._bot = True
             self._channel_type = self._event['channel_type']
@@ -192,7 +190,6 @@ class SlackResponse:
         if self.IMAGE_STORAGE:
             if len(self._files) > 0:
                 download_url = self._files[0]['url_private_download']
-                send_debug_message(download_url, level="INFO")
                 extension = download_url[download_url.rfind('.'):]
                 f = open('Test_File' + extension, 'wb')
                 f.write(requests.get(download_url,
