@@ -66,25 +66,26 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     values = np.squeeze(np.array(true_values))
     N = len(labels)
     ind = np.arange(N)  # the x locations for the groups
-
+    fig, ax = plt.subplots()
     excellent = values[:, 0]
     good = values[:, 1]
     average = values[:, 2]
     low = values[:, 3]
+    true_avg = ((4 * excellent) + (3 * good) + (2 * average) + low) /4
 
-    p1 = plt.bar(ind, low, width, label='low')
-    p2 = plt.bar(ind, average, width,
-                 bottom=low, label='average')
-    p3 = plt.bar(ind, good, width,
-                 bottom=average + low, label='good')
-    p4 = plt.bar(ind, excellent, width,
-                 bottom=good + average + low, label='excellent')
 
-    plt.ylabel(y_label)
-    plt.xlabel(x_label)
-    plt.title(title)
-    plt.xticks(ind, (labels))
-    plt.legend((p4[0], p3[0], p2[0], p1[0]), ('Excellent', 'Good', 'Average', 'Low'))
+    p1 = ax.plot(ind, low, label='low')
+    p2 = ax.plot(ind, average, label='average')
+    p3 = ax.plot(ind, good, label='good')
+    p4 = ax.plot(ind, excellent, label='excellent')
+    p5 = ax.plot(ind, true_avg, label='average score')
+
+    ax.ylabel(y_label)
+    ax.xlabel(x_label)
+    ax.title(title)
+    ax.xticks(ind, labels)
+    ax.legend((p5[0], p4[0], p3[0], p2[0], p1[0]), ('Average score', 'Excellent', 'Good', 'Average', 'Low'))
+    plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right', fontsize='x-small')
     plt.plot()
     file_name = "feedback_plot.png"
     plt.savefig(file_name)
