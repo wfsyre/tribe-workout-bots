@@ -58,7 +58,8 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     true_values = []
     true_lables = []
     for i in range(len(values)):
-        if len(values[i]) == 5:
+        if len(values[i]) == 5 and np.sum(np.array(values[i])) > 0:
+            print(values[i])
             true_lables.append(labels[i])
             true_values.append(values[i])
     labels = true_lables
