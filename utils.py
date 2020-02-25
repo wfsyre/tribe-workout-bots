@@ -71,7 +71,7 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     average = values[:, 2]
     low = values[:, 3]
     true_avg = ((4 * excellent) + (3 * good) + (2 * average) + low)
-    true_avg /= (np.sum(excellent) + np.sum(good) + np.sum(average) + np.sum(low))
+    true_avg = true_avg / (np.sum(excellent) + np.sum(good) + np.sum(average) + np.sum(low))
 
     p1 = ax.plot(ind, low, label='low')
     p2 = ax.plot(ind, average, label='average')
