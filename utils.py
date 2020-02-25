@@ -70,8 +70,12 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     good = values[:, 1]
     average = values[:, 2]
     low = values[:, 3]
-    true_avg = (4 * np.sum(excellent) + 3 * np.sum(good) + 2 * np.sum(average) + np.sum(low))
-    true_avg = true_avg / (np.sum(excellent) + np.sum(good) + np.sum(average) + np.sum(low))
+
+    matrix = np.vstack((excellent, good, average, low))
+    weights = np.array([4, 3, 2, 1])
+    sums = np.sum(matrix, axis=0)
+    result = weights.dot(matrix)
+    true_avg = result / sums
 
     p1 = ax.plot(ind, low, label='low')
     p2 = ax.plot(ind, average, label='average')
@@ -111,12 +115,9 @@ def get_average_intensity_score(labels, values):
     total = total / (np.sum(excellent) + np.sum(good) + np.sum(average) + np.sum(low))
 
     matrix = np.vstack((excellent, good, average, low))
-    print(matrix)
     weights = np.array([4, 3, 2, 1])
     sums = np.sum(matrix, axis=0)
-    print(sums)
     result = weights.dot(matrix)
-    print(result)
     return total, result / sums, labels
 
 
