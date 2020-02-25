@@ -73,18 +73,17 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     low = values[:, 3]
     true_avg = ((4 * excellent) + (3 * good) + (2 * average) + low) /4
 
-
     p1 = ax.plot(ind, low, label='low')
     p2 = ax.plot(ind, average, label='average')
     p3 = ax.plot(ind, good, label='good')
     p4 = ax.plot(ind, excellent, label='excellent')
     p5 = ax.plot(ind, true_avg, label='average score')
 
-    ax.ylabel(y_label)
-    ax.xlabel(x_label)
-    ax.title(title)
-    ax.xticks(ind, labels)
-    ax.legend((p5[0], p4[0], p3[0], p2[0], p1[0]), ('Average score', 'Excellent', 'Good', 'Average', 'Low'))
+    plt.ylabel(y_label)
+    plt.xlabel(x_label)
+    plt.title(title)
+    plt.xticks(ind, labels)
+    plt.legend((p5[0], p4[0], p3[0], p2[0], p1[0]), ('Average score', 'Excellent', 'Good', 'Average', 'Low'))
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right', fontsize='x-small')
     plt.plot()
     file_name = "feedback_plot.png"
