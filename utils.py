@@ -91,7 +91,7 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     plt.title(title)
     plt.xticks(ind, labels)
     plt.yticks(np.arange(0, max_tick, 1))
-    plt.legend((p5[0], p4[0], p3[0], p2[0], p1[0]), ('Average score', 'Excellent', 'Good', 'Average', 'Low'))
+    plt.legend((p5[0], p4[0], p3[0], p2[0], p1[0]), ('Average score', 'Excellent', 'Good', 'Average', 'Low'), loc='upper right')
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right', fontsize='x-small')
     ax.yaxis.grid(True)
     ax.xaxis.grid(True)
