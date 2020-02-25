@@ -64,6 +64,7 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
             true_values.append(values[i])
     labels = true_lables
     values = np.squeeze(np.array(true_values))
+    max_tick = np.max(values)
     N = len(labels)
     ind = np.arange(N)  # the x locations for the groups
     fig, ax = plt.subplots()
@@ -89,6 +90,7 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     plt.xlabel(x_label)
     plt.title(title)
     plt.xticks(ind, labels)
+    plt.yticks(np.arange(0, max_tick, 1))
     plt.legend((p5[0], p4[0], p3[0], p2[0], p1[0]), ('Average score', 'Excellent', 'Good', 'Average', 'Low'))
     plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right', fontsize='x-small')
     plt.plot()
