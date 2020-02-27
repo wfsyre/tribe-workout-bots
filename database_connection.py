@@ -95,6 +95,7 @@ def add_to_db(names, addition, num_workouts, ids):  # add "addition" to each of 
     cursor = None
     conn = None
     num_committed = 0
+    committed = []
     try:
         urllib.parse.uses_netloc.append("postgres")
         url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
@@ -121,15 +122,17 @@ def add_to_db(names, addition, num_workouts, ids):  # add "addition" to each of 
                 send_debug_message("committed %s with %s points" % (names[x], str(addition)), level="INFO")
                 print("committed %s with %s points" % (names[x], str(addition)))
                 num_committed += 1
+                committed.append((names[x], str(ids[x])))
             else:
                 send_debug_message("invalid workout poster found " + names[x], level="INFO")
+                num_committed += 1
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(str(error), level="ERROR")
     finally:
         if cursor is not None:
             cursor.close()
             conn.close()
-        return num_committed
+        return num_committed, committed
 
 
 def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from each of the "names" in the db

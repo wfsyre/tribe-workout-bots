@@ -67,15 +67,16 @@ class SlackResponse:
             self._text = ''
         self._subtype = self._event['subtype'] if 'subtype' in list(self._event.keys()) else 'message'
         if self._subtype == 'message_deleted':
-            self._previous_message = self._event['previous_message']
-            self._bot = True
-            self._channel = self._event['channel']
-            if self._channel not in 'GPA9BE3DL':
-                send_debug_message("Found a deleted message in channel %s written by <@%s>, deleted by: <@%s> that said: %s" % (
-                    self._channel,
-                    self._previous_message['user'],
-                    json_data['authed_users'][0],
-                    self._previous_message['text']), level="INFO")
+            if 'previous_message' in self._event:
+                self._previous_message = self._event['previous_message']
+                self._bot = True
+                self._channel = self._event['channel']
+                if self._channel not in 'GPA9BE3DL':
+                    send_debug_message("Found a deleted message in channel %s written by <@%s>, deleted by: <@%s> that said: %s" % (
+                        self._channel,
+                        self._previous_message['user'],
+                        json_data['authed_users'][0],
+                        self._previous_message['text']), level="INFO")
         elif self._subtype == 'message_changed':
             self._check_for_commands = True
             self._previous_message = self._event['previous_message']
@@ -187,7 +188,7 @@ class SlackResponse:
 
     def handle_db(self):
         print("handling db")
-        num = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids)
+        num, committed = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids)
         url = 'NULL'
         # Add their image under their name in firebase storage
         if self.IMAGE_STORAGE:
@@ -203,9 +204,9 @@ class SlackResponse:
             else:
                 send_debug_message("No file found", level='INFO')
 
-        for i in range(len(self._all_names)):
+        for name, slack_id in committed:
             for workout in self._additions:
-                add_workout(self._all_names[i], self._all_ids[i], workout, url)
+                add_workout(name, slack_id, workout, url)
         if num == len(self._all_names):
             self.like_message()
         else:
@@ -465,9 +466,9 @@ class SlackResponse:
         try:
             addition = float(addition)
             send_debug_message("ADDING: " + str(addition) + " TO: " + str(people_to_add), level="INFO")
-            num = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
-            for name, id in zip(self._all_names[:-1], self._all_ids[:-1]):
-                add_workout(name, id, str(addition))
+            num, committed = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
+            for name, slack_id in committed:
+                add_workout(name, slack_id, str(addition))
         except:
             send_debug_message("Invalid addition value. Must be a float of the form X.X", level="ERROR")
 
