@@ -73,12 +73,19 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
     average = values[:, 2]
     low = values[:, 3]
 
+    totals = excellent + good + average + low
+
     matrix = np.vstack((excellent, good, average, low))
     weights = np.array([4, 3, 2, 1])
     sums = np.sum(matrix, axis=0)
     result = weights.dot(matrix)
     true_avg = result / sums
     print("True Average: ", true_avg)
+
+    low = low / totals
+    average = average / totals
+    good = good / totals
+    excellent = excellent / totals
 
     p1 = ax.plot(ind, low, label='low')
     p2 = ax.plot(ind, average, label='average')
