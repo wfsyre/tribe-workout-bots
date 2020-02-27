@@ -64,7 +64,8 @@ def generate_feedback_bargraph(labels, values, title, x_label, y_label):
             true_values.append(values[i])
     labels = true_lables
     values = np.squeeze(np.array(true_values))
-    max_tick = np.max(values)
+    # max_tick = np.max(values)
+    max_tick = 4
     N = len(labels)
     ind = np.arange(N)  # the x locations for the groups
     fig, ax = plt.subplots()
