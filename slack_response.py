@@ -232,7 +232,6 @@ class SlackResponse:
         send_tribe_message(points_string, channel=self._channel)
 
     def command_leaderboard(self):
-        send_debug_message("Found leaderboard")
         to_print = collect_stats(3, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
