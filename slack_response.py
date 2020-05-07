@@ -224,13 +224,28 @@ class SlackResponse:
         add_num_posts([self._user_id], self._name)
 
     def command_help(self):
-        send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-                           "\n!gym\n!throw\n!cardio\n!workout"
-                           "\n!since [YYYY-MM-DD] [type] [@name]"
-                           "\n!groupsince [YYYY-MM-DD] [type]"
-                           "\n!poll \"Title\" \"option 1\" ... \"option n\""
-                           "\n!daygraph [workout_type]",
-                           channel=self._channel, bot_name="Helper Bot")
+        help_string = "Available commands:\n"
+        for command in self._COMMANDS:
+            if 'admin' not in command:
+                help_string += "!" + command[8:] + "\n"
+        for workout in self._WORKOUT_TYPES:
+            help_string += "!" + workout + "\n"
+        # send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
+        #                    "\n!gym\n!throw\n!cardio\n!workout"
+        #                    "\n!since [YYYY-MM-DD] [type] [@name]"
+        #                    "\n!groupsince [YYYY-MM-DD] [type]"
+        #                    "\n!poll \"Title\" \"option 1\" ... \"option n\""
+        #                    "\n!daygraph [workout_type]",
+        #                    channel=self._channel, bot_name="Helper Bot")
+        send_tribe_message(help_string, channel=self._channel, bot_name="Helper Bot")
+
+    def admin_command_adminhelp(self):
+        help_string = "Available commands:\n"
+        for command in self._COMMANDS:
+            if 'admin' in command:
+                help_string += "!" + command[14:] + "\n"
+        send_tribe_message(help_string, channel=self._channel, bot_name="Helper Bot")
+
 
     def command_points(self):
         points_string = "Point Values\n"
