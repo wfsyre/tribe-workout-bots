@@ -22,10 +22,17 @@ class SlackResponse:
     def __init__(self, json_data):
         self._event = json_data['event']
         self._repeat = False
+
+        # Old point values
+        self.GYM_POINTS = 0.5
+        self.WORKOUT_POINTS = 2.0
         self.THROW_POINTS = 0.5
+
+        # Unused point values
         self.PICKUP_POINTS = 0.0
         self.TOURNAMENT_POINTS = 0.0
 
+        # Special Point Values
         self.LIFT_POINTS = 0.5
         self.HARDLIFT_POINTS = 1.0
         self.WORKOUT_POINTS = 1.0
@@ -35,7 +42,7 @@ class SlackResponse:
         self.BEINGACTIVE_POINTS = 0.5
 
         # Parse the instance variables for point values
-        self._WORKOUT_TYPES = ["hardlift", "hardcardio", "workout", "beingactive", "cardio", "lift", "hackeysack"]
+        self._WORKOUT_TYPES = ["gym", "throw", "workout", "hardlift", "hardcardio", "workout", "beingactive", "cardio", "lift", "hackeysack"]
         self._WORKOUT_TUPLES = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
         self._WORKOUT_MAP = {"!" + x: self[x.upper() + '_POINTS'] for x in self._WORKOUT_TYPES}
 
