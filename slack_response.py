@@ -35,7 +35,7 @@ class SlackResponse:
         # Special Point Values
         self.LIFT_POINTS = 0.5
         self.HARDLIFT_POINTS = 1.0
-        self.WORKOUT_POINTS = 1.0
+        self.WORKOUT_POINTS = 2.0
         self.CARDIO_POINTS = 0.5
         self.HACKEYSACK_POINTS = 0.0
         self.HARDCARDIO_POINTS = 1.0
