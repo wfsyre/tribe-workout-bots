@@ -35,14 +35,14 @@ class SlackResponse:
         # Special Point Values
         self.LIFT_POINTS = 0.5
         self.HARDLIFT_POINTS = 1.0
-        self.WORKOUT_POINTS = 2.0
+        self.TEAMWORKOUT_POINTS = 1.0
         self.CARDIO_POINTS = 0.5
         self.HACKEYSACK_POINTS = 0.0
         self.HARDCARDIO_POINTS = 1.0
         self.BEINGACTIVE_POINTS = 0.5
 
         # Parse the instance variables for point values
-        self._WORKOUT_TYPES = ["gym", "throw", "workout", "hardlift", "hardcardio", "workout", "beingactive", "cardio", "lift", "hackeysack"]
+        self._WORKOUT_TYPES = ["gym", "throw", "workout", "hardlift", "hardcardio", "workout", "beingactive", "cardio", "lift", "hackeysack", "teamworkout"]
         self._WORKOUT_TUPLES = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
         self._WORKOUT_MAP = {"!" + x: self[x.upper() + '_POINTS'] for x in self._WORKOUT_TYPES}
 
