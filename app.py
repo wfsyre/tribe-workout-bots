@@ -6,9 +6,21 @@ from time import sleep
 import random
 import json
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, send_from_directory
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='webapp/build')
+
+# Serve React App
+@app.route('/', defaults={'path': ''}, methods=['GET'])
+@app.route('/<path:path>', methods=['GET'])
+def serve(path):
+    if path == 'api/data':
+        return jsonify(select_all())
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
+
 
 
 @app.route('/', methods=['POST'])
