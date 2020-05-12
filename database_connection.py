@@ -51,6 +51,31 @@ def add_num_posts(mention_id, name):
         send_debug_message(error, level="ERROR")
         return True
 
+def select_all():
+    try:
+        urllib.parse.uses_netloc.append("postgres")
+        print(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+        conn = psycopg2.connect(
+            database=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port
+        )
+        cursor = conn.cursor()
+        # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
+        cursor.execute(sql.SQL(
+            "SELECT * FROM tribe_workouts"), )
+        leaderboard = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return leaderboard
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+        print("error")
+        print(error)
+        return "RIP"
 
 def collect_stats(datafield, rev):
     try:
