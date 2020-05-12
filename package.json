@@ -2,7 +2,7 @@
     "name": "tribe-workout-bot",
     "license": "MIT",
     "scripts": {
-        "build": "yarn --cwd client install && yarn --cwd client build",
-        "heroku-postbuild": "yarn build"
+        "build": "cd webapp && npm run install && npm run build",
+        "heroku-postbuild": "npm run build"
     }
 }
