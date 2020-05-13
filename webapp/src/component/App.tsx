@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { parse } from 'date-fns';
 
-import '../css/App.css';
-
 import { WorkoutData, toWorkoutType } from '../types';
 
 import WorkoutsByDateChart from './WorkoutByDateChart';
+import { Heading, Flex, Checkbox } from '@chakra-ui/core';
+import { getPlayers } from '../transform';
+import PlayerSelect from './PlayerSelect';
 
 function App() {
     const [workoutData, setWorkoutData] = useState<WorkoutData[] | null>(null);
+    const [selectedPlayer, setSelectedPlayer] = useState<string>();
+    const [cumulative, setCumulative] = useState<boolean>(false);
 
     useEffect(() => {
         fetch('/api/data')
@@ -29,14 +32,33 @@ function App() {
             .catch(console.error);
     }, []);
 
+    const players = getPlayers(workoutData ?? []);
+
     return (
-        <div className="App">
-            <header className="App-header">
-                {workoutData && (
-                    <WorkoutsByDateChart workoutData={workoutData} />
-                )}
-            </header>
-        </div>
+        <Flex alignItems="center" flexDirection="column">
+            <Heading>
+                Hey Tribe,{' '}
+                {
+                    <PlayerSelect
+                        players={players}
+                        setSelectedPlayer={setSelectedPlayer}
+                    />
+                }{' '}
+                here
+            </Heading>
+            {workoutData && (
+                <WorkoutsByDateChart
+                    workoutData={workoutData}
+                    player={selectedPlayer}
+                    cumulative={cumulative}
+                />
+            )}
+            <Checkbox
+                isChecked={cumulative}
+                onChange={() => setCumulative(!cumulative)}>
+                cumulative
+            </Checkbox>
+        </Flex>
     );
 }
 

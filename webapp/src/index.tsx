@@ -1,12 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './css/index.css';
+import { ThemeProvider, CSSReset } from '@chakra-ui/core';
 import App from './component/App';
+import customTheme from './theme';
 import * as serviceWorker from './serviceWorker';
+require('typeface-nunito');
 
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <ThemeProvider theme={customTheme}>
+            <CSSReset />
+            <App />
+        </ThemeProvider>
     </React.StrictMode>,
     document.getElementById('root'),
 );

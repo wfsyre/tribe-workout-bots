@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { WorkoutData, WorkoutType } from '../types';
-import { toTimeCount } from '../transform';
+import { toTimeCount, fillDates, toCumulative } from '../transform';
 import { fromUnixTime, format } from 'date-fns';
 import { AreaChart, XAxis, YAxis, Tooltip, Area, Legend } from 'recharts';
 
 const WorkoutsByDateChart = ({
     workoutData,
+    player,
+    cumulative,
 }: {
     workoutData: WorkoutData[];
+    player?: string;
+    cumulative: boolean;
 }) => {
     const [hidden, setHidden] = useState<Record<WorkoutType, boolean>>({
         '!throw': true,
@@ -17,12 +21,17 @@ const WorkoutsByDateChart = ({
         '!other': false,
     });
     if (workoutData == null) return null;
-    const tsCount = toTimeCount(workoutData);
-    console.log(hidden);
+    let tsCount = fillDates(
+        toTimeCount(
+            workoutData.filter((w) => player == null || w.name === player),
+        ),
+    );
+    if (cumulative) {
+        tsCount = toCumulative(tsCount);
+    }
     const max = tsCount.reduce((prev, current) =>
         prev.total > current.total ? prev : current,
     ).total;
-    console.log(tsCount);
     return (
         <AreaChart width={1500} height={600} data={tsCount}>
             <XAxis
