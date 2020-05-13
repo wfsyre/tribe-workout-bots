@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Select } from '@chakra-ui/core';
-
-const defaultSelect = 'Tribe';
+import { TEAM_NAME } from '../types';
 
 const PlayerSelect = ({
     players,
@@ -11,13 +10,13 @@ const PlayerSelect = ({
     setSelectedPlayer: React.Dispatch<React.SetStateAction<string | undefined>>;
 }) => {
     const fakeSelect = useRef(null);
-    const [selected, setSelected] = useState<string>(defaultSelect);
+    const [selected, setSelected] = useState<string>(TEAM_NAME);
     const [w, setW] = useState<number>(
         ((fakeSelect.current as unknown) as HTMLSelectElement)?.parentElement
             ?.offsetWidth ?? 180,
     );
     useEffect(() => {
-        setSelectedPlayer(selected === defaultSelect ? undefined : selected);
+        setSelectedPlayer(selected === TEAM_NAME ? undefined : selected);
         setW(
             ((fakeSelect.current as unknown) as HTMLSelectElement)
                 ?.parentElement?.offsetWidth ?? 180,
@@ -36,9 +35,9 @@ const PlayerSelect = ({
                     transition: 'width 0.2s ease-out',
                 }}
                 onChange={(e) => setSelected(e.target.value)}
-                defaultValue={defaultSelect}>
-                <option value={defaultSelect} key={defaultSelect}>
-                    {defaultSelect}
+                defaultValue={TEAM_NAME}>
+                <option value={TEAM_NAME} key={TEAM_NAME}>
+                    {TEAM_NAME}
                 </option>
                 {players.map((p) => (
                     <option value={p} key={p}>

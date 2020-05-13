@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { parse } from 'date-fns';
 
-import { WorkoutData, toWorkoutType } from '../types';
+import { WorkoutData, toWorkoutType, TEAM_NAME } from '../types';
 
 import WorkoutsByDateChart from './WorkoutByDateChart';
 import { Heading, Flex, Checkbox } from '@chakra-ui/core';
 import { getPlayers } from '../transform';
 import PlayerSelect from './PlayerSelect';
+import WorkoutByTypeChart from './WorkoutByTypeChart';
 
 function App() {
     const [workoutData, setWorkoutData] = useState<WorkoutData[] | null>(null);
@@ -37,7 +38,7 @@ function App() {
     return (
         <Flex alignItems="center" flexDirection="column">
             <Heading>
-                Hey Tribe,{' '}
+                Hey {TEAM_NAME},{' '}
                 {
                     <PlayerSelect
                         players={players}
@@ -58,6 +59,12 @@ function App() {
                 onChange={() => setCumulative(!cumulative)}>
                 cumulative
             </Checkbox>
+            {workoutData && (
+                <WorkoutByTypeChart
+                    workoutData={workoutData}
+                    player={selectedPlayer}
+                />
+            )}
         </Flex>
     );
 }

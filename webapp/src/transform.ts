@@ -1,5 +1,12 @@
 import { getUnixTime, add, fromUnixTime } from 'date-fns';
-import { WorkoutTimeCountData, WorkoutData, WorkoutType } from './types';
+import {
+    WorkoutTimeCountData,
+    WorkoutData,
+    WorkoutType,
+    WorkoutTypeData,
+    workoutTypeFill,
+    workoutTypeCountAdd,
+} from './types';
 import { waitForDomChange } from '@testing-library/react';
 
 export const toTimeCount = (data: WorkoutData[]): WorkoutTimeCountData[] => {
@@ -18,11 +25,9 @@ export const toTimeCount = (data: WorkoutData[]): WorkoutTimeCountData[] => {
         retData.push({
             date: Number(d),
             total: g.length,
-            '!gym': g.filter((t) => t === '!gym').length,
-            '!throw': g.filter((t) => t === '!throw').length,
-            '!workout': g.filter((t) => t === '!workout').length,
-            '!cardio': g.filter((t) => t === '!cardio').length,
-            '!other': g.filter((t) => t === '!other').length,
+            ...workoutTypeFill(
+                (x: WorkoutType) => g.filter((t) => t === x).length,
+            ),
         });
     });
     retData.sort((a, b) => a.date - b.date);
@@ -38,11 +43,7 @@ export const fillDates = (data: WorkoutTimeCountData[]) => {
             outData.push({
                 date: currDate,
                 total: 0,
-                '!throw': 0,
-                '!gym': 0,
-                '!cardio': 0,
-                '!workout': 0,
-                '!other': 0,
+                ...workoutTypeFill(0),
             });
 
             currDate = getUnixTime(add(fromUnixTime(currDate), { days: 1 }));
@@ -60,24 +61,34 @@ export const toCumulative = (data: WorkoutTimeCountData[]) => {
             return (outData[i] = {
                 date: b.date,
                 total: a.total + b.total,
-                '!throw': a['!throw'] + b['!throw'],
-                '!gym': a['!gym'] + b['!gym'],
-                '!cardio': a['!cardio'] + b['!cardio'],
-                '!workout': a['!workout'] + b['!workout'],
-                '!other': a['!other'] + b['!other'],
+                ...workoutTypeCountAdd(a, b),
             });
         },
         {
             date: 0,
             total: 0,
-            '!throw': 0,
-            '!gym': 0,
-            '!cardio': 0,
-            '!workout': 0,
-            '!other': 0,
+            ...workoutTypeFill(0),
         },
     );
     return outData;
+};
+
+export const groupByType = (data: WorkoutData[]): WorkoutTypeData[] => {
+    const groupedByType: Record<WorkoutType, number> = {
+        ...workoutTypeFill(0),
+    };
+    data.forEach((w) => {
+        groupedByType[w.type]++;
+    });
+    const retData: WorkoutTypeData[] = [];
+    Object.keys(groupedByType).forEach((t) => {
+        const type = t as WorkoutType;
+        retData.push({
+            type,
+            count: groupedByType[type],
+        });
+    });
+    return retData;
 };
 
 export const getPlayers = (data: WorkoutData[]): string[] => {
@@ -85,5 +96,7 @@ export const getPlayers = (data: WorkoutData[]): string[] => {
     data.forEach((w) => {
         players.add(w.name);
     });
-    return Array.from(players);
+    const out = Array.from(players);
+    out.sort();
+    return out;
 };
