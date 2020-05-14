@@ -6,7 +6,6 @@ import {
     workoutTypeFill,
     WORKOUTS,
     TEAM_NAME,
-    WorkoutTypeData,
     WorkoutTimeCountData,
 } from '../types';
 import { toTimeCount, fillDates, toCumulative } from '../transform';
@@ -25,15 +24,14 @@ import { workoutTypeColors, workoutTypeVariantColors } from '../theme';
 const WorkoutsByDateChart = ({
     workoutData,
     player,
-    cumulative,
 }: {
     workoutData: WorkoutData[];
     player?: string;
-    cumulative: boolean;
 }) => {
     const [hidden, setHidden] = useState<Record<WorkoutType, boolean>>(
         workoutTypeFill(true),
     );
+    const [cumulative, setCumulative] = useState(true);
     if (workoutData == null) return null;
     let tsCount = fillDates(
         toTimeCount(
@@ -43,9 +41,6 @@ const WorkoutsByDateChart = ({
     if (cumulative) {
         tsCount = toCumulative(tsCount);
     }
-    const max = tsCount.reduce((prev, current) =>
-        prev.total > current.total ? prev : current,
-    ).total;
 
     const toggleHidden = (w: WorkoutType) => {
         setHidden({
@@ -106,6 +101,8 @@ const WorkoutsByDateChart = ({
                         payload={payload}
                         toggleHidden={toggleHidden}
                         hidden={hidden}
+                        cumulative={cumulative}
+                        setCumulative={setCumulative}
                     />
                 )}
             />
@@ -164,29 +161,43 @@ const WorkoutLegend = ({
     payload,
     toggleHidden,
     hidden,
+    cumulative,
+    setCumulative,
 }: {
     payload: readonly LegendPayload[] | undefined;
     toggleHidden: (w: WorkoutType) => void;
     hidden: Record<WorkoutType, boolean>;
+    cumulative: boolean;
+    setCumulative: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     if (payload == null) return null;
     return (
-        <Flex justifyContent="center">
-            {payload.map((entry, index) => {
-                const w = entry.value as WorkoutType;
-                return (
-                    <Checkbox
-                        variantColor={workoutTypeVariantColors[w]}
-                        isChecked={hidden[w]}
-                        onChange={() => {
-                            toggleHidden(entry.value);
-                        }}
-                        mx={2}>
-                        {entry.value}
-                    </Checkbox>
-                );
-            })}
-        </Flex>
+        <>
+            <Flex justifyContent="center">
+                {payload.map((entry) => {
+                    const w = entry.value as WorkoutType;
+                    return (
+                        <Checkbox
+                            variantColor={workoutTypeVariantColors[w]}
+                            isChecked={hidden[w]}
+                            onChange={() => {
+                                toggleHidden(entry.value);
+                            }}
+                            mx={2}
+                            key={entry.value}>
+                            {entry.value}
+                        </Checkbox>
+                    );
+                })}
+            </Flex>
+            <Flex justifyContent="center">
+                <Checkbox
+                    isChecked={cumulative}
+                    onChange={() => setCumulative(!cumulative)}>
+                    cumulative
+                </Checkbox>
+            </Flex>
+        </>
     );
 };
 

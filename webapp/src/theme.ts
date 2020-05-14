@@ -1,4 +1,4 @@
-import { theme, CustomTheme, DefaultTheme } from '@chakra-ui/core';
+import { theme, DefaultTheme } from '@chakra-ui/core';
 import { WorkoutType, workoutTypeFill } from './types';
 
 // Let's say you want to add custom colors

@@ -1,23 +1,30 @@
 import React from 'react';
 import { WorkoutData } from '../types';
-import { PieChart, Pie, Tooltip, Cell } from 'recharts';
+import { PieChart, Pie, Tooltip, Cell, TooltipPayload } from 'recharts';
 import { groupByType } from '../transform';
 import { workoutTypeColors } from '../theme';
+import { Box } from '@chakra-ui/core';
 
 const WorkoutTypeTooltip = ({
     active,
     payload,
+    numWorkouts,
 }: {
     active: boolean;
-    payload: any[];
+    payload: TooltipPayload[];
+    numWorkouts: number;
 }) => {
     if (!active || payload[0] == null) return null;
-    const { date, total } = payload[0].payload;
+    console.log(JSON.stringify(payload));
+    const { type, count } = payload[0].payload.payload;
+    console.log(numWorkouts);
     return (
-        <div>
-            <p>{total}</p>
-            <p>{JSON.stringify(payload[0].payload)}</p>
-        </div>
+        <Box bg="rgba(255, 255, 255, 0.9)" maxW="md" p={3}>
+            <p>
+                {type}: {count} ({Math.round((count / numWorkouts) * 1000) / 10}
+                %)
+            </p>
+        </Box>
     );
 };
 
@@ -28,14 +35,18 @@ const WorkoutByTypeChart = ({
     workoutData: WorkoutData[];
     player?: string;
 }) => {
-    const data = groupByType(
-        workoutData.filter((w) => player == null || w.name === player),
+    const playerWorkouts = workoutData.filter(
+        (w) => player == null || w.name === player,
     );
+    const data = groupByType(playerWorkouts);
     return (
         <PieChart width={600} height={600}>
             <Pie data={data} dataKey="count">
                 {data.map((entry, index) => (
-                    <Cell fill={workoutTypeColors[entry.type]} />
+                    <Cell
+                        fill={workoutTypeColors[entry.type]}
+                        key={entry.type}
+                    />
                 ))}
             </Pie>
             <Tooltip
@@ -44,8 +55,14 @@ const WorkoutByTypeChart = ({
                     payload,
                 }: {
                     active: boolean;
-                    payload: any[];
-                }) => <WorkoutTypeTooltip active={active} payload={payload} />}
+                    payload: TooltipPayload[];
+                }) => (
+                    <WorkoutTypeTooltip
+                        active={active}
+                        payload={payload}
+                        numWorkouts={playerWorkouts.length}
+                    />
+                )}
             />
         </PieChart>
     );

@@ -7,7 +7,6 @@ import {
     workoutTypeFill,
     workoutTypeCountAdd,
 } from './types';
-import { waitForDomChange } from '@testing-library/react';
 
 export const toTimeCount = (data: WorkoutData[]): WorkoutTimeCountData[] => {
     const groupedByTime: { [d: string]: WorkoutType[] } = {};
@@ -32,6 +31,14 @@ export const toTimeCount = (data: WorkoutData[]): WorkoutTimeCountData[] => {
     });
     retData.sort((a, b) => a.date - b.date);
     return retData;
+};
+
+export const minDate = (data: WorkoutData[]) => {
+    return data.reduce((min, p) => (p.date < min ? p.date : min), data[0].date);
+};
+
+export const maxDate = (data: WorkoutData[]) => {
+    return data.reduce((max, p) => (p.date > max ? p.date : max), data[0].date);
 };
 
 export const fillDates = (data: WorkoutTimeCountData[]) => {
