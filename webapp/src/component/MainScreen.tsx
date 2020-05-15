@@ -20,7 +20,6 @@ const MainScreen = ({
         React.SetStateAction<[Date | null, Date | null]>
     >;
 }) => {
-    console.log('rendering!');
     const [selectedPlayer, setSelectedPlayer] = useState<string>();
 
     const minD = new Date(minDate(workoutData));

@@ -49,8 +49,6 @@ const WorkoutsByDateChart = ({
         });
     };
 
-    console.log(hidden);
-
     return (
         <AreaChart width={1500} height={600} data={tsCount}>
             <XAxis
