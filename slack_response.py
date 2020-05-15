@@ -496,11 +496,23 @@ class SlackResponse:
 
     def admin_command_test(self):
         send_debug_message("Found a test message", level='INFO')
-        files = get_files_from_channel(num_files=20)
-        file_list = [x['url_private_download'] for x in files]
-        # img_urls = get_image_urls()
-        # file_name = image_storage.images_to_movie(img_urls)
-        send_file(image_storage.slack_url_to_movie(file_list), channel=self._channel)
+        options = self._lower_text.split()[1:]
+        send_debug_message(options, level='INFO')
+        workouts = get_custom_leaderboard(options)
+        leaderboard = {}
+        for name, slack_id, type, time in workouts:
+            if slack_id in leaderboard:
+                leaderboard[name] += self._WORKOUT_MAP[type]
+            else:
+                leaderboard[name] = self._WORKOUT_MAP[type]
+        leaderboard = [(k, v) for k, v in leaderboard.items()]
+        leaderboard.sort(key=lambda tup: tup[1], reverse=True)
+
+        print_str = "Special Leaderboard:\n"
+        for x in range(0, len(leaderboard)):
+            print_str += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+        send_debug_message(print_str, level='INFO')
+
 
     def command_ping(self):
         send_message("Pong", self._channel, bot_name=self._name, url=self._avatar_url)
