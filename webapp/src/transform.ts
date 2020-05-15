@@ -1,4 +1,4 @@
-import { getUnixTime, add, fromUnixTime } from 'date-fns';
+import { getUnixTime, add, fromUnixTime, isAfter, isBefore } from 'date-fns';
 import {
     WorkoutTimeCountData,
     WorkoutData,
@@ -39,6 +39,12 @@ export const minDate = (data: WorkoutData[]) => {
 
 export const maxDate = (data: WorkoutData[]) => {
     return data.reduce((max, p) => (p.date > max ? p.date : max), data[0].date);
+};
+export const withinRange = (data: WorkoutData[], dateRange: [Date, Date]) => {
+    return data.filter((w) => {
+        const date = fromUnixTime(w.date);
+        return isAfter(date, dateRange[0]) && isBefore(date, dateRange[1]);
+    });
 };
 
 export const fillDates = (data: WorkoutTimeCountData[]) => {

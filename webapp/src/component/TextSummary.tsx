@@ -23,10 +23,10 @@ const TextSummary = ({ workoutData, player }: TextSummaryProps) => {
     return (
         <Flex flexDirection="column" alignItems="center" mt={3}>
             <Text>
-                From {format(minD, 'MMMM d')} to {format(maxD, 'MMMM d')},{' '}
-                {player ?? TEAM_NAME} did {numWorkouts} workouts. On average,
-                that's about {Math.round((numWorkouts / dateRange) * 100) / 100}{' '}
-                per day.
+                From {format(minD, 'MMMM d')} to {format(maxD, 'MMMM d')} (
+                {differenceInDays(maxD, minD)} days), {player ?? TEAM_NAME} did{' '}
+                {numWorkouts} workouts. On average, that's about{' '}
+                {Math.round((numWorkouts / dateRange) * 100) / 100} per day.
             </Text>
             <PlayerImage workoutData={workoutData} player={player} caption />
             <Text>

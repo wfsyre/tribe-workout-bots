@@ -4,9 +4,14 @@ import { parse } from 'date-fns';
 import { WorkoutData, toWorkoutType } from '../types';
 import LoadingScreen from './LoadingScreen';
 import MainScreen from './MainScreen';
+import { minDate, maxDate } from '../transform';
 
 function App() {
     const [workoutData, setWorkoutData] = useState<WorkoutData[] | null>(null);
+    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
+        null,
+        null,
+    ]);
 
     useEffect(() => {
         fetch('/api/data')
@@ -23,12 +28,20 @@ function App() {
                     url: w[4] === 'NULL' ? null : w[4],
                 }));
                 setWorkoutData(retData);
+                setDateRange([
+                    new Date(minDate(retData)),
+                    new Date(maxDate(retData)),
+                ]);
             })
             .catch(console.error);
     }, []);
 
     return workoutData ? (
-        <MainScreen workoutData={workoutData} />
+        <MainScreen
+            workoutData={workoutData}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+        />
     ) : (
         <LoadingScreen />
     );
