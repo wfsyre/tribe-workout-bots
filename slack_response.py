@@ -500,6 +500,7 @@ class SlackResponse:
         send_debug_message(options, level='INFO')
         workouts = get_custom_leaderboard(options)
         leaderboard = {}
+        print(workouts)
         for name, slack_id, type, time in workouts:
             if slack_id in leaderboard:
                 leaderboard[name] += self._WORKOUT_MAP[type]
