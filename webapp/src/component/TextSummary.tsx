@@ -25,12 +25,12 @@ const TextSummary = ({ workoutData, player }: TextSummaryProps) => {
             <Text>
                 From {format(minD, 'MMMM d')} to {format(maxD, 'MMMM d')} (
                 {differenceInDays(maxD, minD)} days), {player ?? TEAM_NAME} did{' '}
-                {numWorkouts} workouts. On average, that's about{' '}
+                {numWorkouts} workouts. That's about{' '}
                 {Math.round((numWorkouts / dateRange) * 100) / 100} per day.
             </Text>
             <PlayerImage workoutData={workoutData} player={player} caption />
             <Text>
-                Their most favorite workout was {typeData[0].type}, which was{' '}
+                Their most common workout was {typeData[0].type}, which was{' '}
                 {Math.round((typeData[0].count / numWorkouts) * 1000) / 10}% of
                 all their workouts.{' '}
             </Text>
