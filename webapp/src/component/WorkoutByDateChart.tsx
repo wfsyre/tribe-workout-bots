@@ -7,9 +7,10 @@ import {
     WORKOUTS,
     TEAM_NAME,
     WorkoutTimeCountData,
+    TournamentData,
 } from '../types';
 import { toTimeCount, fillDates, toCumulative } from '../transform';
-import { fromUnixTime, format } from 'date-fns';
+import { fromUnixTime, format, getUnixTime, isWithinInterval } from 'date-fns';
 import {
     AreaChart,
     XAxis,
@@ -18,14 +19,17 @@ import {
     Area,
     Legend,
     LegendPayload,
+    ReferenceArea,
 } from 'recharts';
 import { workoutTypeColors, workoutTypeVariantColors } from '../theme';
 
 const WorkoutsByDateChart = ({
     workoutData,
+    tournamentData,
     player,
 }: {
     workoutData: WorkoutData[];
+    tournamentData: TournamentData[];
     player?: string;
 }) => {
     const [hidden, setHidden] = useState<Record<WorkoutType, boolean>>(
@@ -50,7 +54,11 @@ const WorkoutsByDateChart = ({
     };
 
     return (
-        <AreaChart width={1500} height={600} data={tsCount}>
+        <AreaChart
+            width={1500}
+            height={600}
+            data={tsCount}
+            margin={{ top: 16 }}>
             <XAxis
                 dataKey="date"
                 domain={['dataMin', 'dataMax']}
@@ -76,6 +84,7 @@ const WorkoutsByDateChart = ({
                         name={player}
                         start={tsCount[0].date}
                         cumulative={cumulative}
+                        tournamentData={tournamentData}
                     />
                 )}
             />
@@ -104,6 +113,16 @@ const WorkoutsByDateChart = ({
                     />
                 )}
             />
+            {tournamentData.map((t) => (
+                <ReferenceArea
+                    x1={getUnixTime(t.start)}
+                    x2={getUnixTime(t.end)}
+                    key={t.name}
+                    fill="black"
+                    fillOpacity="0.1"
+                    ifOverflow="visible"
+                />
+            ))}
         </AreaChart>
     );
 };
@@ -114,6 +133,7 @@ interface WorkoutTooltipProps {
     name?: string;
     start?: number;
     cumulative: boolean;
+    tournamentData: TournamentData[];
 }
 
 const WorkoutTooltip = ({
@@ -122,12 +142,25 @@ const WorkoutTooltip = ({
     name,
     start,
     cumulative,
+    tournamentData,
 }: WorkoutTooltipProps) => {
     if (!active || payload[0] == null) return null;
     const data: WorkoutTimeCountData = payload[0].payload;
     const startDate = format(fromUnixTime(start ?? 0), 'MMM dd');
+    const inTourney = tournamentData.find((t) =>
+        isWithinInterval(fromUnixTime(data.date), {
+            start: t.start,
+            end: t.end,
+        }),
+    );
     return (
         <Box bg="rgba(255, 255, 255, 0.9)" maxW="md" p={3}>
+            {inTourney && (
+                <Text color="gray.400" as="i">
+                    On {format(fromUnixTime(data.date), 'MMM dd')}, {TEAM_NAME}{' '}
+                    was attending {inTourney.name}
+                </Text>
+            )}
             <Text>
                 {cumulative
                     ? `Between ${startDate} and ${format(

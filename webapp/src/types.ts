@@ -64,3 +64,9 @@ export interface WorkoutData {
     date: number;
     url: string | null;
 }
+
+export interface TournamentData {
+    name: string;
+    start: Date;
+    end: Date;
+}

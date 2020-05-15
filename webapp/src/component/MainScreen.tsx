@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Flex, Heading, Text } from '@chakra-ui/core';
-import { TEAM_NAME, WorkoutData } from '../types';
+import { TEAM_NAME, WorkoutData, TournamentData } from '../types';
 import PlayerSelect from './PlayerSelect';
 import WorkoutsByDateChart from './WorkoutByDateChart';
 import TextSummary from './TextSummary';
@@ -11,10 +11,12 @@ import EditableDate from './EditableDate';
 
 const MainScreen = ({
     workoutData,
+    tournamentData,
     dateRange,
     setDateRange,
 }: {
     workoutData: WorkoutData[];
+    tournamentData: TournamentData[];
     dateRange: [Date | null, Date | null];
     setDateRange: React.Dispatch<
         React.SetStateAction<[Date | null, Date | null]>
@@ -56,7 +58,7 @@ const MainScreen = ({
                                 setDateRange([x, dateRange[1]]);
                             }}
                             minDate={minD}
-                            maxDate={maxD}
+                            maxDate={dateRange[1]}
                         />
                     }{' '}
                     to{' '}
@@ -66,7 +68,7 @@ const MainScreen = ({
                             setDate={(x) => {
                                 setDateRange([dateRange[0], x]);
                             }}
-                            minDate={minD}
+                            minDate={dateRange[0]}
                             maxDate={maxD}
                         />
                     }
@@ -74,6 +76,7 @@ const MainScreen = ({
             )}
             <WorkoutsByDateChart
                 workoutData={rangeData}
+                tournamentData={tournamentData}
                 player={selectedPlayer}
             />
             <TextSummary workoutData={rangeData} player={selectedPlayer} />

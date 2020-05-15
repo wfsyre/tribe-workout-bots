@@ -16,6 +16,8 @@ app = Flask(__name__, static_folder='webapp/build')
 def serve(path):
     if path == 'api/data':
         return jsonify(select_all())
+    if path == 'api/tournaments':
+        return jsonify(tournaments())
     if path != "" and os.path.exists(app.static_folder + '/' + path):
         return send_from_directory(app.static_folder, path)
     else:
