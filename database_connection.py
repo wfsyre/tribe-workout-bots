@@ -543,16 +543,17 @@ def get_group_workouts_after_date(date, workout_type):
     return workouts
 
 
-def get_custom_leaderboard(workout_types):
+def get_custom_leaderboard(workout_types, date):
     cursor = None
     conn = None
     workouts = []
     print(workout_types)
     try:
-        select_string = "SELECT * from tribe_workouts WHERE "
+        select_string = "SELECT * from tribe_workouts WHERE (workout_date BETWEEN \'" + date + "\' and now()) and ("
         for workout_type in workout_types:
             select_string += ("workout_type=%s" % ("\'!" + workout_type + "\'")) + " or "
         select_string = select_string[:-4]
+        select_string += ")"
         send_debug_message(select_string, level="INFO")
         conn, cursor = connect_to_db()
         cursor.execute(sql.SQL(select_string))

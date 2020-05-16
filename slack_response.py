@@ -454,8 +454,10 @@ class SlackResponse:
 
     def command_eventboard(self):
         options = self._lower_text.split()[1:]
+        date = options[-1]
+        options = options[:-1]
         send_debug_message(options, level='INFO')
-        workouts = get_custom_leaderboard(options)
+        workouts = get_custom_leaderboard(options, date)
         leaderboard = {}
         for name, slack_id, type, time, img_url in workouts:
             if name in leaderboard:
