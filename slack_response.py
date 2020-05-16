@@ -452,6 +452,23 @@ class SlackResponse:
             string += labels[i] + ": " + str(per_day[i]) + "\n"
         send_message(string, self._channel, bot_name=self._name, url=self._avatar_url)
 
+    def command_eventboard(self):
+        options = self._lower_text.split()[1:]
+        send_debug_message(options, level='INFO')
+        workouts = get_custom_leaderboard(options)
+        leaderboard = {}
+        for name, slack_id, type, time, img_url in workouts:
+            if name in leaderboard:
+                leaderboard[name] += self._WORKOUT_MAP[type]
+            else:
+                leaderboard[name] = self._WORKOUT_MAP[type]
+        leaderboard = [(k, v) for k, v in leaderboard.items()]
+        leaderboard.sort(key=lambda tup: tup[1], reverse=True)
+
+        print_str = "Special Leaderboard:\n"
+        for x in range(0, len(leaderboard)):
+            print_str += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
+        send_message(print_str, self._channel, bot_name=self._name, url=self._avatar_url)
 
     def admin_command_setup(self):
         send_debug_message('Setting up new database', level="INFO")
@@ -501,7 +518,7 @@ class SlackResponse:
         workouts = get_custom_leaderboard(options)
         leaderboard = {}
         for name, slack_id, type, time, img_url in workouts:
-            if slack_id in leaderboard:
+            if name in leaderboard:
                 leaderboard[name] += self._WORKOUT_MAP[type]
             else:
                 leaderboard[name] = self._WORKOUT_MAP[type]
