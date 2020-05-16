@@ -27,10 +27,12 @@ const WorkoutsByDateChart = ({
     workoutData,
     tournamentData,
     player,
+    dateRange,
 }: {
     workoutData: WorkoutData[];
     tournamentData: TournamentData[];
     player?: string;
+    dateRange: [Date | null, Date | null];
 }) => {
     const [hidden, setHidden] = useState<Record<WorkoutType, boolean>>(
         workoutTypeFill(true),
@@ -61,7 +63,10 @@ const WorkoutsByDateChart = ({
             margin={{ top: 16 }}>
             <XAxis
                 dataKey="date"
-                domain={['dataMin', 'dataMax']}
+                domain={[
+                    dateRange[0] ? getUnixTime(dateRange[0]) : 'dataMin',
+                    dateRange[1] ? getUnixTime(dateRange[1]) : 'dataMax',
+                ]}
                 name="Time"
                 tickFormatter={(unixTime) => {
                     return format(fromUnixTime(unixTime), 'MM-dd');
@@ -120,7 +125,7 @@ const WorkoutsByDateChart = ({
                     key={t.name}
                     fill="black"
                     fillOpacity="0.1"
-                    ifOverflow="visible"
+                    ifOverflow="hidden"
                 />
             ))}
         </AreaChart>

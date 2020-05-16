@@ -77,6 +77,7 @@ const MainScreen = ({
             <WorkoutsByDateChart
                 workoutData={rangeData}
                 tournamentData={tournamentData}
+                dateRange={dateRange}
                 player={selectedPlayer}
             />
             <TextSummary workoutData={rangeData} player={selectedPlayer} />
