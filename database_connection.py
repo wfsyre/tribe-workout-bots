@@ -10,20 +10,23 @@ from flask import Flask
 
 app = Flask(__name__)
 
+def connect_to_db():
+    urllib.parse.uses_netloc.append("postgres")
+    url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
+    conn = psycopg2.connect(
+        database=url.path[1:],
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
+        port=url.port
+    )
+    cursor = conn.cursor()
+    return conn, cursor
 
 def add_num_posts(mention_id, name):
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
             "UPDATE tribe_data SET num_posts=num_posts+1 WHERE slack_id = %s"),
@@ -105,16 +108,7 @@ def tournaments():
 
 def collect_stats(datafield, rev):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
             "SELECT * FROM tribe_data WHERE workout_score > -1.0"), )
@@ -148,16 +142,7 @@ def add_to_db(names, addition, num_workouts, ids):  # add "addition" to each of 
     num_committed = 0
     committed = []
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         for x in range(0, len(names)):
             print("starting", names[x])
             cursor.execute(sql.SQL(
@@ -191,16 +176,7 @@ def subtract_from_db(names, subtraction, ids):  # subtract "subtraction" from ea
     conn = None
     num_committed = 0
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         for x in range(0, len(names)):
             cursor.execute(sql.SQL(
                 "UPDATE tribe_data SET workout_score = workout_score - %s WHERE slack_id = %s"),
@@ -224,16 +200,7 @@ def reteam(excluded_ids):
     conn = None
     try:
 
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL(
             "DROP TABLE IF EXISTS tribe_data"
         ))
@@ -279,16 +246,7 @@ def setup():
     cursor = None
     conn = None
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL(create_tribe_data))
         cursor.execute(sql.SQL(create_tribe_workouts))
         cursor.execute(sql.SQL(create_tribe_poll_data))
@@ -308,16 +266,7 @@ def reset_scores():  # reset the scores of everyone
     cursor = None
     conn = None
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL(
             "UPDATE tribe_data SET num_workouts = 0, workout_score = 0, num_posts = 0, last_post = now() WHERE workout_score != -1"
         ))
@@ -343,16 +292,7 @@ def reset_talkative():  # reset the num_posts of everyone
     cursor = None
     conn = None
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL(
             "UPDATE tribe_data SET num_posts = 0"))
         conn.commit()
@@ -367,16 +307,7 @@ def reset_talkative():  # reset the num_posts of everyone
 def add_reaction_info_date(date, yes, drills, injured, no):
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("SELECT * FROM reaction_info WHERE date = %s"), [date])
         if cursor.rowcount == 0:
             cursor.execute(
@@ -401,16 +332,7 @@ def add_reaction_info_date(date, yes, drills, injured, no):
 def add_reaction_info_ts(ts):
     # "UPDATE tribe_data SET num_posts=num_posts+1, WHERE name = 'William Syre' AND last_time != "
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("UPDATE reaction_info SET timestamp = %s WHERE timestamp IS NULL"),
                        [ts])
         if cursor.rowcount == 1:
@@ -429,16 +351,7 @@ def add_reaction_info_ts(ts):
 
 def check_reaction_timestamp(ts):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("SELECT * FROM reaction_info WHERE timestamp = %s"), [ts])
         if cursor.rowcount == 1:
             stuff = cursor.fetchall()
@@ -459,16 +372,7 @@ def check_reaction_timestamp(ts):
 
 def count_practice(slack_id, date, number):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
             "UPDATE tribe_attendance SET attendance_code = %s, date_responded=now() "
@@ -489,16 +393,7 @@ def count_practice(slack_id, date, number):
 
 def add_dummy_responses(date):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE active = 't'"))
         stuff = cursor.fetchall()
         print("This is the stuff")
@@ -517,16 +412,7 @@ def add_dummy_responses(date):
 
 def get_unanswered(date):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
             "SELECT slack_id FROM tribe_attendance WHERE practice_date = %s and attendance_code = -1"),
@@ -541,16 +427,7 @@ def get_unanswered(date):
 
 def get_practice_attendance(date):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("SELECT name FROM tribe_attendance WHERE practice_date = %s AND attendance_code = 1"),
                        [date])
@@ -595,16 +472,7 @@ def add_workout(name, slack_id, workout_type, img_url='NULL'):
     cursor = None
     conn = None
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("INSERT INTO tribe_workouts (name, slack_id, workout_type, workout_date, img_url) "
                                "VALUES (%s, %s, %s, now(), %s)"), [str(name), str(slack_id), str(workout_type), img_url])
         conn.commit()
@@ -622,16 +490,7 @@ def get_workouts_after_date(date, workout_type, slack_id):
     conn = None
     workouts = []
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL(
             "SELECT * from tribe_workouts WHERE slack_id=%s and workout_date BETWEEN %s and now() and workout_type=%s"),
             [slack_id, date, "!" + workout_type])
@@ -652,16 +511,7 @@ def get_group_workouts_after_date(date, workout_type):
     workouts = []
     print(date, workout_type)
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         if workout_type in "all":
             if date is None:
                 cursor.execute(sql.SQL(
@@ -693,21 +543,37 @@ def get_group_workouts_after_date(date, workout_type):
     return workouts
 
 
+def get_custom_leaderboard(workout_types, date):
+    cursor = None
+    conn = None
+    workouts = []
+    print(workout_types)
+    try:
+        select_string = "SELECT * from tribe_workouts WHERE (workout_date BETWEEN \'" + date + "\' and now()) and ("
+        for workout_type in workout_types:
+            select_string += ("workout_type=%s" % ("\'!" + workout_type + "\'")) + " or "
+        select_string = select_string[:-4]
+        select_string += ")"
+        send_debug_message(select_string, level="INFO")
+        conn, cursor = connect_to_db()
+        cursor.execute(sql.SQL(select_string))
+        workouts = cursor.fetchall()
+        conn.commit()
+    except (Exception, psycopg2.DatabaseError) as error:
+        send_debug_message(error, level="ERROR")
+    finally:
+        if cursor is not None:
+            cursor.close()
+            conn.close()
+    return workouts
+
+
 def add_tracked_poll(title, slack_id, ts, options, channel, anonymous, multi=True, invisible=False):
     option_string = '{' + ', '.join(['\"' + x + '\"' for x in options]) + '}'
     cursor = None
     conn = None
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL(
             "INSERT INTO tribe_poll_data (ts, slack_id, title, options, channel, anonymous, multi, invisible)"
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"),
@@ -727,16 +593,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
     conn = None
     res = 0
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("SELECT multi FROM tribe_poll_data where ts=%s"), [ts])
         multi = cursor.fetchall()[0][0]
         cursor.execute(sql.SQL(
@@ -809,16 +666,7 @@ def add_poll_reaction(ts, options_number, slack_id, real_name):
 
 def add_poll_dummy_responses(ts):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("SELECT slack_id, name FROM tribe_data WHERE active ='t'"))
         stuff = cursor.fetchall()
         for slack_id, real_name in stuff:
@@ -835,16 +683,7 @@ def add_poll_dummy_responses(ts):
 
 def get_poll_data(ts):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("SELECT title, options, anonymous FROM tribe_poll_data WHERE ts = %s"), [ts])
         poll_data = cursor.fetchall()
         if len(poll_data) == 0:
@@ -886,16 +725,7 @@ def get_poll_data(ts):
 
 def get_poll_response(slack_id, ts):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("SELECT real_name, response_num FROM tribe_poll_responses WHERE ts = %s AND slack_id = %s"), [ts, slack_id])
         poll_responses = cursor.fetchall()
         conn.commit()
@@ -910,16 +740,7 @@ def get_poll_response(slack_id, ts):
 
 def clear_poll_data():
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("DELETE FROM tribe_poll_responses"))
         cursor.execute(sql.SQL("DELETE FROM tribe_poll_data"))
         conn.commit()
@@ -931,16 +752,7 @@ def clear_poll_data():
 
 def get_poll_unanswered(ts):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("SELECT slack_id FROM tribe_poll_responses WHERE ts = %s and response_num = -1"), [ts])
         unanswered = cursor.fetchall()
@@ -956,16 +768,7 @@ def get_poll_unanswered(ts):
 
 def get_poll_owner(ts):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("SELECT slack_id FROM tribe_poll_data WHERE ts = %s"),
                        [ts])
@@ -981,16 +784,7 @@ def get_poll_owner(ts):
 
 def get_poll_settings(ts):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL("SELECT anonymous, multi, invisible FROM tribe_poll_data WHERE ts = %s"),
                        [ts])
@@ -1006,16 +800,7 @@ def get_poll_settings(ts):
 
 def delete_poll(timestamp):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("DELETE FROM tribe_poll_data WHERE ts = %s"), [timestamp])
         cursor.execute(sql.SQL("DELETE FROM tribe_poll_responses WHERE ts = %s"), [timestamp])
         conn.commit()
@@ -1027,16 +812,7 @@ def delete_poll(timestamp):
 
 def delete_calendar(date):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("DELETE FROM tribe_attendance WHERE practice_date = %s"), [date])
         cursor.execute(sql.SQL("DELETE FROM reaction_info WHERE date = %s"), [date])
         conn.commit()
@@ -1048,16 +824,7 @@ def delete_calendar(date):
 
 def set_leaderboard_from_dict(dict: {}):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("UPDATE tribe_data set workout_score = 0 where workout_score != -1"))
         for key in dict.keys():
             cursor.execute(sql.SQL("UPDATE tribe_data set workout_score = %s where slack_id = %s"), [dict[key], key])
@@ -1069,16 +836,7 @@ def set_leaderboard_from_dict(dict: {}):
 
 def register_feedback_poll(timestamp):
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL("INSERT INTO intensity_feedback_polls (timestamp) VALUES (%s)"), [timestamp])
         conn.commit()
         cursor.close()
@@ -1088,16 +846,7 @@ def register_feedback_poll(timestamp):
 
 def get_leaderboard_total():
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
             "SELECT workout_score FROM tribe_data WHERE workout_score > -1.0"), )
@@ -1113,16 +862,7 @@ def get_leaderboard_total():
 
 def get_feedback_poll_data():
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
         cursor.execute(sql.SQL(
             "SELECT timestamp FROM intensity_feedback_polls"))
@@ -1144,16 +884,7 @@ def get_image_urls():
     conn = None
     urls = []
     try:
-        urllib.parse.uses_netloc.append("postgres")
-        url = urllib.parse.urlparse(os.environ["HEROKU_POSTGRESQL_MAUVE_URL"])
-        conn = psycopg2.connect(
-            database=url.path[1:],
-            user=url.username,
-            password=url.password,
-            host=url.hostname,
-            port=url.port
-        )
-        cursor = conn.cursor()
+        conn, cursor = connect_to_db()
         cursor.execute(sql.SQL(
             "SELECT img_url from tribe_workouts where img_url != '' and img_url is not NULL"))
         urls = cursor.fetchall()
