@@ -500,8 +500,7 @@ class SlackResponse:
         send_debug_message(options, level='INFO')
         workouts = get_custom_leaderboard(options)
         leaderboard = {}
-        print(workouts)
-        for name, slack_id, type, time in workouts:
+        for name, slack_id, type, time, img_url in workouts:
             if slack_id in leaderboard:
                 leaderboard[name] += self._WORKOUT_MAP[type]
             else:
@@ -536,7 +535,7 @@ class SlackResponse:
         since_date = params[1]
         workouts = get_group_workouts_after_date(since_date, 'all')
         leaderboard = {}
-        for name, slack_id, type, time in workouts:
+        for name, slack_id, type, time, img_url in workouts:
             if type not in self._WORKOUT_MAP:  # additions and subtractions are not in the workout map and must be handled differently
                 if slack_id in leaderboard:
                     leaderboard[slack_id] += float(type)
