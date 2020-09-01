@@ -1,2 +1,5 @@
 1. A new member who is not yet in the database will cause an error when they are mentioned in a workout post (!gym @new_person)
     Solved by using !reteam
+2. An edited workout post should not re-add people who were in the original post (eg. gym !Boezi -> !gym @Boezi @Cate should only add Cate)
+    currently it adds Boezi again and Cate
+3. Some slack IDs are 11 digits instead of the old 9
