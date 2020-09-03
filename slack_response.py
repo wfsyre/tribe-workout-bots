@@ -243,7 +243,7 @@ class SlackResponse:
         help_string += "Available throwing commands:\n"
         for throwing in self._THROWING_TYPES:
             help_string += "!" + throwing + "\n"
-        help_string += "!(x minutes) customthrow \n"
+        help_string += "!throw (x minutes) \n"
         send_tribe_message(help_string, channel=self._channel, bot_name="Helper Bot")
 
     def command_generalhelp(self):
