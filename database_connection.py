@@ -115,6 +115,11 @@ def collect_stats(datafield, rev):
         leaderboard = cursor.fetchall()
         leaderboard.sort(key=lambda s: s[datafield], reverse=rev)  # sort the leaderboard by score descending
         string1 = "Leaderboard:\n"
+        if datafield == 10:
+            for x in range(0, len(leaderboard)):
+                hours = int((leaderboard[x][10])/60)
+                minutes = int((leaderboard[x][10]) % 60)
+                string1 += '%d) %s with %d hours and %d minutes \n' % (x + 1, leaderboard[x][0], hours, minutes)
         for x in range(0, len(leaderboard)):
             string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
         cursor.close()
@@ -241,10 +246,10 @@ def reteam(excluded_ids):
 
 
 def setup():
-    create_tribe_data = "create table tribe_data (name text not null constraint tribe_data_pkey primary key, num_posts smallint default 0, num_workouts smallint, workout_score numeric(4, 1), last_post date, slack_id varchar(9));"
-    create_tribe_workouts = "create table tribe_workouts (name varchar, slack_id char(9), workout_type varchar, workout_date date);"
-    create_tribe_poll_data = "create table tribe_poll_data (ts numeric(16, 6), slack_id char(9), title text, options text [], channel char(9), anonymous boolean, multi boolean, invisible boolean);"
-    create_tribe_poll_responses = "create table tribe_poll_responses (ts numeric(16, 6), real_name text, slack_id char(9), response_num smallint);"
+    create_tribe_data = "create table tribe_data (name text not null constraint tribe_data_pkey primary key, num_posts smallint default 0, num_workouts smallint, workout_score numeric(4, 1), last_post date, slack_id varchar(11));"
+    create_tribe_workouts = "create table tribe_workouts (name varchar, slack_id varchar(11), workout_type varchar, workout_date date);"
+    create_tribe_poll_data = "create table tribe_poll_data (ts numeric(16, 6), slack_id varchar(11), title text, options text [], channel char(9), anonymous boolean, multi boolean, invisible boolean);"
+    create_tribe_poll_responses = "create table tribe_poll_responses (ts numeric(16, 6), real_name text, slack_id varchar(11), response_num smallint);"
     create_tribe_reaction_info = "create table reaction_info (date date, yes text, no text, drills text, injured text, timestamp text);"
     create_intensity_feedback_polls = "CREATE TABLE intensity_feedback_polls (timestamp numeric(16, 6));"
     cursor = None
