@@ -219,7 +219,8 @@ def reteam(excluded_ids):
             "workout_score numeric(5,1), "
             "last_post date, "
             "slack_id varchar(11), "
-            "active boolean default 't')"
+            "active boolean default 't', "
+            "throwing_score numeric(4, 1))"
         ))
         cursor.execute(sql.SQL("DELETE FROM tribe_workouts"))
         for member in members:
@@ -245,7 +246,7 @@ def reteam(excluded_ids):
 
 
 def setup():
-    create_tribe_data = "create table tribe_data (name text not null constraint tribe_data_pkey primary key, num_posts smallint default 0, num_workouts smallint, workout_score numeric(4, 1), last_post date, slack_id varchar(11));"
+    create_tribe_data = "create table tribe_data (name text not null constraint tribe_data_pkey primary key, num_posts smallint default 0, num_workouts   smallint      default 0, workout_score  numeric(4, 1) default 0.0, last_post date default('now':: text):: date not null, id bigint, year smallint, slack_id varchar(11), last_time integer, active boolean, throwing_score numeric(4, 1))"
     create_tribe_workouts = "create table tribe_workouts (name varchar, slack_id varchar(11), workout_type varchar, workout_date date);"
     create_tribe_poll_data = "create table tribe_poll_data (ts numeric(16, 6), slack_id varchar(11), title text, options text [], channel char(9), anonymous boolean, multi boolean, invisible boolean);"
     create_tribe_poll_responses = "create table tribe_poll_responses (ts numeric(16, 6), real_name text, slack_id varchar(11), response_num smallint);"
