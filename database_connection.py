@@ -120,8 +120,9 @@ def collect_stats(datafield, rev):
                 hours = int((leaderboard[x][10])/60)
                 minutes = int((leaderboard[x][10]) % 60)
                 string1 += '%d) %s with %d hours and %d minutes \n' % (x + 1, leaderboard[x][0], hours, minutes)
-        for x in range(0, len(leaderboard)):
-            string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
+        else:
+            for x in range(0, len(leaderboard)):
+                string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
         cursor.close()
         conn.close()
         return string1
