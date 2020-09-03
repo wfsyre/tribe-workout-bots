@@ -198,6 +198,7 @@ class SlackResponse:
                 self._minutes_to_add += item[1]
                 self._additions.append(item[0])
         if "customthrow" in self._lower_text:
+            str1 = self._lower_text
             custom_minutes = int(str1.split()[0])
             self._minutes_to_add += custom_minutes
 
