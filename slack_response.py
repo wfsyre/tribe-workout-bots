@@ -38,16 +38,6 @@ class SlackResponse:
         self.KFTHROW_THROWING = 60
         self.LONEWOLF_THROWING = 60
 
-
-        # Special Point Values
-        self.LIFT_POINTS = 0.0
-        self.HARDLIFT_POINTS = 0.0
-        self.TEAMWORKOUT_POINTS = 0.0
-        self.CARDIO_POINTS = 0.0
-        self.HACKEYSACK_POINTS = 0.0
-        self.HARDCARDIO_POINTS = 0.0
-        self.BEINGACTIVE_POINTS = 0.0
-
         # Parse the instance variables for point values
         self._WORKOUT_TYPES = ["gym", "workout", "cardio", "routine"]
         self._WORKOUT_TUPLES = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
