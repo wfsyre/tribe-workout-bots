@@ -535,7 +535,7 @@ class SlackResponse:
             print(e)
             send_debug_message("Invalid addition value. Must be a float of the form X.X", level="ERROR")
         send_debug_message("ADDING: " + str(addition) + " TO: " + str(people_to_add), level="INFO")
-        num, committed = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1])
+        num, committed = add_to_db(self._all_names[:-1], self._lower_text[-3:], 1, self._all_ids[:-1], 0)
         for name, slack_id in committed:
             add_workout(name, slack_id, str(addition))
 
