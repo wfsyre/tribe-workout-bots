@@ -136,7 +136,7 @@ def get_emojis():
     return json
 
 
-def add_to_db(names, addition, num_workouts, ids):  # add "addition" to each of the "names" in the db
+def add_to_db(names, addition, num_workouts, ids, minutes):  # add "addition" to each of the "names" in the db
     cursor = None
     conn = None
     num_committed = 0
@@ -154,9 +154,13 @@ def add_to_db(names, addition, num_workouts, ids):  # add "addition" to each of 
                     "UPDATE tribe_data SET num_workouts=num_workouts+%s, workout_score=workout_score+%s, last_post="
                     "now() WHERE slack_id = %s"),
                     [str(num_workouts), str(addition), ids[x]])
+                cursor.execute(sql.SQL(
+                    "UPDATE tribe_data SET num_workouts=num_workouts+%s, throwing_score=throwing_score+%s, last_post="
+                    "now() WHERE slack_id = %s"),
+                    [str(num_workouts), str(minutes), ids[x]])
                 conn.commit()
-                send_debug_message("committed %s with %s points" % (names[x], str(addition)), level="INFO")
-                print("committed %s with %s points" % (names[x], str(addition)))
+                send_debug_message("committed %s with %s points and %s minutes" % (names[x], str(addition), str(minutes)), level="INFO")
+                print("committed %s with %s points and %s minutes" % (names[x], str(addition), str(minutes)))
                 num_committed += 1
                 committed.append((names[x], str(ids[x])))
             else:
