@@ -197,9 +197,9 @@ class SlackResponse:
             if item[0] in self._lower_text:
                 self._minutes_to_add += item[1]
                 self._additions.append(item[0])
-        if "!throw " in self._lower_text:
+        if "!customthrow " in self._lower_text:
             str1 = self._lower_text
-            str2 = str1[7:]   # !throw 30
+            str2 = str1[13:]   # !throw 30
             custom_minutes = int(str2.split()[0])
             if custom_minutes > 0:
                 self._minutes_to_add += custom_minutes
