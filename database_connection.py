@@ -225,13 +225,13 @@ def reteam(excluded_ids):
         for member in members:
             if member[0] in excluded_ids:
                 cursor.execute(sql.SQL(
-                    "INSERT INTO tribe_data_test (name, num_posts, num_workouts, workout_score, last_post, slack_id, active)"
+                    "INSERT INTO tribe_data (name, num_posts, num_workouts, workout_score, last_post, slack_id, active)"
                     "VALUES(%s, 0, 0, -1.0, now(), %s, 't')"),
                     [member[1], member[0]]
                 )
             else:
                 cursor.execute(sql.SQL(
-                    "INSERT INTO tribe_data_test (name, num_posts, num_workouts, workout_score, last_post, slack_id, active)"
+                    "INSERT INTO tribe_data (name, num_posts, num_workouts, workout_score, last_post, slack_id, active)"
                     "VALUES(%s, 0, 0, 0.0, now(), %s, 't')"),
                     [member[1], member[0]]
                 )
