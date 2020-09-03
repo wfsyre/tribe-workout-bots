@@ -241,6 +241,7 @@ class SlackResponse:
             help_string += "!" + workout + "\n"
         for throwing in self._THROWING_TYPES:
             help_string += "!" + throwing + "\n"
+        help_string += "!(x minutes) customthrow \n"
         for command in self._COMMANDS:
             if 'admin' not in command:
                 help_string += "!" + command[8:] + "\n"
