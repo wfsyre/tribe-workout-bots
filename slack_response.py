@@ -235,13 +235,17 @@ class SlackResponse:
     def add_num_posts(self):
         add_num_posts([self._user_id], self._name)
 
-    def command_help(self):
-        help_string = "Available commands:\n"
+    def command_selfiehelp(self):
+        help_string = "Available workout commands:\n"
         for workout in self._WORKOUT_TYPES:
             help_string += "!" + workout + "\n"
+        help_string += "Available throwing commands:\n"
         for throwing in self._THROWING_TYPES:
             help_string += "!" + throwing + "\n"
         help_string += "!(x minutes) customthrow \n"
+
+    def command_generalhelp(self):
+        help_string = "Available commands:\n"
         for command in self._COMMANDS:
             if 'admin' not in command:
                 help_string += "!" + command[8:] + "\n"
