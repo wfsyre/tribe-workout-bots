@@ -117,9 +117,7 @@ def collect_stats(datafield, rev):
         string1 = "Leaderboard:\n"
         if datafield == 10:
             for x in range(0, len(leaderboard)):
-                hours = int((leaderboard[x][10])/60)
-                minutes = int((leaderboard[x][10]) % 60)
-                string1 += '%d) %s with %d hours and %d minutes \n' % (x + 1, leaderboard[x][0], hours, minutes)
+                string1 += '%d) %s with %d minutes \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
         else:
             for x in range(0, len(leaderboard)):
                 string1 += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
