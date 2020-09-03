@@ -43,6 +43,9 @@ def webhook():
         if obj._points_to_add > 0 and not obj._slackbot:
             print("points to add")
             obj.handle_db()
+        elif obj._minutes_to_add > 0 and not obj._slackbot:
+            print("minutes to add")
+            obj.handle_db()
         else:
             print("executing commands")
             obj.execute_commands()

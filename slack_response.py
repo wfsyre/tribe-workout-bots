@@ -49,7 +49,7 @@ class SlackResponse:
         self.BEINGACTIVE_POINTS = 0.0
 
         # Parse the instance variables for point values
-        self._WORKOUT_TYPES = ["gym", "throw", "workout", "hardlift", "hardcardio", "workout", "beingactive", "cardio", "lift", "hackeysack", "teamworkout"]
+        self._WORKOUT_TYPES = ["gym", "workout", "cardio", "routine"]
         self._WORKOUT_TUPLES = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
         self._THROWING_TYPES = ["zenfull", "zen", "zenlite", "routine", "fakes", "kfthrow", "lonewolf"]
         self._THROWING_TUPLES = [(("!" + x), self[x.upper() + '_THROWING']) for x in self._THROWING_TYPES]
@@ -210,7 +210,10 @@ class SlackResponse:
 
     def handle_db(self):
         print("handling db")
-        num, committed = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids, self._minutes_to_add)
+        if self._points_to_add > 0:
+            num, committed = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids, 0)
+        if self._minutes_to_add > 0:
+            num, committed = add_to_db(self._all_name, 0, len(self._additions), self._all_ids, self._minutes_to_add)
         url = 'NULL'
         # Add their image under their name in firebase storage
         if self.IMAGE_STORAGE:
