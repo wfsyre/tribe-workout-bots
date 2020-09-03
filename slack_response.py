@@ -197,6 +197,9 @@ class SlackResponse:
             if item[0] in self._lower_text:
                 self._minutes_to_add += item[1]
                 self._additions.append(item[0])
+        if "customthrow" in self._lower_text:
+            custom_minutes = int(str1.split()[0])
+            self._minutes_to_add += custom_minutes
 
     def handle_db(self):
         print("handling db")
@@ -232,13 +235,15 @@ class SlackResponse:
 
     def command_help(self):
         help_string = "Available commands:\n"
+        for workout in self._WORKOUT_TYPES:
+            help_string += "!" + workout + "\n"
+        for throwing in self._THROWING_TYPES:
+            help_string += "!" + throwing + "\n"
         for command in self._COMMANDS:
             if 'admin' not in command:
                 help_string += "!" + command[8:] + "\n"
-        for workout in self._WORKOUT_TYPES:
-            help_string += "!" + workout + "\n"
         # send_tribe_message("Available commands:\n!leaderboard\n!workouts\n!talkative\n!regionals\n!points"
-        #                    "\n!gym\n!throw\n!cardio\n!workout"
+        #                    "\n!gym\t!cardio\t!workout"
         #                    "\n!since [YYYY-MM-DD] [type] [@name]"
         #                    "\n!groupsince [YYYY-MM-DD] [type]"
         #                    "\n!poll \"Title\" \"option 1\" ... \"option n\""
@@ -263,6 +268,10 @@ class SlackResponse:
 
     def command_leaderboard(self):
         to_print = collect_stats(3, True)
+        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+
+    def command_throwerboard(self):
+        to_print = collect_stats(10, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
     def command_total(self):
