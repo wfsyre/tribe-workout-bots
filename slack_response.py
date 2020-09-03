@@ -30,9 +30,9 @@ class SlackResponse:
         self.ROUTINE_POINTS = 0.5
 
         # Throwing Point Values
-        self.ZENFULL_THROWING = 70
+        self.FULLZEN_THROWING = 70
         self.ZEN_THROWING = 60
-        self.ZENLITE_THROWING = 30
+        self.LITEZEN_THROWING = 30
         self.ROUTINE_THROWING = 60
         self.FAKES_THROWING = 90
         self.KFTHROW_THROWING = 60
@@ -51,7 +51,7 @@ class SlackResponse:
         # Parse the instance variables for point values
         self._WORKOUT_TYPES = ["gym", "workout", "cardio", "routine"]
         self._WORKOUT_TUPLES = [(("!" + x), self[x.upper() + '_POINTS']) for x in self._WORKOUT_TYPES]
-        self._THROWING_TYPES = ["zenfull", "zen", "zenlite", "routine", "fakes", "kfthrow", "lonewolf"]
+        self._THROWING_TYPES = ["fullzen", "zen", "litezen", "routine", "fakes", "kfthrow", "lonewolf"]
         self._THROWING_TUPLES = [(("!" + x), self[x.upper() + '_THROWING']) for x in self._THROWING_TYPES]
         self._WORKOUT_MAP = {"!" + x: self[x.upper() + '_POINTS'] for x in self._WORKOUT_TYPES}
 
