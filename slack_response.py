@@ -280,7 +280,7 @@ class SlackResponse:
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
     def command_throwerboard(self):
-        to_print = collect_stats(10, True)
+        to_print = collect_stats(7, True)
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
     def command_total(self):

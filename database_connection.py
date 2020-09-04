@@ -115,7 +115,7 @@ def collect_stats(datafield, rev):
         leaderboard = cursor.fetchall()
         leaderboard.sort(key=lambda s: s[datafield], reverse=rev)  # sort the leaderboard by score descending
         string1 = "Leaderboard:\n"
-        if datafield == 10:
+        if datafield == 7:
             for x in range(0, len(leaderboard)):
                 string1 += '%d) %s with %d minutes \n' % (x + 1, leaderboard[x][0], leaderboard[x][datafield])
         else:
