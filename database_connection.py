@@ -106,6 +106,8 @@ def tournaments():
         print(error)
         return "RIP"
 
+
+
 def collect_stats(datafield, rev):
     try:
         conn, cursor = connect_to_db()
@@ -853,12 +855,16 @@ def register_feedback_poll(timestamp):
     except (Exception, psycopg2.DatabaseError) as error:
         send_debug_message(error, level="ERROR")
 
-def get_leaderboard_total():
+def get_leaderboard_total(datafield):
     try:
         conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        cursor.execute(sql.SQL(
-            "SELECT workout_score FROM tribe_data WHERE workout_score > -1.0"), )
+        if datafield == 3:
+            cursor.execute(sql.SQL(
+                "SELECT workout_score FROM tribe_data WHERE workout_score > -1.0"), )
+        elif datafield == 7:
+            cursor.execute(sql.SQL(
+                "SELECT throwing_score FROM tribe_data WHERE workout_score > -1.0"), )
         leaderboard = cursor.fetchall()
         total = 0
         for x in leaderboard:

@@ -284,9 +284,11 @@ class SlackResponse:
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
     def command_total(self):
-        total = get_leaderboard_total()
-        total = str(total)
-        send_message("Total points so far: " + total + "\n " + total + " / 1000", channel=self._channel, bot_name=self._name, url=self._avatar_url)
+        points = get_leaderboard_total()
+        points = str(points)
+        minutes = get_leaderboard_total()
+        minutes = str(minutes)
+        send_message("Total points so far: " + points + "\n " + points + " / 400\n" + "Total minutes so far: " + minutes + "\n " + minutes + " / 12000", channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
     def command_workouts(self):  # display the leaderboard for who works out the most
         to_print = collect_stats(2, True)
