@@ -859,10 +859,10 @@ def get_leaderboard_total(datafield):
     try:
         conn, cursor = connect_to_db()
         # get all of the people who's workout scores are greater than -1 (any non players have a workout score of -1)
-        if datafield == 3:
+        if datafield == 1:
             cursor.execute(sql.SQL(
                 "SELECT workout_score FROM tribe_data WHERE workout_score > -1.0"), )
-        elif datafield == 7:
+        elif datafield == 2:
             cursor.execute(sql.SQL(
                 "SELECT throwing_score FROM tribe_data WHERE workout_score > -1.0"), )
         leaderboard = cursor.fetchall()

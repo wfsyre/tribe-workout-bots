@@ -284,9 +284,9 @@ class SlackResponse:
         send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
     def command_total(self):
-        points = get_leaderboard_total()
+        points = get_leaderboard_total(1)
         points = str(points)
-        minutes = get_leaderboard_total()
+        minutes = get_leaderboard_total(2)
         minutes = str(minutes)
         send_message("Total points so far: " + points + "\n " + points + " / 400\n" + "Total minutes so far: " + minutes + "\n " + minutes + " / 12000", channel=self._channel, bot_name=self._name, url=self._avatar_url)
 
