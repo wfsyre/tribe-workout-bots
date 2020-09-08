@@ -203,6 +203,9 @@ class SlackResponse:
             custom_minutes = int(str2.split()[0])
             if custom_minutes > 0:
                 self._minutes_to_add += custom_minutes
+        if "!ignore" in self._lower_text:
+            self._points_to_add = 0
+            self._minutes_to_add = 0
 
     def handle_db(self):
         print("handling db")
