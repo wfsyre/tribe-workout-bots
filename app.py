@@ -40,6 +40,9 @@ def webhook():
     obj = SlackResponse(data)
     if (not obj._bot or obj._slackbot) and not obj._reaction_added and not obj._reaction_removed:
         obj.add_num_posts()
+        if obj._subtype == 'message_changed' and obj._previous_message_text != obj._text and obj._channel = 'C019TQRH1DY':
+            print("edited message to handle")
+            obj.handle_edit()
         if obj._points_to_add > 0 and not obj._slackbot:
             print("points to add")
             obj.handle_db()

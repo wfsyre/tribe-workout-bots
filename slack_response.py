@@ -199,13 +199,32 @@ class SlackResponse:
                 self._additions.append(item[0])
         if "!customthrow " in self._lower_text:
             str1 = self._lower_text
-            str2 = str1[13:]   # !throw 30
+            str2 = str1[13:]   
             custom_minutes = int(str2.split()[0])
             if custom_minutes > 0:
                 self._minutes_to_add += custom_minutes
         if "!ignore" in self._lower_text:
             self._points_to_add = 0
             self._minutes_to_add = 0
+
+    def handle_edit(self):
+        self._points_to_remove = 0
+        for item in self._WORKOUT_TUPLES:
+            if item[0] in self._previous_message_text:
+                self._points_to_remove += item[1]
+                self._additions.append(item[0])
+        self._minutes_to_remove = 0
+        for item in self._WORKOUT_TUPLES:
+            if item[0] in self._previous_message_text:
+                self._minutes_to_remove += item[1]
+                self._additions.append(item[0])
+        if "!customthrow " in self._previous_message_text:
+            str1 = self._lower_text
+            str2 = str1[13:]   
+            custom_minutes = int(str2.split()[0])
+            if custom_minutes > 0:
+                self._minutes_to_remove += custom_minutes
+        num, committed = edit_message_db(self._all_names, self._points_to_remove, len(self._additions), self._all_ids, self._minutes_to_remove)
 
     def handle_db(self):
         print("handling db")
