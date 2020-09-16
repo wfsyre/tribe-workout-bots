@@ -203,8 +203,8 @@ def edit_message_db(names, subtraction, num_workouts, ids, minutes):  # add "add
                     "now() WHERE slack_id = %s"),
                     [str(minutes), ids[x]])
                 conn.commit()
-                send_debug_message("subtracted %s with %s points and %s minutes" % (names[x], str(addition), str(minutes)), level="INFO")
-                print("subtracted %s with %s points and %s minutes" % (names[x], str(addition), str(minutes)))
+                send_debug_message("subtracted %s with %s points and %s minutes" % (names[x], str(subtraction), str(minutes)), level="INFO")
+                print("subtracted %s with %s points and %s minutes" % (names[x], str(subtraction), str(minutes)))
                 num_committed += 1
                 committed.append((names[x], str(ids[x])))
             else:
