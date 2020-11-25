@@ -150,7 +150,7 @@ class SlackResponse:
             self.match_names_to_ids()
             self._lower_text = self._text.lower()
 
-            self.parse_for_additions()
+            # self.parse_for_additions()
 
     def parse_text_for_mentions(self):
         text = self._text
