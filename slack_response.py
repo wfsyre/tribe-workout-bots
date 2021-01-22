@@ -234,7 +234,7 @@ class SlackResponse:
         if self._points_to_add > 0:
             num, committed = add_to_db(self._all_names, self._points_to_add, len(self._additions), self._all_ids, 0)
         if self._minutes_to_add > 0:
-            num, committed = add_to_db(self._all_names, 0, len(self._additions), self._all_ids, self._minutes_to_add)
+            num, committed = add_to_db(self._all_names, 0, 0, self._all_ids, self._minutes_to_add)
         url = 'NULL'
         # Add their image under their name in firebase storage
         if self.IMAGE_STORAGE:
