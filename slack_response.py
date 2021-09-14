@@ -302,30 +302,30 @@ class SlackResponse:
 
     def command_leaderboard(self):
         to_print = collect_stats(3, True)
-        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message(to_print, channel=self._channel, bot_name=self._name)
 
     def command_throwerboard(self):
         to_print = collect_stats(7, True)
-        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message(to_print, channel=self._channel, bot_name=self._name)
 
     def command_total(self):
         points = get_leaderboard_total(1)
         points = str(points)
         minutes = get_leaderboard_total(2)
         minutes = str(minutes)
-        send_message("Total points so far: " + points + "\n " + points + " / a lot\n" + "Total minutes so far: " + minutes + "\n " + minutes + " / a lot", channel=self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message("Total points so far: " + points + "\n " + points + " / a lot\n" + "Total minutes so far: " + minutes + "\n " + minutes + " / a lot", channel=self._channel, bot_name=self._name)
 
     def command_workouts(self):  # display the leaderboard for who works out the most
         to_print = collect_stats(2, True)
-        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message(to_print, channel=self._channel, bot_name=self._name)
 
     def command_talkative(self):  # displays the leaderboard for who posts the most
         to_print = collect_stats(1, True)
-        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message(to_print, channel=self._channel, bot_name=self._name)
 
     def command_handsome(self):  # displays the leaderboard for who posts the most
         to_print = collect_stats(1, True)
-        send_message(to_print, channel=self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message(to_print, channel=self._channel, bot_name=self._name)
 
     def command_regionals(self):
         now = datetime.now()
@@ -502,7 +502,7 @@ class SlackResponse:
         string = "Overall Average: " + str(total) + "\nPer Day Average:\n"
         for i in range(len(labels)):
             string += labels[i] + ": " + str(per_day[i]) + "\n"
-        send_message(string, self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message(string, self._channel, bot_name=self._name)
 
     def command_eventboard(self):
         options = self._lower_text.split()[1:]
@@ -522,7 +522,7 @@ class SlackResponse:
         print_str = "Special Leaderboard:\n"
         for x in range(0, len(leaderboard)):
             print_str += '%d) %s with %.1f points \n' % (x + 1, leaderboard[x][0], leaderboard[x][1])
-        send_message(print_str, self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message(print_str, self._channel, bot_name=self._name)
 
     def admin_command_setup(self):
         send_debug_message('Setting up new database', level="INFO")
@@ -588,7 +588,7 @@ class SlackResponse:
 
 
     def command_ping(self):
-        send_message("Pong", self._channel, bot_name=self._name, url=self._avatar_url)
+        send_message("Pong", self._channel, bot_name=self._name)
 
     def admin_command_yaml(self):
         custom_emoji_file = open("custom_emoji_names.yaml", "w")
